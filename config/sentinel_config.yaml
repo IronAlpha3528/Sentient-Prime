@@ -1,0 +1,49 @@
+# Sentinel-Prime Configuration
+
+# --- SIEM ---
+elasticsearch:
+  host: "localhost"
+  port: 9200
+  index_prefix: "wazuh-"
+
+# --- Honeypot ---
+honeypots:
+  # Bait files use dot-prefix to appear hidden on Linux
+  # On Windows, set file attribute to hidden via attrib +H
+  hidden_prefix: true
+  adaptive:
+    ttl_minutes: 30
+    max_concurrent_entities: 5   # decoy budget (EXT-4)
+  passive:
+    # Paths registered at deployment time in honeytoken_registry.db
+
+# --- Detection ---
+detection:
+  baseline_min_observations: 10  # min obs before trusting entity-level baseline
+  zscore_threshold: 3.0          # standard deviations for anomaly flag
+  entropy_threshold_low: 6.0     # below this = plaintext
+  entropy_threshold_high: 7.5    # above this = likely encrypted
+
+# --- Correlation ---
+correlation:
+  graph_window_minutes: 60       # sliding window for NetworkX graph
+  ego_graph_hops: 2
+  adaptive_trigger_low: 0.4      # score range for adaptive deception
+  adaptive_trigger_high: 0.74
+
+# --- Reasoning ---
+reasoning:
+  gemini_model: "gemini-2.0-flash"
+  max_hypotheses: 4
+  faiss_top_k: 5                 # top-k ATT&CK techniques per query
+
+# --- Orchestration ---
+orchestration:
+  confidence_threshold: 0.75     # auto-execute if >= this AND low blast radius
+  max_auto_blast_radius: 2       # max disrupted services for auto-execute
+  dry_run_enabled: true
+
+# --- Audit ---
+audit:
+  ledger_path: "data/audit_ledger.jsonl"
+  hash_algorithm: "sha256"

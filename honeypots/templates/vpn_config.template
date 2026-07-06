@@ -1,0 +1,17 @@
+client
+dev tun
+proto udp
+remote vpn.internal-corp.local 1194
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+ca ca.crt
+cert admin_vpn.crt
+key admin_vpn.key
+# DECOY — HONEYTOKEN
+# Username: vpn_admin
+# Password: Vpn_Acc3ss_2024!
+cipher AES-256-CBC
+auth SHA256
+verb 3

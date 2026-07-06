@@ -143,49 +143,57 @@ After a live action executes, a monitoring step rechecks the entity's behavior o
 
 | # | Component | What it does | Build effort |
 |---|---|---|---|
+| 0 | Offline training pipeline | Preprocess datasets, train Isolation Forest + XGBoost, build FAISS vector DB, compile Sigma rules | Medium |
 | 1 | Log ingestion pipeline | Ship endpoint/network/auth logs into a central store | Low–Medium |
-| 2 | Ransomware/corruption/malicious-activity detection agents | LLM- or rule-assisted scoring of log patterns | Medium |
+| 2 | Ransomware/corruption/malicious-activity detection agents | ML-assisted (Isolation Forest, XGBoost) + rule-based (Sigma, entropy, z-score) scoring of log patterns | Medium |
 | 3 | Honeypot/honeytoken layer | Deploy decoys across IT and OT, capture interaction events | Low–Medium |
-| 4 | Correlation & lateral-movement agent | Graph traversal: who/what touched whom, ATT&CK technique mapping | Medium–High |
-| 5 | Hypothesis Generation Agent | Produces multiple confidence-scored competing explanations per incident | Medium |
-| 6 | Risk Scoring & Action Ranking module | Weighs containment effectiveness vs. business impact per candidate action | Low–Medium |
-| 7 | Orchestration agent (dry-run + execution) | Simulates, then executes/escalates the top-ranked action | Medium |
-| 8 | Closed-loop outcome monitoring | Confirms actions worked; feeds results back into baselines | Medium |
-| 9 | Audit ledger | Hash-chained, append-only record of every hypothesis, score, and action | Low |
-| 10 | Dashboard / demo UI | Visualizes incidents, hypotheses, scores, and outcomes | Medium |
+| 4 | Threat correlation engine | Signal fusion: merge anomaly scores + attack class + ATT&CK TTP match + co-occurrences | Medium |
+| 5 | Hypothesis Generation Agent | Gemini Flash + FAISS ATT&CK RAG producing 2–4 confidence-scored competing explanations per incident | Medium |
+| 6 | APT attribution + next-stage prediction | Map to known TTP chains, predict likely next technique, NetworkX 2-hop graph | Medium–High |
+| 7 | Risk Scoring & Action Ranking module | Weighs containment effectiveness vs. business impact per candidate action | Low–Medium |
+| 8 | Orchestration agent (dry-run + SOAR playbook) | Simulates, then auto-executes (confidence ≥0.75 + low blast radius) or escalates to human gate | Medium |
+| 9 | Closed-loop outcome monitoring | Confirms actions worked; feeds results back into baselines | Medium |
+| 10 | Audit ledger | Hash-chained, append-only record of every hypothesis, score, and action | Low |
+| 11 | SOC Dashboard (React) | Live alert feed, TTP map, MTTD/MTTR metrics, hypothesis ladder, audit log | Medium |
 
 ### 3.1 Log ingestion pipeline
 - **Tooling:** Wazuh or the ELK stack (Elasticsearch + Logstash/Beats + Kibana) for the SIEM layer; Sysmon/auditd for endpoint telemetry; Suricata/Zeek for network flow.
 - **What to ingest:** authentication logs, process creation events, file integrity monitoring (FIM) events, network connection logs, and the honeypot trigger events (see 3.3).
 
 ### 3.2 Detection agents
-- A small set of focused agents rather than one monolithic model:
+- A small set of focused agents backed by both **trained ML models** and **deterministic rules**:
   - **Ransomware agent** — mass file renames, rapid entropy increase, shadow-copy/backup deletion commands, known ransomware-note filenames.
   - **Corruption/integrity agent** — unexpected checksum mismatches or writes to files that shouldn't change.
-  - **Malicious-activity agent** — suspicious process trees (e.g., office app spawning PowerShell spawning a network call), beaconing-like outbound traffic.
-- Each agent outputs a **confidence score + supporting evidence**, which becomes raw input to the Hypothesis Generation Agent (3.5) rather than a final verdict in itself.
+  - **Malicious-activity agent** — Isolation Forest for auth anomalies (impossible travel, odd-hour logins), XGBoost/Random Forest for suspicious process trees, FFT + DBSCAN for beaconing detection.
+- Each agent outputs a **confidence score + supporting evidence**, which becomes raw input to the Threat Correlation Engine and Hypothesis Generation Agent rather than a final verdict in itself.
+- ML models (Isolation Forest, XGBoost) are trained offline in Phase 1A and loaded at runtime.
 
 ### 3.3 Honeypot/deception layer
-- **IT-side:** Canarytokens (open source) for decoy AWS keys, fake credentials, decoy documents/web links, DNS tokens.
+- **IT-side:** Custom file-based honeytokens — fake credential files, decoy documents, decoy database connection strings, VPN config bait, DNS canary tokens. Monitored via the existing Sysmon/auditd → Wazuh pipeline.
 - **OT/ICS-side:** Conpot (open source ICS honeypot) for decoy Modbus/S7comm endpoints.
 - **Placement strategy:** decoys concentrated near high-value or legacy/unpatched assets rather than placed randomly.
 - **Output:** every interaction event is pushed into the SIEM pipeline as a special, maximum-confidence alert type.
 
 ### 3.4 Correlation & lateral-movement agent
-- Builds a short-lived graph (nodes = users/hosts/processes/IPs, edges = observed interactions in a recent time window) and traverses outward from the triggering event.
-- Maps the leading hypothesis's technique(s) to **MITRE ATT&CK** via a RAG pipeline over the official ATT&CK STIX dataset.
+- Builds a short-lived graph (nodes = users/hosts/processes/IPs, edges = observed interactions in a recent time window) and traverses outward from the triggering event using NetworkX 2-hop ego graphs.
+- Maps the leading hypothesis's technique(s) to **MITRE ATT&CK** via a **FAISS vector DB** built from the official ATT&CK STIX dataset with embeddings generated by Gemini Flash / Sentence-BERT.
+
+### 3.4a APT attribution + next-stage prediction
+- Maps the leading hypothesis to **known threat actor TTP chains** (not just individual techniques).
+- **Predicts the likely next technique** in the chain based on observed progression, giving defenders proactive warning.
+- Uses the NetworkX 2-hop ego graph for lateral-movement context and outputs a confidence score for the attribution.
 
 ### 3.5 Hypothesis Generation Agent
-- An LLM agent given the correlated evidence for an entity and asked to produce 2–4 competing hypotheses (including a benign one), each with a confidence score and the specific evidence supporting it.
+- A **Gemini Flash** agent given the correlated evidence for an entity, with access to the **FAISS ATT&CK RAG** vector DB, asked to produce 2–4 competing hypotheses (including a benign one), each with a confidence score and the specific evidence supporting it.
 - This is deliberately kept separate from the detection agents (3.2) so that raw signal-scoring and incident-level reasoning don't get conflated — the detection agents say "this looks unusual," the hypothesis agent says "here's what that unusual activity might mean."
 
 ### 3.6 Risk Scoring & Action Ranking module
 - Deterministic, not LLM-driven — a small scoring function applied to a fixed action menu (isolate host, revoke credential, block IP, snapshot VM, monitor only) for the leading hypothesis.
 - `α`/`β` weights should be configurable per organisation/asset criticality, since a hospital network and an exam-board database server have very different tolerance for disruption.
 
-### 3.7 Orchestration agent (dry-run + execution)
+### 3.7 Orchestration agent (dry-run + SOAR playbook)
 - Dry-run mode simulates the top-ranked action and logs the predicted effect before anything touches a real (or lab) system.
-- **Autonomy rule:** actions below a defined blast-radius threshold execute automatically once the dry-run clears; anything broader requires human approval.
+- **Autonomy rule:** confidence **≥ 0.75** AND low blast radius → auto-execute via SOAR playbook (isolate, revoke, block IP); anything broader requires human approval via the escalation gate.
 
 ### 3.8 Closed-loop outcome monitoring
 - A short follow-up window after execution re-checks the relevant signals (file activity, honeypot interactions, process state) for the same entity.
@@ -194,8 +202,9 @@ After a live action executes, a monitoring step rechecks the entity's behavior o
 ### 3.9 Audit ledger
 - A hash-chained append-only log (each entry includes a hash of the previous entry) recording every hypothesis set, every risk score, every dry-run prediction, every live action, and every monitored outcome.
 
-### 3.10 Dashboard / demo
-- A lightweight UI (or notebook-driven walkthrough for the demo video) showing: incoming alerts → hypotheses with confidence → honeypot confirmations → risk-ranked actions → dry-run result → executed action → monitored outcome → audit trail.
+### 3.10 SOC Dashboard (React)
+- A **React SPA** frontend with a **Flask/FastAPI API backend** and real-time updates via WebSocket/SSE.
+- Displays: live alert feed, TTP map visualization, MTTD/MTTR metrics, hypothesis ladder with confidence scores, honeypot confirmations, risk-ranked actions, dry-run results, executed/escalated actions, action timeline, and the full audit trail for any selected incident.
 
 ---
 
@@ -203,7 +212,8 @@ After a live action executes, a monitoring step rechecks the entity's behavior o
 
 | Purpose | Source |
 |---|---|
-| Background "normal" + labeled attack network traffic | CICIDS2017 / CSE-CIC-IDS2018, UNSW-NB15 |
+| Background "normal" + labeled attack network traffic | CSE-CIC-IDS2018 |
+| SOC-realistic multi-stage attack scenarios (APT, ransomware, web attacks) | Splunk BOTS (Boss of the SOC) |
 | Behavioral/auth baselining | LANL Authentication dataset |
 | OT/ICS attack scenarios | SWaT and WADI (iTrust, SUTD), or HAI dataset |
 | MITRE ATT&CK technique/tactic data (RAG corpus) | Official MITRE ATT&CK STIX bundles |
@@ -213,24 +223,26 @@ After a live action executes, a monitoring step rechecks the entity's behavior o
 
 ---
 
-## 5. Tech stack (suggested)
+## 5. Tech stack
 
-- **SIEM:** Wazuh or ELK stack
+- **SIEM:** Wazuh + Elasticsearch
 - **Honeypots:** Canarytokens (IT), Conpot (OT/ICS)
 - **Attack simulation for demo:** MITRE Caldera or Atomic Red Team
-- **Agent framework:** any LLM agent/tool-use framework (e.g., Claude with tool use, LangChain/LangGraph, or a custom orchestrator)
-- **Knowledge base / RAG:** MITRE ATT&CK STIX data, CERT-In advisories, CVE feeds — indexed in a vector store
-- **Graph correlation:** NetworkX (prototype) or Neo4j (if time allows)
+- **ML models:** Isolation Forest + XGBoost/LightGBM (trained offline, loaded at runtime) via scikit-learn/xgboost/lightgbm
+- **LLM agent:** Gemini Flash via `google-generativeai`
+- **Knowledge base / RAG:** MITRE ATT&CK STIX data embedded into **FAISS** vector store (`faiss-cpu` + `sentence-transformers`)
+- **Graph correlation:** NetworkX (prototype) with 2-hop ego graph traversal
 - **Risk scoring:** plain Python/NumPy — deliberately simple and auditable, not a black box
 - **Audit ledger:** hash-chained JSON log (Python `hashlib`)
-- **Dashboard:** a small web app or notebook-based visualization
+- **Dashboard:** React SPA frontend + Flask/FastAPI API backend + WebSocket/SSE for real-time updates
+- **Data preprocessing:** pandas, imbalanced-learn (SMOTE), scikit-learn (StandardScaler)
 
 ---
 
 ## 6. Build roadmap
 
 1. **Lab setup** — Wazuh/ELK, a few VMs, Canarytokens + Conpot wired into the SIEM.
-2. **Replay realistic traffic** — feed CICIDS2017/SWaT data into the lab for "normal + attack" background noise.
+2. **Replay realistic traffic** — feed CSE-CIC-IDS2018/Splunk BOTS/SWaT data into the lab for "normal + attack" background noise.
 3. **Detection agents v1** — ransomware/corruption/malicious-activity agents against replayed data.
 4. **Honeypot integration** — confirm honeypot events flow in as maximum-confidence alerts.
 5. **Hypothesis Generation Agent** — wire detection + honeypot signals into multi-hypothesis reasoning.
@@ -246,7 +258,7 @@ After a live action executes, a monitoring step rechecks the entity's behavior o
 
 ## 7. Evaluation metrics (matching the challenge's judging criteria)
 
-- **Anomaly/ransomware detection rate** and **false-positive rate**, measured against CICIDS2017/UNSW-NB15 benchmark traffic.
+- **Anomaly/ransomware detection rate** and **false-positive rate**, measured against CSE-CIC-IDS2018/Splunk BOTS benchmark traffic.
 - **ATT&CK attribution accuracy** at the technique level, measured against Caldera/Atomic Red Team's known ground-truth technique IDs.
 - **Hypothesis ranking accuracy** — how often the correct explanation is ranked highest among the generated hypotheses.
 - **Automation coverage** — percentage of containment playbook steps that execute without human input.
@@ -263,3 +275,18 @@ After a live action executes, a monitoring step rechecks the entity's behavior o
 - **Structural/graph-based feasibility validation** — checking a hypothesis against the actual privilege/network topology graph before trusting it (rather than only correlating observed interactions after the fact) — is a deliberately deferred addition for a future iteration; see the accompanying comparison document for why this is currently out of scope.
 - Cross-agency threat intelligence sharing (federated, privacy-preserving) is out of scope for this prototype but is a natural extension given India's DPDP Act constraints.
 - OT/ICS decoys (Conpot) only cover a subset of real-world protocols — production use would need broader protocol coverage.
+- **Cloud/AWS coverage** is out of scope for this prototype — the system targets on-premise lab infrastructure. A future iteration would add cloud-native honeytokens (AWS CloudTrail canaries, fake IAM keys, S3 bucket decoys), cloud SIEM integration (AWS Security Hub, GuardDuty), and cloud-native containment actions (security group rules, IAM policy revocation).
+
+### Possible extensions (if time permits)
+
+Small, self-contained improvements that can be added without architectural changes:
+
+| Extension | Enhances | What it does |
+|---|---|---|
+| **Signal TTL / temporal decay** | Correlation engine | Exponential decay on signal weights so old signals fade instead of accumulating — prevents stale data from inflating composite scores |
+| **Baseline cold-start fallback** | BaselineStore | Pre-computed global baselines for new/unseen entities until they accumulate enough local observations; cold-start signals tagged with lower weight |
+| **LLM fallback mode** | Hypothesis agent | Rule-based deterministic hypothesis generator when Gemini Flash API is unreachable — pipeline degrades gracefully instead of stalling |
+| **Adaptive deception budget** | Adaptive deception | Rate-limit concurrent adaptive decoy sets (e.g., max 5 entities) to prevent environment flooding during noisy periods |
+| **IOC enrichment** | Signal fusion | Check flagged IPs/hashes against AbuseIPDB and VirusTotal for confidence boost via real-world threat intel |
+| **Evidence preservation** | Orchestrator | Auto-snapshot (process list, connections, recent files) before destructive containment actions to preserve forensic evidence |
+| **Campaign grouping** | APT attribution | Cluster related entities (overlapping techniques + graph connectivity) into campaign chains for more accurate attribution and next-stage prediction |

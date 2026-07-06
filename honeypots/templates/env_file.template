@@ -1,0 +1,13 @@
+# Application Environment (DECOY — HONEYTOKEN)
+# Auto-generated — do not commit to version control
+
+APP_ENV=production
+APP_SECRET=xK9mP2vL8nQ4wR7jB5tH3yU6
+DB_HOST=10.0.1.50
+DB_PORT=5432
+DB_NAME=app_production
+DB_USER=app_service
+DB_PASSWORD=S3rvic3_Pr0d_2024!
+REDIS_URL=redis://10.0.1.51:6379/0
+JWT_SECRET=aF4kE_jWt_S3cr3t_N0t_R34l
+SMTP_PASSWORD=Email_S3rvice_2024!
