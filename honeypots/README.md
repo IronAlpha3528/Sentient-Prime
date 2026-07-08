@@ -4,16 +4,17 @@ Custom file-based honeytokens monitored via the existing Sysmon/auditd → Wazuh
 
 ## How It Works
 
-1. **Bait files** are placed on production VMs in locations an attacker would explore during reconnaissance
-2. **Sysmon** (Windows) / **auditd** (Linux) log file access events and feed them to Wazuh → Elasticsearch
-3. The **honeytoken detector** queries Elasticsearch for file-access events matching registered honeytokens
-4. A match emits a **confidence: 1.0 ground-truth signal** to the Threat Correlation Engine
+1. **Passive bait files** are placed on production VMs during setup
+2. **Adaptive decoys** are placed dynamically by the **AI Deception Agent** to test uncertain hypotheses
+3. **Sysmon/auditd** log file access events and feed them to Wazuh → Elasticsearch
+4. The **honeytoken detector** queries Elasticsearch for file-access events matching registered honeytokens
+5. A match emits a **confidence: 1.0 ground-truth signal** to the Threat Correlation Engine
 
 No external honeytoken service is needed — the SIEM does all detection.
 
 ## Bait File Visibility
 
-Bait files use a **dot-prefix** on Linux (e.g., `.db_admin_creds.txt`) to appear hidden in normal directory listings but still visible to `ls -a` or programmatic file enumeration. On Windows, the deployer sets the **hidden file attribute** (`attrib +H`) so the files don't appear in Explorer but are accessible to any process. This prevents legitimate users from accidentally opening them while keeping them discoverable to attacker tooling.
+Bait files use a **dot-prefix** on Linux (e.g., `.db_admin_creds.txt`) to appear hidden in normal directory listings but still visible to `ls -a` or programmatic file enumeration. On Windows, the deployer sets the **hidden file attribute** (`attrib +H`). This prevents legitimate users from accidentally opening them while keeping them discoverable to attacker tooling.
 
 ## Decoy Types
 
@@ -34,7 +35,7 @@ honeypots/
 ├── honeytoken_registry.py     # SQLite DB tracking all deployed honeytokens
 ├── honeytoken_detector.py     # Polls ES for file-access events matching registry
 ├── decoy_deployer.py          # Places/removes bait files on remote hosts via SSH/WinRM
-├── adaptive_engine.py         # Orchestrates adaptive deception lifecycle
+├── adaptive_engine.py         # Orchestrates adaptive deception lifecycle (used by AI Deception Agent)
 ├── conpot_monitor.py          # Tails Conpot logs, forwards to ES
 ├── templates/                 # Bait file content templates
 │   ├── db_credentials.template
@@ -49,7 +50,10 @@ honeypots/
 | Mode | When deployed | Triggered by | Lifetime |
 |---|---|---|---|
 | **Passive** | Once, at system setup | Always active | Permanent |
-| **Adaptive** | Dynamically, on moderate anomaly (0.4–0.74) | Correlation engine trigger | TTL (default 30 min) — auto-cleanup |
+| **Adaptive** | Dynamically, on moderate anomaly (0.4–0.74) | AI Deception Agent | TTL (default 30 min) — auto-cleanup |
+
+### AI-Driven Adaptive Deception
+When a moderate threat score occurs, the AI Deception Agent decides **what uncertain hypothesis to test, what attacker behaviour would confirm it, which decoy matches that behaviour, and where the graph says the decoy can be safely placed.**
 
 ## Signal Output Schema
 

@@ -8,11 +8,12 @@ Unit and integration tests for all Sentinel-Prime pipeline components.
 tests/
 ├── test_baseline_store.py       # ✅ BaselineStore unit tests (21 tests passing)
 ├── test_webhook_receiver.py     # Webhook receiver tests
-├── test_honeytoken_registry.py  # Honeytoken registry + detector tests
-├── test_detectors.py            # Detection agent tests
-├── test_correlator.py           # Threat correlation engine tests
-├── test_hypothesis_agent.py     # Hypothesis agent tests
+├── test_honeytoken_registry.py  # Honeytoken registry tests
+├── test_specialist_detectors.py # Network, Identity, Endpoint, OT detector tests
+├── test_meta_classifier.py      # LightGBM correlation engine tests
+├── test_ai_agents.py            # Correlation, Hypothesis, Prediction, Deception, Response agent tests
 ├── test_risk_scoring.py         # Risk scoring formula tests
+├── test_policy_gate.py          # Deterministic execution gate tests
 ├── test_audit_ledger.py         # Hash-chain integrity tests
 ├── test_adaptive_engine.py      # Adaptive deception lifecycle tests
 ├── conftest.py                  # Shared fixtures
