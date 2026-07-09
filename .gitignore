@@ -10,6 +10,7 @@ data/processed/
 data/models/*.pkl
 data/models/*.json
 data/models/*.index
+agent/rag/index/
 
 # Audit ledger (runtime output)
 data/audit_ledger.jsonl

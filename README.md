@@ -306,3 +306,14 @@ Composite Score = α × Containment Effectiveness − β × Business Impact
 | **IOC enrichment** | Signal fusion | Check IPs/hashes against AbuseIPDB/VirusTotal |
 | **Evidence preservation** | Orchestrator | Auto-snapshot before destructive containment |
 | **Campaign grouping** | APT attribution | Cluster related entities into campaign chains |
+
+---
+
+## 10. AI Reasoning Core Implementation (Blocks 1-3)
+
+The AI Reasoning Core has been implemented (Hardik's Blocks), focusing on the Sense-Reason-Act loop for Cyber Resilience, grounded in MITRE ATT&CK.
+
+- **Hypothesis Generation**: `agent/hypothesis_agent.py` takes the enriched alert, queries the FAISS index (built with `agent/rag/build_index.py`), and uses Gemini Flash to generate 3-4 ranked hypotheses (including one benign).
+- **APT Attribution & Blast Radius**: `agent/apt_attribution.py` attributes to a threat actor and calculates the blast radius using a NetworkX topology loaded dynamically from `config/topology.yaml`.
+- **Risk Scoring**: `risk_scoring/scorer.py` evaluates the operational impact based on the deterministic math formula utilizing configurable weights from `config/risk_params.yaml`.
+- **Pipeline integration**: `agent/pipeline.py` wires these modules together, exposing a single entry point `run_pipeline(evidence: dict) -> dict` for seamless consumption by the FastAPI dashboard.
