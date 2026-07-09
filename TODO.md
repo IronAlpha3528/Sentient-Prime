@@ -7,15 +7,15 @@ Goal: a working lab-scale prototype demonstrating the full pipeline end-to-end (
 - [ ] **1.1 Define Common Evidence Object schema**
   Create `detectors/evidence_schema.py` defining the exact JSON structure that all 4 specialist detectors will output.
 - [ ] **1.2 Train Network LightGBM**
-  Load CSE-CIC-IDS2018. Train LightGBM on flow features. Serialize to `data/models/network_lightgbm.pkl`.
+  Load CSE-CIC-IDS2018 (Parquet files). Train LightGBM on flow features. Serialize to `data/models/network/network_model.txt`.
 - [ ] **1.3 Train Identity / UEBA Isolation Forest**
-  Load LANL Auth. Build behavioral windows (auth frequency, host fanout). Train Isolation Forest. Serialize to `data/models/identity_iforest.pkl`.
-- [ ] **1.4 Train Endpoint LightGBM + Sigma integration**
-  Load Splunk BOTS v3 + Mordor. Extract process lineage + Sigma rule matches. Train LightGBM. Serialize to `data/models/endpoint_lightgbm.pkl`.
-- [ ] **1.5 Train OT / ICS Isolation Forest**
-  Load HAI dataset. Build sensor/actuator windows. Train Isolation Forest. Serialize to `data/models/ot_iforest.pkl`.
+  Load LANL Auth. Build behavioral windows. Train Isolation Forest. Serialize to `data/models/identity/identity_iforest.pkl`.
+- [Bypassed] **1.4 Train Endpoint LightGBM + Sigma integration**
+  (Bypassed due to dataset availability constraints - no BOTS/Mordor data on disk)
+- [Bypassed] **1.5 Train OT / ICS Isolation Forest**
+  (Bypassed due to dataset availability constraints - no HAI data on disk)
 - [ ] **1.6 Train LightGBM Meta-Classifier**
-  Generate synchronized cyber-range scenarios. Run all 4 detectors to get evidence objects. Train Meta-Classifier to output unified threat score. Serialize to `data/models/meta_lightgbm.pkl`.
+  Generate scenarios. Run enabled detectors (Network, Identity) to get evidence objects. Train Meta-Classifier to correlate Network and Identity threat scores. Serialize to `data/models/meta_lightgbm.pkl`.
 - [ ] **1.7 Build MITRE ATT&CK Hybrid Graph-RAG**
   Parse ATT&CK STIX 2.1. Embed using Sentence Transformer → FAISS index (`data/models/attack_faiss.index`). Build NetworkX Knowledge Graph from STIX relationships.
 
