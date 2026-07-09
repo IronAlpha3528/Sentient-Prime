@@ -1,38 +1,36 @@
-# Orchestrator — SOAR Playbook Dispatcher
+﻿# Orchestrator - SOAR Playbook Dispatcher
 
-Manages the dry-run → policy gate → execute/escalate pipeline for containment actions.
+Manages the dry-run -> policy gate -> execute/escalate pipeline for containment actions.
 
 ## Directory Structure
 
 ```
 orchestrator/
 ├── __init__.py
-├── dispatcher.py            # Main orchestration loop
-├── dry_run.py               # Action effect simulation / prediction
-├── policy_gate.py           # Confidence ≥ 0.75 + blast radius check
-├── actions/                 # Pluggable containment action implementations
-│   ├── __init__.py
-│   ├── isolate_host.py      # iptables (Linux) / Windows Firewall
-│   ├── revoke_credential.py # Disable-ADAccount or mocked equivalent
-│   └── block_ip.py          # Firewall rule / DNS sinkhole
-└── README.md
+├── dispatcher.py
+├── dry_run.py
+├── policy_gate.py
+└── actions/
+    ├── block_ip.py
+    ├── isolate_host.py
+    └── revoke_access.py
 ```
+
+### actions/
+
+This folder contains the SOAR response actions executed after the Policy Gate approves an incident.
+
+- **block_ip.py** → Simulates blocking a malicious IP address.
+- **isolate_host.py** → Simulates isolating an infected host from the network.
+- **revoke_access.py** → Simulates revoking access for a compromised user account.
+
+Each action returns a structured response indicating whether the simulated action succeeded or failed.
 
 ## Policy Gate Logic
 
 ```
-IF dry_run.passes AND confidence ≥ 0.75 AND blast_radius ≤ max_auto:
-    → auto-execute via SOAR playbook (isolate, revoke, block IP)
+IF dry_run.passes AND confidence >= 0.75 AND blast_radius <= max_auto:
+    -> auto-execute via SOAR playbook
 ELSE:
-    → escalate to human-approval queue (surfaced in dashboard)
+    -> escalate to human approval
 ```
-
-## SOAR Actions
-
-| Action | Implementation |
-|---|---|
-| Isolate host | `iptables` (Linux) / Windows Firewall rule |
-| Revoke credential | `Disable-ADAccount` or mocked equivalent |
-| Block IP/domain | Firewall rule / DNS sinkhole |
-| Snapshot VM | Forensic snapshot for evidence preservation |
-| Monitor only | Continue observation, no active response |

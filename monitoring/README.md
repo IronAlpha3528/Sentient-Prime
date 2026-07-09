@@ -1,4 +1,4 @@
-# Monitoring — Closed-Loop Outcome Monitoring
+﻿# Monitoring - Closed-Loop Outcome Monitoring
 
 Verifies whether containment actions worked and routes the result back into the pipeline.
 
@@ -7,10 +7,26 @@ Verifies whether containment actions worked and routes the result back into the 
 ```
 monitoring/
 ├── __init__.py
-├── outcome_monitor.py       # Re-run detectors over follow-up window
-├── feedback.py              # Baseline update + confidence recalibration
+├── monitor.py
+├── status.py
 └── README.md
 ```
+
+## Monitoring
+
+The Monitoring module validates whether the selected SOAR playbook successfully contained the incident.
+
+Responsibilities
+
+- Verify execution results
+- Decide final incident status
+- Send status to the Audit Ledger
+
+Possible outcomes
+
+- RESOLVED
+- PERSISTING
+- ESCALATED
 
 ## Outcome Classification
 
