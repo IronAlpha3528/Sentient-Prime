@@ -1,42 +1,52 @@
-# Correlation — Signal Fusion, ATT&CK RAG, APT Attribution
+# Correlation — Meta-Classifier, Cyber Entity Graph, ATT&CK Graph-RAG
 
-Builds a graph of entity interactions, fuses detector signals into composite anomaly scores, maps hypotheses to MITRE ATT&CK via FAISS, and performs APT attribution with next-stage prediction.
+Statistical signal correlation via LightGBM Meta-Classifier, live entity graph for attack-path analysis, and Hybrid ATT&CK Graph-RAG for threat knowledge retrieval.
 
 ## Directory Structure
 
 ```
 correlation/
 ├── __init__.py
-├── graph_builder.py         # NetworkX graph from SIEM events (sliding window)
-├── correlator.py            # Threat Correlation Engine — signal fusion
-├── attack_rag.py            # FAISS vector DB — embed/query ATT&CK techniques
+├── cyber_entity_graph.py    # NetworkX graph of users/hosts/processes/IPs/OT assets
+├── graph_features.py        # Extract attack-path, centrality, blast-radius features
+├── meta_classifier.py       # LightGBM meta-classifier — combines detector + graph + deception evidence
+├── attack_rag.py            # FAISS semantic retrieval of ATT&CK techniques
+├── attack_knowledge_graph.py # ATT&CK STIX → NetworkX knowledge graph (tactic→technique→software→group)
 ├── apt_attribution.py       # TTP chain mapping + next-stage prediction
 └── README.md
 ```
 
 ## Components
 
-### Threat Correlation Engine (`correlator.py`)
-Fuses raw detector signals into a composite anomaly score per entity:
-- Anomaly scores (Isolation Forest)
-- Attack class predictions (XGBoost)
-- ATT&CK TTP matches (FAISS query)
-- Co-occurrence analysis (multiple signals in a time window)
-- Honeypot flags (passive/adaptive → max confidence boost)
+### Cyber Entity Graph (`cyber_entity_graph.py`)
+- **Nodes:** users, hosts, processes, IPs, critical OT assets
+- **Edges:** observed interactions within a sliding time window
+- Updated continuously from SIEM events
+- Supports ego graph queries, shortest-path, centrality, community detection
 
-Output: composite score → routes to adaptive deception (0.4–0.74) or hypothesis generation (≥0.75).
+### Graph Features (`graph_features.py`)
+Extracted from the Cyber Entity Graph for each incident entity:
+- `attack_path_length`, `hop_count_to_critical_asset`, `node_centrality`
+- `community_crossing_count`, `blast_radius_estimate`
+- `unique_host_count`, `ot_reachability`
 
-### Graph Builder (`graph_builder.py`)
-- Nodes: users, hosts, processes, IPs
-- Edges: observed interactions within a sliding time window
-- Supports 2-hop `ego_graph` queries for lateral-movement context
+### LightGBM Meta-Classifier (`meta_classifier.py`)
+Combines all evidence into a unified threat score:
+```
+Inputs: network_score, identity_score, endpoint_score, ot_score,
+        sigma_match_count, graph_features, honeypot_touched,
+        event_velocity, asset_criticality
+        ↓
+Output: unified_threat_score (0.0 – 1.0), severity, evidence_contribution breakdown
+```
+Trained on synchronized scenarios from an isolated cyber range — NOT by row-wise merging the public datasets.
 
-### ATT&CK RAG (`attack_rag.py`)
-- Loads the FAISS index built in Phase 1A
-- Queries: signal description → top-k matching ATT&CK techniques
-- Used by both the hypothesis agent and APT attribution
+### ATT&CK Hybrid Graph-RAG (`attack_rag.py` + `attack_knowledge_graph.py`)
+- **FAISS semantic**: "What ATT&CK knowledge is semantically similar to this evidence?"
+- **Knowledge Graph structural**: "What tactics, techniques, software, and mitigations are structurally related?"
+- Combined context bundle is attached to every AI agent's input
 
 ### APT Attribution (`apt_attribution.py`)
-- Maps leading hypothesis to known threat actor TTP chains
-- Predicts likely next technique based on observed progression
-- Uses NetworkX 2-hop ego graph for lateral-movement context
+- Maps leading hypothesis to known TTP chains
+- Predicts likely next technique and target
+- Uses Cyber Entity Graph for lateral-movement context

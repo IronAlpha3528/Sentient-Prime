@@ -27,8 +27,11 @@ Tampering with any entry breaks the chain — `verify_chain()` detects this.
 
 | Event | When |
 |---|---|
-| Hypothesis generation | After each agent run (2-4 hypotheses + confidence scores) |
-| Risk score | After action ranking |
+| AI Correlation | When cross-domain incident story is generated |
+| AI Hypothesis generation | After hypothesis agent run (2-4 hypotheses + confidence scores) |
+| AI Attack prediction | After prediction agent estimates next stage/target |
+| AI Response planning | After response agent proposes containment candidates |
+| Risk score | After deterministic action ranking |
 | Dry-run prediction | Before live execution |
 | Action execution | When SOAR playbook fires |
 | Action escalation | When human gate is triggered |

@@ -7,32 +7,35 @@ Holds raw datasets, preprocessed data, trained model artifacts, and the offline 
 ```
 data/
 ├── raw/                         # Original unmodified datasets (git-ignored)
-│   ├── cse-cic-ids2018/         # CSE-CIC-IDS2018 network flow CSVs
-│   ├── splunk-bots/             # Splunk BOTS v2/v3 export
-│   ├── lanl-auth/               # LANL Authentication dataset
-│   ├── swat/                    # SWaT OT/ICS dataset
-│   └── attack-stix/             # MITRE ATT&CK STIX JSON bundle
+│   ├── cse-cic-ids2018/         # Network flow CSVs (80 features)
+│   ├── lanl-auth/               # LANL 708M+ authentication events
+│   ├── splunk-bots/             # Splunk BOTS v3 export
+│   ├── mordor/                  # OTRF Security Datasets / Mordor
+│   ├── hai/                     # HAI ICS testbed dataset
+│   └── attack-stix/             # MITRE ATT&CK STIX 2.1 JSON bundle
 ├── processed/                   # Preprocessed train/test splits (git-ignored)
-│   ├── X_train.parquet
-│   ├── X_test.parquet
-│   ├── y_train.parquet
-│   └── y_test.parquet
-├── models/                      # Trained model artifacts (Phase 1A output)
-│   ├── isolation_forest.pkl     # Unsupervised anomaly scorer
-│   ├── xgboost_classifier.json  # Supervised attack classifier
+├── models/                      # Trained model artifacts (git-ignored)
+│   ├── network_lightgbm.pkl     # Network flow classifier
+│   ├── identity_iforest.pkl     # Identity/UEBA anomaly scorer
+│   ├── endpoint_lightgbm.pkl    # Endpoint behavior classifier
+│   ├── ot_iforest.pkl           # OT/ICS process anomaly scorer
+│   ├── meta_lightgbm.pkl        # Meta-classifier for signal correlation
 │   ├── attack_faiss.index       # FAISS vector DB of ATT&CK TTPs
-│   ├── attack_metadata.json     # Technique IDs + descriptions for FAISS index
-│   └── baseline_thresholds.json # Entropy + z-score threshold configs
-├── training/                    # Offline training pipeline scripts
+│   └── attack_metadata.json     # Technique IDs + descriptions for FAISS
+├── training/                    # Offline training pipeline
 │   ├── __init__.py
-│   ├── preprocessing.py         # Load → clean → encode → SMOTE → scale → split
-│   ├── train_isolation_forest.py
-│   ├── train_xgboost.py
-│   ├── build_faiss_index.py     # Embed ATT&CK STIX → FAISS index
-│   └── validate_models.py       # Run trained models against test set, print metrics
+│   ├── evidence_schema.py       # Common Evidence Object definition
+│   ├── train_network.py         # LightGBM on CIC-IDS2018
+│   ├── train_identity.py        # Isolation Forest on LANL UEBA windows
+│   ├── train_endpoint.py        # LightGBM on BOTS + Mordor features
+│   ├── train_ot.py              # Isolation Forest on HAI sensor windows
+│   ├── train_meta_classifier.py # LightGBM on synchronized cyber-range evidence
+│   ├── build_faiss_index.py     # ATT&CK STIX → Sentence Transformer → FAISS
+│   ├── build_attack_graph.py    # ATT&CK STIX → NetworkX Knowledge Graph
+│   └── validate_models.py       # Run models against test sets, print metrics
 ├── scripts/                     # Utility scripts
 │   ├── __init__.py
-│   ├── verify_datasets.py       # Confirm row counts, column schemas, basic stats
+│   ├── verify_datasets.py       # Confirm row counts, column schemas, stats
 │   └── download_attack_stix.py  # Pull latest ATT&CK STIX bundle
 ├── README.md
 └── audit_ledger.jsonl           # Hash-chained audit log (runtime output)
@@ -40,19 +43,22 @@ data/
 
 ## Datasets
 
-| Dataset | Purpose | Key caveats |
+| Dataset | Behaviour | Key details |
 |---|---|---|
-| **CSE-CIC-IDS2018** | Network flows: normal + labeled attacks (80+ features) | ~7.5% label noise — use BOTS as primary benchmark |
-| **Splunk BOTS v2/v3** | Multi-stage APT scenarios (ransomware, web attacks) | Human-verified ground truth — primary benchmark |
-| **LANL Auth** | 58 days of authentication events, 5 sources | De-identified but consistently anonymized |
-| **SWaT** | OT/ICS: 495K normal + 449K attack records, 51 attributes | Physical testbed data from iTrust/SUTD |
-| **MITRE ATT&CK STIX** | TTP descriptions for FAISS vector DB | Enterprise + ICS matrices |
+| **CSE-CIC-IDS2018** | Network | 80 CICFlowMeter features, labeled attacks |
+| **LANL Auth** | Identity / UEBA | 708M+ auth events, 58 days, de-identified |
+| **Splunk BOTS v3** | Endpoint | Multi-stage APT/ransomware SOC investigation |
+| **OTRF Mordor** | Endpoint | Adversarial host/network telemetry |
+| **HAI** | OT / ICS | Steam-turbine + hydropower ICS testbed |
+| **ATT&CK STIX 2.1** | Threat knowledge | Enterprise + ICS matrices |
 
-## Model Artifacts (Phase 1A output)
+## Training Strategy
 
-| File | Trained on | Used by |
-|---|---|---|
-| `isolation_forest.pkl` | Normal-only traffic from CIC-IDS2018 + LANL Auth | Auth anomaly detector (2.5a) |
-| `xgboost_classifier.json` | Labeled CIC-IDS2018 + BOTS data | Process lineage detector (2.5b) |
-| `attack_faiss.index` | ATT&CK STIX technique descriptions | Hypothesis agent + APT attribution |
-| `baseline_thresholds.json` | Configured during Phase 1A | Entropy + z-score detectors |
+```
+1. Train Network LightGBM (CIC-IDS2018)
+2. Build LANL UEBA windows → train Identity Isolation Forest
+3. Build endpoint features + Sigma → train Endpoint LightGBM (BOTS + Mordor)
+4. Build HAI sensor windows → train OT Isolation Forest
+5. Build cyber-range scenarios → train Meta-Classifier on synchronized evidence
+6. ATT&CK STIX → Sentence Transformer → FAISS + Knowledge Graph
+```
