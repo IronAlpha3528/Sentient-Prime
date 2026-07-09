@@ -12,6 +12,9 @@ data/models/
 # Ignore runtime outputs
 data/runtime/
 
+# RAG index
+agent/rag/index/
+
 # Audit ledger (runtime output)
 data/audit_ledger.jsonl
 
