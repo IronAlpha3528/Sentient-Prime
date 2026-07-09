@@ -44,3 +44,7 @@ python-dotenv>=1.0
 pytest>=8.0
 pytest-cov>=5.0
 ruff>=0.4
+
+# Phase-1 model artifact serialization / Parquet
+joblib>=1.4
+pyarrow>=16.0
