@@ -1,0 +1,2768 @@
+{
+  "sensor_P1_B2004_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_B2004 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_B2004 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_B2004 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_B2004 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_B2004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_median": {
+    "dtype": "float64",
+    "description": "Median value for sensor_P1_B2004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_variance": {
+    "dtype": "float64",
+    "description": "Variance of sensor_P1_B2004 within the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_p25": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_B2004_p25",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_p75": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_B2004_p75",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_iqr": {
+    "dtype": "float64",
+    "description": "Interquartile Range of sensor_P1_B2004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_cv": {
+    "dtype": "float64",
+    "description": "Coefficient of variation for sensor_P1_B2004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_energy": {
+    "dtype": "float64",
+    "description": "Signal energy (sum of squares) for sensor_P1_B2004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_entropy": {
+    "dtype": "float64",
+    "description": "Shannon entropy of sensor_P1_B2004 based on 10-bin histogram",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_first_diff_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_B2004_first_diff over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_rate_of_change": {
+    "dtype": "float64",
+    "description": "Rate of change slope estimation for sensor_P1_B2004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_zero_crossings": {
+    "dtype": "int64",
+    "description": "Number of times sensor_P1_B2004 crossed its window mean",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_flatline_duration": {
+    "dtype": "int64",
+    "description": "Maximum duration in seconds where sensor_P1_B2004 remained unchanged",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2004_oscillation_count": {
+    "dtype": "int64",
+    "description": "Number of local extrema peaks for sensor_P1_B2004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_B2016 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_B2016 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_B2016 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_B2016 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_B2016",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_median": {
+    "dtype": "float64",
+    "description": "Median value for sensor_P1_B2016",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_variance": {
+    "dtype": "float64",
+    "description": "Variance of sensor_P1_B2016 within the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_p25": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_B2016_p25",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_p75": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_B2016_p75",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_iqr": {
+    "dtype": "float64",
+    "description": "Interquartile Range of sensor_P1_B2016",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_cv": {
+    "dtype": "float64",
+    "description": "Coefficient of variation for sensor_P1_B2016",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_energy": {
+    "dtype": "float64",
+    "description": "Signal energy (sum of squares) for sensor_P1_B2016",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_entropy": {
+    "dtype": "float64",
+    "description": "Shannon entropy of sensor_P1_B2016 based on 10-bin histogram",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_first_diff_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_B2016_first_diff over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_rate_of_change": {
+    "dtype": "float64",
+    "description": "Rate of change slope estimation for sensor_P1_B2016",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_zero_crossings": {
+    "dtype": "int64",
+    "description": "Number of times sensor_P1_B2016 crossed its window mean",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_flatline_duration": {
+    "dtype": "int64",
+    "description": "Maximum duration in seconds where sensor_P1_B2016 remained unchanged",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B2016_oscillation_count": {
+    "dtype": "int64",
+    "description": "Number of local extrema peaks for sensor_P1_B2016",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_B3004 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_B3004 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_B3004 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_B3004 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_B3004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_median": {
+    "dtype": "float64",
+    "description": "Median value for sensor_P1_B3004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_variance": {
+    "dtype": "float64",
+    "description": "Variance of sensor_P1_B3004 within the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_p25": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_B3004_p25",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_p75": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_B3004_p75",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_iqr": {
+    "dtype": "float64",
+    "description": "Interquartile Range of sensor_P1_B3004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_cv": {
+    "dtype": "float64",
+    "description": "Coefficient of variation for sensor_P1_B3004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_energy": {
+    "dtype": "float64",
+    "description": "Signal energy (sum of squares) for sensor_P1_B3004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_entropy": {
+    "dtype": "float64",
+    "description": "Shannon entropy of sensor_P1_B3004 based on 10-bin histogram",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_first_diff_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_B3004_first_diff over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_rate_of_change": {
+    "dtype": "float64",
+    "description": "Rate of change slope estimation for sensor_P1_B3004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_zero_crossings": {
+    "dtype": "int64",
+    "description": "Number of times sensor_P1_B3004 crossed its window mean",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_flatline_duration": {
+    "dtype": "int64",
+    "description": "Maximum duration in seconds where sensor_P1_B3004 remained unchanged",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3004_oscillation_count": {
+    "dtype": "int64",
+    "description": "Number of local extrema peaks for sensor_P1_B3004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_B3005 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_B3005 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_B3005 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_B3005 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_B3005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_median": {
+    "dtype": "float64",
+    "description": "Median value for sensor_P1_B3005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_variance": {
+    "dtype": "float64",
+    "description": "Variance of sensor_P1_B3005 within the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_p25": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_B3005_p25",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_p75": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_B3005_p75",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_iqr": {
+    "dtype": "float64",
+    "description": "Interquartile Range of sensor_P1_B3005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_cv": {
+    "dtype": "float64",
+    "description": "Coefficient of variation for sensor_P1_B3005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_energy": {
+    "dtype": "float64",
+    "description": "Signal energy (sum of squares) for sensor_P1_B3005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_entropy": {
+    "dtype": "float64",
+    "description": "Shannon entropy of sensor_P1_B3005 based on 10-bin histogram",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_first_diff_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_B3005_first_diff over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_rate_of_change": {
+    "dtype": "float64",
+    "description": "Rate of change slope estimation for sensor_P1_B3005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_zero_crossings": {
+    "dtype": "int64",
+    "description": "Number of times sensor_P1_B3005 crossed its window mean",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_flatline_duration": {
+    "dtype": "int64",
+    "description": "Maximum duration in seconds where sensor_P1_B3005 remained unchanged",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B3005_oscillation_count": {
+    "dtype": "int64",
+    "description": "Number of local extrema peaks for sensor_P1_B3005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_B4002 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_B4002 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_B4002 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_B4002 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_B4002",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_median": {
+    "dtype": "float64",
+    "description": "Median value for sensor_P1_B4002",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_variance": {
+    "dtype": "float64",
+    "description": "Variance of sensor_P1_B4002 within the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_p25": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_B4002_p25",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_p75": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_B4002_p75",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_iqr": {
+    "dtype": "float64",
+    "description": "Interquartile Range of sensor_P1_B4002",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_cv": {
+    "dtype": "float64",
+    "description": "Coefficient of variation for sensor_P1_B4002",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_energy": {
+    "dtype": "float64",
+    "description": "Signal energy (sum of squares) for sensor_P1_B4002",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_entropy": {
+    "dtype": "float64",
+    "description": "Shannon entropy of sensor_P1_B4002 based on 10-bin histogram",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_first_diff_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_B4002_first_diff over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_rate_of_change": {
+    "dtype": "float64",
+    "description": "Rate of change slope estimation for sensor_P1_B4002",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_zero_crossings": {
+    "dtype": "int64",
+    "description": "Number of times sensor_P1_B4002 crossed its window mean",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_flatline_duration": {
+    "dtype": "int64",
+    "description": "Maximum duration in seconds where sensor_P1_B4002 remained unchanged",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4002_oscillation_count": {
+    "dtype": "int64",
+    "description": "Number of local extrema peaks for sensor_P1_B4002",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_B4005 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_B4005 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_B4005 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_B4005 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_median": {
+    "dtype": "float64",
+    "description": "Median value for sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_variance": {
+    "dtype": "float64",
+    "description": "Variance of sensor_P1_B4005 within the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_p25": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_B4005_p25",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_p75": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_B4005_p75",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_iqr": {
+    "dtype": "float64",
+    "description": "Interquartile Range of sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_cv": {
+    "dtype": "float64",
+    "description": "Coefficient of variation for sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_energy": {
+    "dtype": "float64",
+    "description": "Signal energy (sum of squares) for sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_entropy": {
+    "dtype": "float64",
+    "description": "Shannon entropy of sensor_P1_B4005 based on 10-bin histogram",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_first_diff_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_B4005_first_diff over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_rate_of_change": {
+    "dtype": "float64",
+    "description": "Rate of change slope estimation for sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_zero_crossings": {
+    "dtype": "int64",
+    "description": "Number of times sensor_P1_B4005 crossed its window mean",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_flatline_duration": {
+    "dtype": "int64",
+    "description": "Maximum duration in seconds where sensor_P1_B4005 remained unchanged",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4005_oscillation_count": {
+    "dtype": "int64",
+    "description": "Number of local extrema peaks for sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_B400B over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_B400B over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_B400B observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_B400B observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_B400B",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_median": {
+    "dtype": "float64",
+    "description": "Median value for sensor_P1_B400B",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_variance": {
+    "dtype": "float64",
+    "description": "Variance of sensor_P1_B400B within the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_p25": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_B400B_p25",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_p75": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_B400B_p75",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_iqr": {
+    "dtype": "float64",
+    "description": "Interquartile Range of sensor_P1_B400B",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_cv": {
+    "dtype": "float64",
+    "description": "Coefficient of variation for sensor_P1_B400B",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_energy": {
+    "dtype": "float64",
+    "description": "Signal energy (sum of squares) for sensor_P1_B400B",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_entropy": {
+    "dtype": "float64",
+    "description": "Shannon entropy of sensor_P1_B400B based on 10-bin histogram",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_first_diff_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_B400B_first_diff over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_rate_of_change": {
+    "dtype": "float64",
+    "description": "Rate of change slope estimation for sensor_P1_B400B",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_zero_crossings": {
+    "dtype": "int64",
+    "description": "Number of times sensor_P1_B400B crossed its window mean",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_flatline_duration": {
+    "dtype": "int64",
+    "description": "Maximum duration in seconds where sensor_P1_B400B remained unchanged",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B400B_oscillation_count": {
+    "dtype": "int64",
+    "description": "Number of local extrema peaks for sensor_P1_B400B",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_B4022 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_B4022 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_B4022 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_B4022 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_B4022",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_median": {
+    "dtype": "float64",
+    "description": "Median value for sensor_P1_B4022",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_variance": {
+    "dtype": "float64",
+    "description": "Variance of sensor_P1_B4022 within the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_p25": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_B4022_p25",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_p75": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_B4022_p75",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_iqr": {
+    "dtype": "float64",
+    "description": "Interquartile Range of sensor_P1_B4022",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_cv": {
+    "dtype": "float64",
+    "description": "Coefficient of variation for sensor_P1_B4022",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_energy": {
+    "dtype": "float64",
+    "description": "Signal energy (sum of squares) for sensor_P1_B4022",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_entropy": {
+    "dtype": "float64",
+    "description": "Shannon entropy of sensor_P1_B4022 based on 10-bin histogram",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_first_diff_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_B4022_first_diff over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_rate_of_change": {
+    "dtype": "float64",
+    "description": "Rate of change slope estimation for sensor_P1_B4022",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_zero_crossings": {
+    "dtype": "int64",
+    "description": "Number of times sensor_P1_B4022 crossed its window mean",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_flatline_duration": {
+    "dtype": "int64",
+    "description": "Maximum duration in seconds where sensor_P1_B4022 remained unchanged",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_B4022_oscillation_count": {
+    "dtype": "int64",
+    "description": "Number of local extrema peaks for sensor_P1_B4022",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_FT01 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_FT01 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_FT01 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_FT01 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_FT01",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_median": {
+    "dtype": "float64",
+    "description": "Median value for sensor_P1_FT01",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_variance": {
+    "dtype": "float64",
+    "description": "Variance of sensor_P1_FT01 within the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_p25": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_FT01_p25",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_p75": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_FT01_p75",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_iqr": {
+    "dtype": "float64",
+    "description": "Interquartile Range of sensor_P1_FT01",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_cv": {
+    "dtype": "float64",
+    "description": "Coefficient of variation for sensor_P1_FT01",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_energy": {
+    "dtype": "float64",
+    "description": "Signal energy (sum of squares) for sensor_P1_FT01",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_entropy": {
+    "dtype": "float64",
+    "description": "Shannon entropy of sensor_P1_FT01 based on 10-bin histogram",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_first_diff_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_FT01_first_diff over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_rate_of_change": {
+    "dtype": "float64",
+    "description": "Rate of change slope estimation for sensor_P1_FT01",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_zero_crossings": {
+    "dtype": "int64",
+    "description": "Number of times sensor_P1_FT01 crossed its window mean",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_flatline_duration": {
+    "dtype": "int64",
+    "description": "Maximum duration in seconds where sensor_P1_FT01 remained unchanged",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01_oscillation_count": {
+    "dtype": "int64",
+    "description": "Number of local extrema peaks for sensor_P1_FT01",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_FT01Z over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_FT01Z over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_FT01Z observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_FT01Z observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_FT01Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_median": {
+    "dtype": "float64",
+    "description": "Median value for sensor_P1_FT01Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_variance": {
+    "dtype": "float64",
+    "description": "Variance of sensor_P1_FT01Z within the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_p25": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_FT01Z_p25",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_p75": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_FT01Z_p75",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_iqr": {
+    "dtype": "float64",
+    "description": "Interquartile Range of sensor_P1_FT01Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_cv": {
+    "dtype": "float64",
+    "description": "Coefficient of variation for sensor_P1_FT01Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_energy": {
+    "dtype": "float64",
+    "description": "Signal energy (sum of squares) for sensor_P1_FT01Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_entropy": {
+    "dtype": "float64",
+    "description": "Shannon entropy of sensor_P1_FT01Z based on 10-bin histogram",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_first_diff_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_FT01Z_first_diff over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_rate_of_change": {
+    "dtype": "float64",
+    "description": "Rate of change slope estimation for sensor_P1_FT01Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_zero_crossings": {
+    "dtype": "int64",
+    "description": "Number of times sensor_P1_FT01Z crossed its window mean",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_flatline_duration": {
+    "dtype": "int64",
+    "description": "Maximum duration in seconds where sensor_P1_FT01Z remained unchanged",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT01Z_oscillation_count": {
+    "dtype": "int64",
+    "description": "Number of local extrema peaks for sensor_P1_FT01Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_FT02 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_FT02 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_FT02 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_FT02 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_FT02",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_median": {
+    "dtype": "float64",
+    "description": "Median value for sensor_P1_FT02",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_variance": {
+    "dtype": "float64",
+    "description": "Variance of sensor_P1_FT02 within the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_p25": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_FT02_p25",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_p75": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_FT02_p75",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_iqr": {
+    "dtype": "float64",
+    "description": "Interquartile Range of sensor_P1_FT02",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_cv": {
+    "dtype": "float64",
+    "description": "Coefficient of variation for sensor_P1_FT02",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_energy": {
+    "dtype": "float64",
+    "description": "Signal energy (sum of squares) for sensor_P1_FT02",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_entropy": {
+    "dtype": "float64",
+    "description": "Shannon entropy of sensor_P1_FT02 based on 10-bin histogram",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_first_diff_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_FT02_first_diff over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_rate_of_change": {
+    "dtype": "float64",
+    "description": "Rate of change slope estimation for sensor_P1_FT02",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_zero_crossings": {
+    "dtype": "int64",
+    "description": "Number of times sensor_P1_FT02 crossed its window mean",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_flatline_duration": {
+    "dtype": "int64",
+    "description": "Maximum duration in seconds where sensor_P1_FT02 remained unchanged",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02_oscillation_count": {
+    "dtype": "int64",
+    "description": "Number of local extrema peaks for sensor_P1_FT02",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_FT02Z over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_FT02Z over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_FT02Z observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_FT02Z observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_FT02Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_median": {
+    "dtype": "float64",
+    "description": "Median value for sensor_P1_FT02Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_variance": {
+    "dtype": "float64",
+    "description": "Variance of sensor_P1_FT02Z within the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_p25": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_FT02Z_p25",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_p75": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_FT02Z_p75",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_iqr": {
+    "dtype": "float64",
+    "description": "Interquartile Range of sensor_P1_FT02Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_cv": {
+    "dtype": "float64",
+    "description": "Coefficient of variation for sensor_P1_FT02Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_energy": {
+    "dtype": "float64",
+    "description": "Signal energy (sum of squares) for sensor_P1_FT02Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_entropy": {
+    "dtype": "float64",
+    "description": "Shannon entropy of sensor_P1_FT02Z based on 10-bin histogram",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_first_diff_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_FT02Z_first_diff over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_rate_of_change": {
+    "dtype": "float64",
+    "description": "Rate of change slope estimation for sensor_P1_FT02Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_zero_crossings": {
+    "dtype": "int64",
+    "description": "Number of times sensor_P1_FT02Z crossed its window mean",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_flatline_duration": {
+    "dtype": "int64",
+    "description": "Maximum duration in seconds where sensor_P1_FT02Z remained unchanged",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT02Z_oscillation_count": {
+    "dtype": "int64",
+    "description": "Number of local extrema peaks for sensor_P1_FT02Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_FT03 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_FT03 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_FT03 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_FT03 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_FT03",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_median": {
+    "dtype": "float64",
+    "description": "Median value for sensor_P1_FT03",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_variance": {
+    "dtype": "float64",
+    "description": "Variance of sensor_P1_FT03 within the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_p25": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_FT03_p25",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_p75": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_FT03_p75",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_iqr": {
+    "dtype": "float64",
+    "description": "Interquartile Range of sensor_P1_FT03",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_cv": {
+    "dtype": "float64",
+    "description": "Coefficient of variation for sensor_P1_FT03",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_energy": {
+    "dtype": "float64",
+    "description": "Signal energy (sum of squares) for sensor_P1_FT03",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_entropy": {
+    "dtype": "float64",
+    "description": "Shannon entropy of sensor_P1_FT03 based on 10-bin histogram",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_first_diff_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_FT03_first_diff over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_rate_of_change": {
+    "dtype": "float64",
+    "description": "Rate of change slope estimation for sensor_P1_FT03",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_zero_crossings": {
+    "dtype": "int64",
+    "description": "Number of times sensor_P1_FT03 crossed its window mean",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_flatline_duration": {
+    "dtype": "int64",
+    "description": "Maximum duration in seconds where sensor_P1_FT03 remained unchanged",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03_oscillation_count": {
+    "dtype": "int64",
+    "description": "Number of local extrema peaks for sensor_P1_FT03",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_FT03Z over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_FT03Z over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_FT03Z observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_FT03Z observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_FT03Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_median": {
+    "dtype": "float64",
+    "description": "Median value for sensor_P1_FT03Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_variance": {
+    "dtype": "float64",
+    "description": "Variance of sensor_P1_FT03Z within the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_p25": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_FT03Z_p25",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_p75": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_FT03Z_p75",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_iqr": {
+    "dtype": "float64",
+    "description": "Interquartile Range of sensor_P1_FT03Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_cv": {
+    "dtype": "float64",
+    "description": "Coefficient of variation for sensor_P1_FT03Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_energy": {
+    "dtype": "float64",
+    "description": "Signal energy (sum of squares) for sensor_P1_FT03Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_entropy": {
+    "dtype": "float64",
+    "description": "Shannon entropy of sensor_P1_FT03Z based on 10-bin histogram",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_first_diff_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_FT03Z_first_diff over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_rate_of_change": {
+    "dtype": "float64",
+    "description": "Rate of change slope estimation for sensor_P1_FT03Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_zero_crossings": {
+    "dtype": "int64",
+    "description": "Number of times sensor_P1_FT03Z crossed its window mean",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_flatline_duration": {
+    "dtype": "int64",
+    "description": "Maximum duration in seconds where sensor_P1_FT03Z remained unchanged",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_FT03Z_oscillation_count": {
+    "dtype": "int64",
+    "description": "Number of local extrema peaks for sensor_P1_FT03Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_LCV01D over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_LCV01D over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_LCV01D observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_LCV01D observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_LCV01D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_median": {
+    "dtype": "float64",
+    "description": "Median value for sensor_P1_LCV01D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_variance": {
+    "dtype": "float64",
+    "description": "Variance of sensor_P1_LCV01D within the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_p25": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_LCV01D_p25",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_p75": {
+    "dtype": "float64",
+    "description": "Behavioral statistical indicator for sensor_P1_LCV01D_p75",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_iqr": {
+    "dtype": "float64",
+    "description": "Interquartile Range of sensor_P1_LCV01D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_cv": {
+    "dtype": "float64",
+    "description": "Coefficient of variation for sensor_P1_LCV01D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_energy": {
+    "dtype": "float64",
+    "description": "Signal energy (sum of squares) for sensor_P1_LCV01D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_entropy": {
+    "dtype": "float64",
+    "description": "Shannon entropy of sensor_P1_LCV01D based on 10-bin histogram",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_first_diff_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_LCV01D_first_diff over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_rate_of_change": {
+    "dtype": "float64",
+    "description": "Rate of change slope estimation for sensor_P1_LCV01D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_zero_crossings": {
+    "dtype": "int64",
+    "description": "Number of times sensor_P1_LCV01D crossed its window mean",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_flatline_duration": {
+    "dtype": "int64",
+    "description": "Maximum duration in seconds where sensor_P1_LCV01D remained unchanged",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01D_oscillation_count": {
+    "dtype": "int64",
+    "description": "Number of local extrema peaks for sensor_P1_LCV01D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01Z_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_LCV01Z over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01Z_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_LCV01Z over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01Z_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_LCV01Z observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01Z_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_LCV01Z observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LCV01Z_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_LCV01Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LIT01_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_LIT01 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LIT01_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_LIT01 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LIT01_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_LIT01 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LIT01_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_LIT01 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_LIT01_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_LIT01",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PCV01D_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_PCV01D over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PCV01D_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_PCV01D over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PCV01D_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_PCV01D observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PCV01D_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_PCV01D observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PCV01D_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_PCV01D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PCV01Z_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_PCV01Z over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PCV01Z_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_PCV01Z over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PCV01Z_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_PCV01Z observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PCV01Z_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_PCV01Z observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PCV01Z_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_PCV01Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PCV02Z_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_PCV02Z over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PCV02Z_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_PCV02Z over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PCV02Z_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_PCV02Z observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PCV02Z_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_PCV02Z observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PCV02Z_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_PCV02Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PIT01_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_PIT01 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PIT01_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_PIT01 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PIT01_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_PIT01 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PIT01_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_PIT01 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PIT01_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_PIT01",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PIT02_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_PIT02 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PIT02_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_PIT02 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PIT02_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_PIT02 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PIT02_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_PIT02 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_PIT02_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_PIT02",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_TIT01_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_TIT01 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_TIT01_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_TIT01 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_TIT01_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_TIT01 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_TIT01_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_TIT01 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_TIT01_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_TIT01",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_TIT02_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P1_TIT02 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_TIT02_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P1_TIT02 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_TIT02_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P1_TIT02 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_TIT02_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P1_TIT02 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P1_TIT02_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P1_TIT02",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_24Vdc_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P2_24Vdc over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_24Vdc_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P2_24Vdc over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_24Vdc_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P2_24Vdc observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_24Vdc_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P2_24Vdc observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_24Vdc_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P2_24Vdc",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_SIT01_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P2_SIT01 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_SIT01_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P2_SIT01 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_SIT01_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P2_SIT01 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_SIT01_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P2_SIT01 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_SIT01_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P2_SIT01",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VT01e_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P2_VT01e over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VT01e_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P2_VT01e over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VT01e_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P2_VT01e observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VT01e_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P2_VT01e observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VT01e_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P2_VT01e",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VXT02_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P2_VXT02 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VXT02_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P2_VXT02 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VXT02_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P2_VXT02 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VXT02_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P2_VXT02 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VXT02_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P2_VXT02",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VXT03_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P2_VXT03 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VXT03_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P2_VXT03 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VXT03_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P2_VXT03 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VXT03_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P2_VXT03 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VXT03_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P2_VXT03",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VYT02_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P2_VYT02 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VYT02_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P2_VYT02 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VYT02_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P2_VYT02 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VYT02_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P2_VYT02 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VYT02_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P2_VYT02",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VYT03_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P2_VYT03 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VYT03_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P2_VYT03 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VYT03_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P2_VYT03 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VYT03_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P2_VYT03 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P2_VYT03_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P2_VYT03",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P3_LCP01D_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P3_LCP01D over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P3_LCP01D_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P3_LCP01D over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P3_LCP01D_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P3_LCP01D observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P3_LCP01D_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P3_LCP01D observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P3_LCP01D_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P3_LCP01D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P3_LCV01D_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P3_LCV01D over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P3_LCV01D_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P3_LCV01D over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P3_LCV01D_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P3_LCV01D observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P3_LCV01D_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P3_LCV01D observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P3_LCV01D_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P3_LCV01D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P3_LT01_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P3_LT01 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P3_LT01_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P3_LT01 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P3_LT01_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P3_LT01 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P3_LT01_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P3_LT01 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P3_LT01_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P3_LT01",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_HT_FD_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P4_HT_FD over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_HT_FD_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P4_HT_FD over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_HT_FD_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P4_HT_FD observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_HT_FD_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P4_HT_FD observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_HT_FD_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P4_HT_FD",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_HT_LD_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P4_HT_LD over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_HT_LD_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P4_HT_LD over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_HT_LD_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P4_HT_LD observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_HT_LD_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P4_HT_LD observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_HT_LD_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P4_HT_LD",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_HT_PO_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P4_HT_PO over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_HT_PO_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P4_HT_PO over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_HT_PO_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P4_HT_PO observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_HT_PO_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P4_HT_PO observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_HT_PO_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P4_HT_PO",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_LD_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P4_LD over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_LD_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P4_LD over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_LD_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P4_LD observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_LD_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P4_LD observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_LD_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P4_LD",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_FD_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P4_ST_FD over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_FD_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P4_ST_FD over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_FD_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P4_ST_FD observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_FD_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P4_ST_FD observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_FD_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P4_ST_FD",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_LD_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P4_ST_LD over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_LD_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P4_ST_LD over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_LD_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P4_ST_LD observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_LD_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P4_ST_LD observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_LD_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P4_ST_LD",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_PO_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P4_ST_PO over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_PO_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P4_ST_PO over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_PO_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P4_ST_PO observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_PO_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P4_ST_PO observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_PO_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P4_ST_PO",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_PT01_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P4_ST_PT01 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_PT01_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P4_ST_PT01 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_PT01_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P4_ST_PT01 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_PT01_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P4_ST_PT01 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_PT01_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P4_ST_PT01",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_TT01_mean": {
+    "dtype": "float64",
+    "description": "Rolling mean value for sensor_P4_ST_TT01 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_TT01_std": {
+    "dtype": "float64",
+    "description": "Rolling standard deviation for sensor_P4_ST_TT01 over the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_TT01_min": {
+    "dtype": "float64",
+    "description": "Minimum value for sensor_P4_ST_TT01 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_TT01_max": {
+    "dtype": "float64",
+    "description": "Maximum value for sensor_P4_ST_TT01 observed in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "sensor_P4_ST_TT01_range": {
+    "dtype": "float64",
+    "description": "Peak-to-peak amplitude range for sensor_P4_ST_TT01",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV01D_state_changes": {
+    "dtype": "int64",
+    "description": "Number of transitions or state changes for actuator actuator_P1_FCV01D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV01D_transition_rate": {
+    "dtype": "float64",
+    "description": "Transition rate per second for actuator actuator_P1_FCV01D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV01D_max_state_duration": {
+    "dtype": "int64",
+    "description": "Max continuous time spent in a single state for actuator actuator_P1_FCV01D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV01Z_state_changes": {
+    "dtype": "int64",
+    "description": "Number of transitions or state changes for actuator actuator_P1_FCV01Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV01Z_transition_rate": {
+    "dtype": "float64",
+    "description": "Transition rate per second for actuator actuator_P1_FCV01Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV01Z_max_state_duration": {
+    "dtype": "int64",
+    "description": "Max continuous time spent in a single state for actuator actuator_P1_FCV01Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV02D_state_changes": {
+    "dtype": "int64",
+    "description": "Number of transitions or state changes for actuator actuator_P1_FCV02D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV02D_transition_rate": {
+    "dtype": "float64",
+    "description": "Transition rate per second for actuator actuator_P1_FCV02D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV02D_max_state_duration": {
+    "dtype": "int64",
+    "description": "Max continuous time spent in a single state for actuator actuator_P1_FCV02D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV02Z_state_changes": {
+    "dtype": "int64",
+    "description": "Number of transitions or state changes for actuator actuator_P1_FCV02Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV02Z_transition_rate": {
+    "dtype": "float64",
+    "description": "Transition rate per second for actuator actuator_P1_FCV02Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV02Z_max_state_duration": {
+    "dtype": "int64",
+    "description": "Max continuous time spent in a single state for actuator actuator_P1_FCV02Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV03D_state_changes": {
+    "dtype": "int64",
+    "description": "Number of transitions or state changes for actuator actuator_P1_FCV03D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV03D_transition_rate": {
+    "dtype": "float64",
+    "description": "Transition rate per second for actuator actuator_P1_FCV03D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV03D_max_state_duration": {
+    "dtype": "int64",
+    "description": "Max continuous time spent in a single state for actuator actuator_P1_FCV03D",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV03Z_state_changes": {
+    "dtype": "int64",
+    "description": "Number of transitions or state changes for actuator actuator_P1_FCV03Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV03Z_transition_rate": {
+    "dtype": "float64",
+    "description": "Transition rate per second for actuator actuator_P1_FCV03Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P1_FCV03Z_max_state_duration": {
+    "dtype": "int64",
+    "description": "Max continuous time spent in a single state for actuator actuator_P1_FCV03Z",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P4_ST_PS_state_changes": {
+    "dtype": "int64",
+    "description": "Number of transitions or state changes for actuator actuator_P4_ST_PS",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P4_ST_PS_transition_rate": {
+    "dtype": "float64",
+    "description": "Transition rate per second for actuator actuator_P4_ST_PS",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "actuator_P4_ST_PS_max_state_duration": {
+    "dtype": "int64",
+    "description": "Max continuous time spent in a single state for actuator actuator_P4_ST_PS",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_corr_sensor_P1_B2004_vs_sensor_P1_B2016": {
+    "dtype": "float64",
+    "description": "Pairwise Pearson correlation coefficient between two sensors: sensor_P1_B2004_vs_sensor_P1_B2016",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_cov_sensor_P1_B2004_vs_sensor_P1_B2016": {
+    "dtype": "float64",
+    "description": "Covariance relationship between two sensors: sensor_P1_B2004_vs_sensor_P1_B2016",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_corr_sensor_P1_B2004_vs_sensor_P1_B3004": {
+    "dtype": "float64",
+    "description": "Pairwise Pearson correlation coefficient between two sensors: sensor_P1_B2004_vs_sensor_P1_B3004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_cov_sensor_P1_B2004_vs_sensor_P1_B3004": {
+    "dtype": "float64",
+    "description": "Covariance relationship between two sensors: sensor_P1_B2004_vs_sensor_P1_B3004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_corr_sensor_P1_B2004_vs_sensor_P1_B3005": {
+    "dtype": "float64",
+    "description": "Pairwise Pearson correlation coefficient between two sensors: sensor_P1_B2004_vs_sensor_P1_B3005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_cov_sensor_P1_B2004_vs_sensor_P1_B3005": {
+    "dtype": "float64",
+    "description": "Covariance relationship between two sensors: sensor_P1_B2004_vs_sensor_P1_B3005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_corr_sensor_P1_B2004_vs_sensor_P1_B4002": {
+    "dtype": "float64",
+    "description": "Pairwise Pearson correlation coefficient between two sensors: sensor_P1_B2004_vs_sensor_P1_B4002",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_cov_sensor_P1_B2004_vs_sensor_P1_B4002": {
+    "dtype": "float64",
+    "description": "Covariance relationship between two sensors: sensor_P1_B2004_vs_sensor_P1_B4002",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_corr_sensor_P1_B2004_vs_sensor_P1_B4005": {
+    "dtype": "float64",
+    "description": "Pairwise Pearson correlation coefficient between two sensors: sensor_P1_B2004_vs_sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_cov_sensor_P1_B2004_vs_sensor_P1_B4005": {
+    "dtype": "float64",
+    "description": "Covariance relationship between two sensors: sensor_P1_B2004_vs_sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_corr_sensor_P1_B2016_vs_sensor_P1_B3004": {
+    "dtype": "float64",
+    "description": "Pairwise Pearson correlation coefficient between two sensors: sensor_P1_B2016_vs_sensor_P1_B3004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_cov_sensor_P1_B2016_vs_sensor_P1_B3004": {
+    "dtype": "float64",
+    "description": "Covariance relationship between two sensors: sensor_P1_B2016_vs_sensor_P1_B3004",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_corr_sensor_P1_B2016_vs_sensor_P1_B3005": {
+    "dtype": "float64",
+    "description": "Pairwise Pearson correlation coefficient between two sensors: sensor_P1_B2016_vs_sensor_P1_B3005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_cov_sensor_P1_B2016_vs_sensor_P1_B3005": {
+    "dtype": "float64",
+    "description": "Covariance relationship between two sensors: sensor_P1_B2016_vs_sensor_P1_B3005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_corr_sensor_P1_B2016_vs_sensor_P1_B4002": {
+    "dtype": "float64",
+    "description": "Pairwise Pearson correlation coefficient between two sensors: sensor_P1_B2016_vs_sensor_P1_B4002",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_cov_sensor_P1_B2016_vs_sensor_P1_B4002": {
+    "dtype": "float64",
+    "description": "Covariance relationship between two sensors: sensor_P1_B2016_vs_sensor_P1_B4002",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_corr_sensor_P1_B2016_vs_sensor_P1_B4005": {
+    "dtype": "float64",
+    "description": "Pairwise Pearson correlation coefficient between two sensors: sensor_P1_B2016_vs_sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_cov_sensor_P1_B2016_vs_sensor_P1_B4005": {
+    "dtype": "float64",
+    "description": "Covariance relationship between two sensors: sensor_P1_B2016_vs_sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_corr_sensor_P1_B3004_vs_sensor_P1_B3005": {
+    "dtype": "float64",
+    "description": "Pairwise Pearson correlation coefficient between two sensors: sensor_P1_B3004_vs_sensor_P1_B3005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_cov_sensor_P1_B3004_vs_sensor_P1_B3005": {
+    "dtype": "float64",
+    "description": "Covariance relationship between two sensors: sensor_P1_B3004_vs_sensor_P1_B3005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_corr_sensor_P1_B3004_vs_sensor_P1_B4002": {
+    "dtype": "float64",
+    "description": "Pairwise Pearson correlation coefficient between two sensors: sensor_P1_B3004_vs_sensor_P1_B4002",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_cov_sensor_P1_B3004_vs_sensor_P1_B4002": {
+    "dtype": "float64",
+    "description": "Covariance relationship between two sensors: sensor_P1_B3004_vs_sensor_P1_B4002",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_corr_sensor_P1_B3004_vs_sensor_P1_B4005": {
+    "dtype": "float64",
+    "description": "Pairwise Pearson correlation coefficient between two sensors: sensor_P1_B3004_vs_sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_cov_sensor_P1_B3004_vs_sensor_P1_B4005": {
+    "dtype": "float64",
+    "description": "Covariance relationship between two sensors: sensor_P1_B3004_vs_sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_corr_sensor_P1_B3005_vs_sensor_P1_B4002": {
+    "dtype": "float64",
+    "description": "Pairwise Pearson correlation coefficient between two sensors: sensor_P1_B3005_vs_sensor_P1_B4002",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_cov_sensor_P1_B3005_vs_sensor_P1_B4002": {
+    "dtype": "float64",
+    "description": "Covariance relationship between two sensors: sensor_P1_B3005_vs_sensor_P1_B4002",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_corr_sensor_P1_B3005_vs_sensor_P1_B4005": {
+    "dtype": "float64",
+    "description": "Pairwise Pearson correlation coefficient between two sensors: sensor_P1_B3005_vs_sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_cov_sensor_P1_B3005_vs_sensor_P1_B4005": {
+    "dtype": "float64",
+    "description": "Covariance relationship between two sensors: sensor_P1_B3005_vs_sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_corr_sensor_P1_B4002_vs_sensor_P1_B4005": {
+    "dtype": "float64",
+    "description": "Pairwise Pearson correlation coefficient between two sensors: sensor_P1_B4002_vs_sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_cov_sensor_P1_B4002_vs_sensor_P1_B4005": {
+    "dtype": "float64",
+    "description": "Covariance relationship between two sensors: sensor_P1_B4002_vs_sensor_P1_B4005",
+    "normalization": "none",
+    "allowed_null": false
+  }
+}

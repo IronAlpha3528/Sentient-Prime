@@ -1,0 +1,15 @@
+{
+  "total_windows": 5995,
+  "normal_windows": 5566,
+  "anomalous_windows": 429,
+  "average_score": 0.33567980414085286,
+  "average_attack_probability": 0.0,
+  "top_shifted_variables": [
+    "P3_LCV01D",
+    "P1_FT01Z",
+    "P3_LCP01D",
+    "P4_LD",
+    "P4_ST_LD"
+  ],
+  "inference_time_seconds": 63.712377309799194
+}

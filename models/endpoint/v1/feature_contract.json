@@ -1,0 +1,158 @@
+{
+  "process_depth": {
+    "dtype": "float64",
+    "description": "Depth of process in execution hierarchy (2 if parent exists, else 1)",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "child_process_count": {
+    "dtype": "float64",
+    "description": "Number of process spawn events inside the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "unique_child_processes": {
+    "dtype": "float64",
+    "description": "Number of unique process names spawned as children in this window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "parent_child_frequency": {
+    "dtype": "float64",
+    "description": "Frequency count of the parent-child pair in events",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "parent_child_rarity": {
+    "dtype": "float64",
+    "description": "Rarity score of the parent-child combination (1.0 if rare/unknown, 0.0 if common)",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "command_length": {
+    "dtype": "float64",
+    "description": "Length of process command line string",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "command_token_count": {
+    "dtype": "float64",
+    "description": "Number of whitespace-separated tokens in command line",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "encoded_command_flag": {
+    "dtype": "float64",
+    "description": "Flag representing potential base64 or encoded execution commands",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "powershell_flag": {
+    "dtype": "float64",
+    "description": "Flag representing execution involving PowerShell/pwsh",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "script_interpreter_flag": {
+    "dtype": "float64",
+    "description": "Flag indicating process name is a script interpreter",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "lolbin_flag": {
+    "dtype": "float64",
+    "description": "Flag representing process matches a recognized LOLBin",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "network_connection_count": {
+    "dtype": "float64",
+    "description": "Number of network connections observed",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "unique_destination_count": {
+    "dtype": "float64",
+    "description": "Number of unique destination IP addresses",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "destination_port_count": {
+    "dtype": "float64",
+    "description": "Number of unique destination ports",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "dns_query_count": {
+    "dtype": "float64",
+    "description": "Number of DNS queries issued",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "registry_modification_count": {
+    "dtype": "float64",
+    "description": "Number of registry modifications (creates, deletes, sets)",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "registry_create_count": {
+    "dtype": "float64",
+    "description": "Number of registry keys or values created",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "file_create_count": {
+    "dtype": "float64",
+    "description": "Number of file creation operations",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "image_load_count": {
+    "dtype": "float64",
+    "description": "Number of image/DLL load events",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "process_access_count": {
+    "dtype": "float64",
+    "description": "Number of times this process accessed another process",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "lsass_access_count": {
+    "dtype": "float64",
+    "description": "Number of process accesses specifically targeting LSASS memory",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "remote_thread_count": {
+    "dtype": "float64",
+    "description": "Number of remote threads created",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "granted_access_entropy": {
+    "dtype": "float64",
+    "description": "Character entropy of the process granted access mask",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "integrity_level_change": {
+    "dtype": "float64",
+    "description": "Flag indicating multiple integrity levels occurred within the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "cross_user_process_count": {
+    "dtype": "float64",
+    "description": "Number of unique users associated with events in the window",
+    "normalization": "none",
+    "allowed_null": false
+  },
+  "rare_image_load_count": {
+    "dtype": "float64",
+    "description": "Number of images loaded from temp/appdata/public directories",
+    "normalization": "none",
+    "allowed_null": false
+  }
+}

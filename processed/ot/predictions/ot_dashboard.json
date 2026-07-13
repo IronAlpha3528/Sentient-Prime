@@ -1,0 +1,48 @@
+{
+  "risk_histogram": {
+    "low (0-0.45)": 4554,
+    "medium (0.45-0.70)": 1012,
+    "high (0.70-0.85)": 414,
+    "critical (0.85-1.0)": 15
+  },
+  "top_shifted_sensors": {
+    "P3_LCV01D": 5461,
+    "P1_FT01Z": 5347,
+    "P3_LCP01D": 4924,
+    "P4_LD": 3577,
+    "P4_ST_LD": 2284
+  },
+  "top_anomalous_windows": [
+    {
+      "window_id": "2019-09-12 07:01:49",
+      "anomaly_score": 0.9130145887312512,
+      "severity": "CRITICAL",
+      "timestamp": "2019-09-12 07:01:49"
+    },
+    {
+      "window_id": "2019-09-12 07:01:59",
+      "anomaly_score": 0.907009721475422,
+      "severity": "CRITICAL",
+      "timestamp": "2019-09-12 07:01:59"
+    },
+    {
+      "window_id": "2019-09-12 07:02:09",
+      "anomaly_score": 0.9011079836039769,
+      "severity": "CRITICAL",
+      "timestamp": "2019-09-12 07:02:09"
+    },
+    {
+      "window_id": "2019-09-12 07:01:39",
+      "anomaly_score": 0.9006309794202467,
+      "severity": "CRITICAL",
+      "timestamp": "2019-09-12 07:01:39"
+    },
+    {
+      "window_id": "2019-09-12 07:01:29",
+      "anomaly_score": 0.8843491258826978,
+      "severity": "CRITICAL",
+      "timestamp": "2019-09-12 07:01:29"
+    }
+  ],
+  "current_system_health": "Healthy"
+}

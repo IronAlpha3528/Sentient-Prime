@@ -1,5 +1,4 @@
 import json
-
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
@@ -18,6 +17,30 @@ DROP_IF_PRESENT = [
     "destination_ip",
     "timestamp",
 ]
+
+ATTACK_FAMILY_MAPPING = {
+    "Benign": "Benign",
+    "Bot": "Botnet",
+    "Brute Force -Web": "BruteForce",
+    "FTP-BruteForce": "BruteForce",
+    "SSH-Bruteforce": "BruteForce",
+    "DDOS attack-HOIC": "DDoS",
+    "DDOS attack-LOIC-UDP": "DDoS",
+    "DDoS attacks-LOIC-HTTP": "DDoS",
+    "DoS attacks-GoldenEye": "DoS",
+    "DoS attacks-Hulk": "DoS",
+    "DoS attacks-SlowHTTPTest": "DoS",
+    "DoS attacks-Slowloris": "DoS",
+    "Infilteration": "Infiltration",
+    "Brute Force -XSS": "WebAttack",
+    "SQL Injection": "WebAttack",
+}
+
+
+def map_family(label: str) -> str:
+    if label not in ATTACK_FAMILY_MAPPING:
+        raise ValueError(f"Unknown attack class: '{label}' encountered in dataset.")
+    return ATTACK_FAMILY_MAPPING[label]
 
 
 def main() -> None:
@@ -49,7 +72,13 @@ def main() -> None:
         columns=[c for c in DROP_IF_PRESENT if c in data.columns]
     )
 
-    feature_columns = [c for c in data.columns if c != label_column]
+    family_label_column = "family"
+    # Populate the family column with validation check
+    data[family_label_column] = data[label_column].apply(map_family)
+
+    feature_columns = [
+        c for c in data.columns if c not in (label_column, family_label_column)
+    ]
     for column in feature_columns:
         data[column] = pd.to_numeric(data[column], errors="coerce")
     data[feature_columns] = data[feature_columns].fillna(0)
@@ -82,17 +111,27 @@ def main() -> None:
 
     metadata = {
         "label_column": label_column,
+        "family_label_column": family_label_column,
         "feature_columns": feature_columns,
+        "original_class_counts": class_counts.to_dict(),
+        "family_class_counts": data[family_label_column].value_counts().to_dict(),
         "train_rows": len(train),
         "valid_rows": len(valid),
         "test_rows": len(test),
-        "class_counts": class_counts.to_dict(),
+        "attack_family_mapping": ATTACK_FAMILY_MAPPING,
     }
+    
     (PROCESSED_DIR / "metadata.json").write_text(
         json.dumps(metadata, indent=2),
         encoding="utf-8",
     )
-    print(json.dumps(metadata, indent=2))
+    
+    print("\n--- Preprocessing Complete ---")
+    print(f"Total Rows: {len(data)}")
+    print(f"Train Rows: {len(train)}")
+    print(f"Valid Rows: {len(valid)}")
+    print(f"Test Rows: {len(test)}")
+    print("This is a stratified flow-level evaluation and not a fully unseen-campaign evaluation.")
 
 
 if __name__ == "__main__":

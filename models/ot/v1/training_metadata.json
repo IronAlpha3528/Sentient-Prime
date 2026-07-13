@@ -1,0 +1,19 @@
+{
+  "model_version": "v1",
+  "training_date": "2026-07-11T23:59:49.457526",
+  "training_dataset": "data\\processed\\ot\\features\\ot_features.parquet",
+  "feature_contract_hash": "-8163350730341093259",
+  "python_version": "3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]",
+  "scikit_learn_version": "1.3.0",
+  "lightgbm_version": "4.6.0",
+  "train_samples": 4196,
+  "val_samples": 899,
+  "test_samples": 900,
+  "calibrator_stats": {
+    "mean": 0.5126117360857178,
+    "std": 0.057685489448559384,
+    "threshold_medium": 0.45,
+    "threshold_high": 0.7,
+    "threshold_critical": 0.85
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "timestamp": "2026-07-13T14:20:32.147841+00:00",
+  "evidence_processed": 1,
+  "nodes_created": 2,
+  "edges_created": 2,
+  "graph_size": {
+    "nodes": 2,
+    "edges": 2
+  },
+  "contexts_generated": 0,
+  "average_context_generation_time_ms": 0.0,
+  "average_graph_query_time_ms": 0.0,
+  "duplicates_removed": 0,
+  "validation_failures": 0
+}

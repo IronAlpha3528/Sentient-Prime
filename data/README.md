@@ -52,6 +52,22 @@ data/
 | **HAI** | OT / ICS | Steam-turbine + hydropower ICS testbed |
 | **ATT&CK STIX 2.1** | Threat knowledge | Enterprise + ICS matrices |
 
+## Dataset Paths & Configuration
+
+### HAI Dataset
+The HAI dataset is located at:
+`data/raw/HAI/archive (1).zip`
+It is read directly using zipfile interfaces inside python without full extraction.
+
+### OTRF / Mordor Endpoint Dataset
+Due to its large size and external upstream versioning, the OTRF dataset is kept external to the repository workspace:
+- Path: `C:\Users\Aanoush Surana\OneDrive\Desktop\ET Hackathon\OTRF-Endpoint-Data\datasets\atomic\windows`
+- Configuration: Set the `OTRF_DATASET_PATH` environment variable:
+  - **PowerShell**:
+    `$env:OTRF_DATASET_PATH="C:\path\to\OTRF-Endpoint-Data\datasets\atomic\windows"`
+  - **Bash**:
+    `export OTRF_DATASET_PATH="/path/to/OTRF-Endpoint-Data/datasets/atomic/windows"`
+
 ## Training Strategy
 
 ```

@@ -1,0 +1,70 @@
+{
+  "directed": true,
+  "multigraph": true,
+  "graph": {},
+  "nodes": [
+    {
+      "node_id": "HOST:192.168.1.1",
+      "entity_type": "HOST",
+      "display_name": "192.168.1.1",
+      "risk_score": 0.4,
+      "confidence": 0.9,
+      "severity": "MEDIUM",
+      "first_seen": "2026-07-13T19:00:00+00:00",
+      "last_seen": "2026-07-13T19:00:00+00:00",
+      "metadata": {},
+      "id": "HOST:192.168.1.1"
+    },
+    {
+      "node_id": "HOST:0.0.0.0",
+      "entity_type": "HOST",
+      "display_name": "0.0.0.0",
+      "risk_score": 0.4,
+      "confidence": 0.9,
+      "severity": "MEDIUM",
+      "first_seen": "2026-07-13T19:00:00+00:00",
+      "last_seen": "2026-07-13T19:00:00+00:00",
+      "metadata": {
+        "role": "destination"
+      },
+      "id": "HOST:0.0.0.0"
+    }
+  ],
+  "edges": [
+    {
+      "type": "CONNECTS_TO",
+      "first_seen": "2026-07-13T19:00:00+00:00",
+      "last_seen": "2026-07-13T19:00:00+00:00",
+      "occurrence_count": 1,
+      "timestamp": "2026-07-13T19:00:00+00:00",
+      "confidence": 0.9,
+      "source_detector": "NETWORK",
+      "risk": 0.4,
+      "metadata": {
+        "protocol": "unknown",
+        "attack_family": "unknown",
+        "flow_duration": 0.0,
+        "source_detector": "NETWORK"
+      },
+      "source": "HOST:0.0.0.0",
+      "target": "HOST:0.0.0.0",
+      "key": 0
+    },
+    {
+      "type": "GENERATES",
+      "first_seen": "2026-07-13T19:00:00+00:00",
+      "last_seen": "2026-07-13T19:00:00+00:00",
+      "occurrence_count": 1,
+      "timestamp": "2026-07-13T19:00:00+00:00",
+      "confidence": 0.9,
+      "source_detector": "NETWORK",
+      "risk": 0.4,
+      "metadata": {
+        "source_detector": "NETWORK"
+      },
+      "source": "HOST:0.0.0.0",
+      "target": "HOST:192.168.1.1",
+      "key": 0
+    }
+  ]
+}
