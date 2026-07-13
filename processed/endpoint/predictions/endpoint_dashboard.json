@@ -1,0 +1,38 @@
+{
+  "risk_histogram": {
+    "low (0-0.3)": 11085,
+    "medium (0.3-0.7)": 49,
+    "high (0.7-1.0)": 239
+  },
+  "top_processes": {
+    "unknown_process": 6177,
+    "svchost.exe": 2014,
+    "lsass.exe": 206,
+    "System": 157,
+    "conhost.exe": 156
+  },
+  "top_hosts": {
+    "wec.internal.cloudapp.net": 8492,
+    "unknown_host": 2711,
+    "ip-172-18-39-102.ec2.internal": 170
+  },
+  "top_sigma_rules": [
+    "PowerShell Encoded Command",
+    "LSASS Memory Access"
+  ],
+  "feature_importance": {
+    "lsass_access_count": 25,
+    "remote_thread_count": 22,
+    "encoded_command_flag": 18,
+    "powershell_flag": 15
+  },
+  "recent_detections": [
+    {
+      "host": "SEC-HOST-01",
+      "process": "mimikatz.exe",
+      "risk_score": 0.95,
+      "severity": "critical",
+      "timestamp": "2026-07-11T23:32:43.748541"
+    }
+  ]
+}

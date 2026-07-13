@@ -1,0 +1,23 @@
+{
+  "total_windows": 11373,
+  "high_risk_windows": 234,
+  "average_score": 0.03404164360257384,
+  "sigma_matches": 0,
+  "top_techniques": [
+    "T1059.001",
+    "T1003.001"
+  ],
+  "top_hosts": [
+    "wec.internal.cloudapp.net",
+    "unknown_host",
+    "ip-172-18-39-102.ec2.internal"
+  ],
+  "top_processes": [
+    "SearchUI.exe",
+    "unknown_process",
+    "svchost.exe",
+    "dns.exe",
+    "WaAppAgent.exe"
+  ],
+  "inference_time_seconds": 1.4317078590393066
+}

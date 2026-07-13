@@ -1,0 +1,12 @@
+{
+  "model_version": "v1",
+  "training_date": "2026-07-11T23:20:42.883627",
+  "training_dataset": "data\\processed\\endpoint\\features\\endpoint_features.parquet",
+  "feature_contract_hash": "-7172830990258121383",
+  "lightgbm_version": "4.6.0",
+  "python_version": "3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]",
+  "samples_count": 11373,
+  "train_samples": 7961,
+  "val_samples": 1706,
+  "test_samples": 1706
+}

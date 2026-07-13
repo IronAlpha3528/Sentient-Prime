@@ -1,0 +1,8 @@
+# OT/ICS Specialist Configuration
+window_length: 60
+stride: 10
+sampling_interval: 1.0
+risk_threshold: 0.75
+model_directory: "models/ot"
+feature_directory: "data/processed/ot/features"
+raw_directory: "data/raw/HAI"

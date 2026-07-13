@@ -1,0 +1,11 @@
+{
+  "nodes_count": 2,
+  "edges_count": 2,
+  "risk_distribution": {
+    "benign": 0,
+    "moderate": 2,
+    "high": 0,
+    "critical": 0
+  },
+  "timestamp": "2026-07-13T14:20:32.155834+00:00"
+}

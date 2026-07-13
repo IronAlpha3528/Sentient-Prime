@@ -263,8 +263,8 @@ Composite Score = α × Containment Effectiveness − β × Business Impact
 1. Define Common Evidence Object schema
 2. Train Network LightGBM (CSE-CIC-IDS2018)
 3. Build LANL UEBA behavioral windows → train Identity Isolation Forest
-4. Build endpoint feature extractor + Sigma integration → train Endpoint LightGBM (BOTS + Mordor)
-5. Build HAI sensor windows → train OT Isolation Forest
+4. **[x] Build endpoint feature extractor + Sigma integration** → train Endpoint LightGBM (OTRF / Mordor)
+5. **[x] Build HAI sensor windows → train OT Isolation Forest**
 6. Build isolated cyber-range scenarios → train LightGBM Meta-Classifier on synchronized detector outputs
 7. Parse ATT&CK STIX → Sentence Transformer → FAISS index + ATT&CK Knowledge Graph
 8. Connect Gemini Flash agents (correlation, hypothesis, prediction, deception, response)
@@ -306,3 +306,21 @@ Composite Score = α × Containment Effectiveness − β × Business Impact
 | **IOC enrichment** | Signal fusion | Check IPs/hashes against AbuseIPDB/VirusTotal |
 | **Evidence preservation** | Orchestrator | Auto-snapshot before destructive containment |
 | **Campaign grouping** | APT attribution | Cluster related entities into campaign chains |
+
+---
+
+## 10. Unified Evidence Framework (UEF) and Cyber Knowledge Graph
+
+We have introduced the central UEF system at the core of Sentinel-Prime:
+
+### 10.1 Architecture Details
+- **BaseEvidence & Specialist Schemas**: A dataclass model standardizing inputs from Network, Identity, Endpoint, and OT sensors. Includes validation constraints and contract checks.
+- **Evidence Bus**: A thread-safe, in-memory streaming bus featuring validation, normalizers, a SHA-256 duplicate cache, and an event queue sorting by priority and timestamp.
+- **Cyber Knowledge Graph**: An incremental graph storage system wrapping NetworkX `MultiDiGraph` to represent entity nodes (HOST, USER, PROCESS, PLC) and interaction edges (CONNECTS_TO, RUNS_PROCESS, AUTHENTICATES_TO, CONTROLS). Calculates graph metrics (degree/betweenness centrality, PageRank, modularity communities) for AI reasoning.
+- **Correlation Context Builder**: Extracts local subgraphs (bounded by hop radius), generates natural language summaries, orders timelines chronologically, and compiles structured `CorrelationContext` objects suitable for Gemini prompt injection.
+
+### 10.2 Directory Structure
+- `core/evidence/`: Schemas, validators, normalizers, publishers, subscribers, queue, cache, and bus.
+- `core/graph/`: Extractor, node/edge builders, indexing, queries, metrics, and manager.
+- `core/context/`: Context schema, timelines, summaries, and builders.
+- `core/framework.py`: Central facade coordinating the pipeline.

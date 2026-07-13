@@ -1,0 +1,18 @@
+# Evidence Bus Configuration
+
+queue_size: 10000
+cache_size: 10000
+cache_ttl: 600          # TTL in seconds (10 minutes)
+max_batch: 100
+retry_limit: 3
+logging:
+  level: "INFO"
+  file: "data/runtime/evidence/evidence_bus.log"
+thread_pool:
+  max_workers: 4
+priority_mapping:
+  CRITICAL: "CRITICAL"
+  HIGH: "HIGH"
+  MEDIUM: "NORMAL"
+  LOW: "LOW"
+  INFO: "LOW"

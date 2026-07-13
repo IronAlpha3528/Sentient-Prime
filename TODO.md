@@ -4,16 +4,16 @@ Goal: a working lab-scale prototype demonstrating the full pipeline end-to-end (
 
 ## PHASE 1 — Offline Training Pipeline
 
-- [ ] **1.1 Define Common Evidence Object schema**
+- [x] **1.1 Define Common Evidence Object schema**
   Create `detectors/evidence_schema.py` defining the exact JSON structure that all 4 specialist detectors will output.
-- [ ] **1.2 Train Network LightGBM**
-  Load CSE-CIC-IDS2018 (Parquet files). Train LightGBM on flow features. Serialize to `data/models/network/network_model.txt`.
-- [ ] **1.3 Train Identity / UEBA Isolation Forest**
-  Load LANL Auth. Build behavioral windows. Train Isolation Forest. Serialize to `data/models/identity/identity_iforest.pkl`.
-- [Bypassed] **1.4 Train Endpoint LightGBM + Sigma integration**
-  (Bypassed due to dataset availability constraints - no BOTS/Mordor data on disk)
-- [Bypassed] **1.5 Train OT / ICS Isolation Forest**
-  (Bypassed due to dataset availability constraints - no HAI data on disk)
+- [x] **1.2 Train Network LightGBM**
+  Load CSE-CIC-IDS2018 (Parquet files). Train LightGBM on flow features. Upgraded to v2.1 Hierarchical Classifier with Evidence Bands.
+- [x] **1.3 Train Identity / UEBA Isolation Forest**
+  Load LANL Auth. Build behavioral windows. Upgraded to v2.1 User-Relative Timing and Traversal baselines to prevent low-activity anomaly dominance.
+- [x] **1.4 Train Endpoint LightGBM + Sigma integration**
+  Implemented OTRF ZIP crawlers, field mappers, 60s process windows, behavioral features, LightGBM classifier training, lightweight Sigma engine, and evidence fusion.
+- [x] **1.5 Train OT / ICS Isolation Forest**
+  Implemented HAI ZIP loading, timeseries normalizer, column classifier, 60s time-windows, rolling behavioral feature engineering, Isolation Forest model training, calibration scoring, and OTEvidence generation.
 - [ ] **1.6 Train LightGBM Meta-Classifier**
   Generate scenarios. Run enabled detectors (Network, Identity) to get evidence objects. Train Meta-Classifier to correlate Network and Identity threat scores. Serialize to `data/models/meta_lightgbm.pkl`.
 - [ ] **1.7 Build MITRE ATT&CK Hybrid Graph-RAG**

@@ -1,0 +1,11 @@
+# Unified Evidence & Knowledge Graph Framework Configuration
+
+graph_radius: 2
+max_nodes: 50
+max_edges: 100
+timeline_window: 30       # Default window size in minutes
+context_cache: 500
+logging:
+  level: "INFO"
+  file: "data/runtime/evidence/framework.log"
+export_directory: "processed/graph"
