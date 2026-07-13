@@ -25,23 +25,18 @@ class SOARDispatcher:
     """Coordinates dry run, policy gate, and action execution."""
 
     def dispatch(self, incident: dict[str, Any]) -> dict[str, Any]:
-        incident_id = incident.get("incident_id", "UNKNOWN")
-        attack_type = incident["attack_type"]
+        incident_data = self._prepare_incident(incident)
+        incident_id = incident_data.get("incident_id", "UNKNOWN")
+        attack_type = incident_data.get("attack_type", "Unknown")
         actions = get_playbook(attack_type)
-        incident_with_actions = dict(incident)
-        incident_with_actions["recommended_actions"] = actions
+        incident_data["recommended_actions"] = actions
 
         logger.info("Dispatching incident %s", incident_id)
 
-        dry_run_result = dry_run.simulate(incident_with_actions)
+        dry_run_result = dry_run.simulate(incident_data, actions)
         logger.info("Dry run completed for incident %s", incident_id)
 
-        if hasattr(dry_run_result, "to_dict"):
-            dry_run_data = dry_run_result.to_dict()
-        else:
-            dry_run_data = dry_run_result
-
-        decision_result = policy_gate.evaluate(incident_with_actions, dry_run_data)
+        decision_result = policy_gate.evaluate(incident_data, dry_run_result)
         decision = decision_result.get("decision")
         logger.info("Policy decision for incident %s: %s", incident_id, decision)
 
@@ -55,7 +50,7 @@ class SOARDispatcher:
         action_results = []
         for action in actions:
             logger.info("Executing action %s for incident %s", action, incident_id)
-            result = self._run_action(action, incident_with_actions)
+            result = self._run_action(action, incident_data)
             action_results.append(result)
 
         return {
@@ -63,6 +58,22 @@ class SOARDispatcher:
             "decision": "AUTO",
             "actions": action_results,
         }
+
+    def _prepare_incident(self, incident: dict[str, Any]) -> dict[str, Any]:
+        incident_data = dict(incident)
+        entity_id = incident_data.get("entity_id", "UNKNOWN")
+        score = float(incident_data.get("score", 0))
+
+        incident_data.setdefault("incident_id", f"INC-{entity_id}")
+        incident_data.setdefault("attack_type", incident_data.get("classification", "Unknown"))
+        incident_data.setdefault("confidence", score)
+        incident_data.setdefault("risk_score", 0)
+        incident_data.setdefault("asset", entity_id)
+
+        if incident_data.get("entity_type") == "user":
+            incident_data.setdefault("username", entity_id)
+
+        return incident_data
 
     def _run_action(self, action: str, incident: dict[str, Any]) -> dict[str, str]:
         if execute_action is None:
