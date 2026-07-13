@@ -2,8 +2,8 @@ import os
 import tempfile
 import time
 import pytest
-from core import Framework
-from core.evidence import NetworkEvidence, IdentityEvidence, EndpointEvidence, OTEvidence
+from sentinel_prime.core import Framework
+from sentinel_prime.core.evidence import NetworkEvidence, IdentityEvidence, EndpointEvidence, OTEvidence
 
 def test_complete_integration_pipeline():
     with tempfile.TemporaryDirectory() as tmpdir:

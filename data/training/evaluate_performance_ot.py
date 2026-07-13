@@ -11,7 +11,7 @@ import numpy as np
 # Ensure project root is in path if executing directly
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from detectors.ot.ot_detector import OTDetector
+from sentinel_prime.detection.detectors.ot.ot_detector import OTDetector
 
 logger = logging.getLogger(__name__)
 

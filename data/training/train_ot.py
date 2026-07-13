@@ -14,7 +14,7 @@ from typing import Dict, Any, List, Optional
 # Ensure project root is in path if executing directly
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from detectors.ot.anomaly_calibrator import AnomalyCalibrator
+from sentinel_prime.detection.detectors.ot.anomaly_calibrator import AnomalyCalibrator
 
 logger = logging.getLogger(__name__)
 

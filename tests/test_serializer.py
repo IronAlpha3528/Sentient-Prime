@@ -1,8 +1,8 @@
 import os
 import tempfile
 import pytest
-from core.evidence.network_evidence import NetworkEvidence
-from core.evidence.serializer import EvidenceSerializer
+from sentinel_prime.core.evidence.network_evidence import NetworkEvidence
+from sentinel_prime.core.evidence.serializer import EvidenceSerializer
 
 def test_json_and_dict_serialization():
     net_ev = NetworkEvidence(

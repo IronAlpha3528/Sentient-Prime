@@ -4,10 +4,10 @@ import pytest
 import pandas as pd
 import numpy as np
 
-from detectors.ot.timeseries_normalizer import TimeseriesNormalizer
-from detectors.ot.window_builder import build_sliding_windows
-from detectors.ot.feature_builder import build_features_for_window
-from detectors.ot.ot_detector import OTDetector
+from sentinel_prime.detection.detectors.ot.timeseries_normalizer import TimeseriesNormalizer
+from sentinel_prime.detection.detectors.ot.window_builder import build_sliding_windows
+from sentinel_prime.detection.detectors.ot.feature_builder import build_features_for_window
+from sentinel_prime.detection.detectors.ot.ot_detector import OTDetector
 
 def test_ot_pipeline_integration():
     # 1. Generate synthetic raw timeseries data representing HAI logs

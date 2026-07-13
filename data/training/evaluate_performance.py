@@ -12,7 +12,7 @@ import joblib
 # Ensure project root is in path if executing directly
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from detectors.endpoint.endpoint_detector import EndpointDetector
+from sentinel_prime.detection.detectors.endpoint.endpoint_detector import EndpointDetector
 
 logger = logging.getLogger(__name__)
 

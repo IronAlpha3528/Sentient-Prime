@@ -1,7 +1,7 @@
 import pytest
-from risk_scoring.scorer import calculate_execution_score
-from orchestrator.dry_run import simulate_action
-from orchestrator.policy_gate import evaluate_policy
+from sentinel_prime.soar.risk_scoring.scorer import calculate_execution_score
+from sentinel_prime.soar.orchestrator.dry_run import simulate_action
+from sentinel_prime.soar.orchestrator.policy_gate import evaluate_policy
 
 def test_calculate_execution_score():
     # Isolate Host (0.9) with Low Impact (0.2)

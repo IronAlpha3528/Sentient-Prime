@@ -4,9 +4,9 @@ import pandas as pd
 from pathlib import Path
 
 from data.training.preprocess_network import ATTACK_FAMILY_MAPPING, map_family
-from detectors.network_detector import NetworkDetector
-from detectors.evidence_schema import DetectorEvidence
-from orchestrator.phase1_pipeline import Phase1Pipeline
+from sentinel_prime.detection.detectors.network_detector import NetworkDetector
+from sentinel_prime.detection.detectors.evidence_schema import DetectorEvidence
+from sentinel_prime.soar.orchestrator.phase1_pipeline import Phase1Pipeline
 
 
 # 1. Label Mapping Tests

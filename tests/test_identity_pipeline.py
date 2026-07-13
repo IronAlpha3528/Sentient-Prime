@@ -6,9 +6,9 @@ import pandas as pd
 from pathlib import Path
 from sklearn.ensemble import IsolationForest
 
-from detectors.identity_detector import IdentityDetector
-from ingestion.identity_adapter import IdentityAdapter
-from orchestrator.phase1_pipeline import Phase1Pipeline
+from sentinel_prime.detection.detectors.identity_detector import IdentityDetector
+from sentinel_prime.core.ingestion.identity_adapter import IdentityAdapter
+from sentinel_prime.soar.orchestrator.phase1_pipeline import Phase1Pipeline
 from data.training.aggregate_lanl import process_window
 
 

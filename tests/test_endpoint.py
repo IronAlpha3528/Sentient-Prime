@@ -6,12 +6,12 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 
-from detectors.endpoint.schemas import EndpointEvent
-from detectors.endpoint.endpoint_model import EndpointModel
-from detectors.endpoint.sigma_loader import load_sigma_rules, SigmaRule
-from detectors.endpoint.sigma_engine import SigmaEngine, get_field_value_from_event
-from detectors.endpoint.evidence_fusion import fuse_predictions_and_rules
-from detectors.endpoint.endpoint_detector import EndpointDetector
+from sentinel_prime.detection.detectors.endpoint.schemas import EndpointEvent
+from sentinel_prime.detection.detectors.endpoint.endpoint_model import EndpointModel
+from sentinel_prime.detection.detectors.endpoint.sigma_loader import load_sigma_rules, SigmaRule
+from sentinel_prime.detection.detectors.endpoint.sigma_engine import SigmaEngine, get_field_value_from_event
+from sentinel_prime.detection.detectors.endpoint.evidence_fusion import fuse_predictions_and_rules
+from sentinel_prime.detection.detectors.endpoint.endpoint_detector import EndpointDetector
 
 @pytest.fixture
 def temp_sigma_rule(tmp_path):

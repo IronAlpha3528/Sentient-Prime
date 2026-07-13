@@ -5,17 +5,17 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-from detectors.network_detector import (
+from sentinel_prime.detection.detectors.network_detector import (
     NetworkDetector,
     MINIMAL_NETWORK_EVIDENCE,
     WEAK_NETWORK_EVIDENCE,
     MODERATE_NETWORK_EVIDENCE,
     STRONG_NETWORK_EVIDENCE
 )
-from detectors.identity_detector import IdentityDetector
+from sentinel_prime.detection.detectors.identity_detector import IdentityDetector
 from data.training.aggregate_lanl import process_window
-from correlation.evidence_stream import EvidenceStream
-from orchestrator.phase1_pipeline import Phase1Pipeline
+from sentinel_prime.detection.correlation.evidence_stream import EvidenceStream
+from sentinel_prime.soar.orchestrator.phase1_pipeline import Phase1Pipeline
 
 
 # ========================================================

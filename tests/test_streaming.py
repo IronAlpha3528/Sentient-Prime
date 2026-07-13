@@ -1,7 +1,7 @@
 import time
 import pytest
-from core.evidence import EvidenceBus, NetworkEvidence, EventPriority, EvidenceEvent, EventStatus
-from core.evidence.event_queue import EventQueue
+from sentinel_prime.core.evidence import EvidenceBus, NetworkEvidence, EventPriority, EvidenceEvent, EventStatus
+from sentinel_prime.core.evidence.event_queue import EventQueue
 
 def test_priority_scheduling_order():
     """Directly tests the EventQueue class to ensure high-priority events are

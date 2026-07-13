@@ -7,14 +7,14 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 
-from detectors.endpoint.schemas import ArchiveManifest, EndpointEvent
-from detectors.endpoint.dataset_discovery import get_otrf_path, discover_archives, DatasetNotFoundError
-from detectors.endpoint.archive_reader import stream_telemetry_files
-from detectors.endpoint.event_parser import parse_telemetry_content
-from detectors.endpoint.field_mapper import find_alias_value, FIELD_ALIASES
-from detectors.endpoint.event_normalizer import normalize_event, clear_stats, get_stats
-from detectors.endpoint.process_window_builder import build_process_windows, parse_timestamp
-from detectors.endpoint.feature_builder import build_features_for_window, FEATURE_CONTRACT
+from sentinel_prime.detection.detectors.endpoint.schemas import ArchiveManifest, EndpointEvent
+from sentinel_prime.detection.detectors.endpoint.dataset_discovery import get_otrf_path, discover_archives, DatasetNotFoundError
+from sentinel_prime.detection.detectors.endpoint.archive_reader import stream_telemetry_files
+from sentinel_prime.detection.detectors.endpoint.event_parser import parse_telemetry_content
+from sentinel_prime.detection.detectors.endpoint.field_mapper import find_alias_value, FIELD_ALIASES
+from sentinel_prime.detection.detectors.endpoint.event_normalizer import normalize_event, clear_stats, get_stats
+from sentinel_prime.detection.detectors.endpoint.process_window_builder import build_process_windows, parse_timestamp
+from sentinel_prime.detection.detectors.endpoint.feature_builder import build_features_for_window, FEATURE_CONTRACT
 
 # ========================================================
 # PATH RESOLUTION & DISCOVERY TESTS

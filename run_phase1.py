@@ -3,7 +3,7 @@ from pathlib import Path
 import sys
 import pandas as pd
 
-from orchestrator.phase1_pipeline import Phase1Pipeline
+from sentinel_prime.soar.orchestrator.phase1_pipeline import Phase1Pipeline
 
 
 def run_network(pipeline: Phase1Pipeline) -> None:

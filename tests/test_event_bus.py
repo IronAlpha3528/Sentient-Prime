@@ -1,7 +1,7 @@
 import time
 import pytest
-from core.evidence import EvidenceBus, NetworkEvidence, OTEvidence, Subscriber, EvidenceEvent
-from core.evidence.subscriber import SubscriberFilter
+from sentinel_prime.core.evidence import EvidenceBus, NetworkEvidence, OTEvidence, Subscriber, EvidenceEvent
+from sentinel_prime.core.evidence.subscriber import SubscriberFilter
 
 class DummySubscriber(Subscriber):
     """A test subscriber that accumulates received events in memory."""

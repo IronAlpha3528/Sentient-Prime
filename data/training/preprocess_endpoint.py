@@ -9,12 +9,12 @@ import numpy as np
 # Ensure project root is in path if executing directly
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from detectors.endpoint.dataset_discovery import discover_archives, DatasetNotFoundError
-from detectors.endpoint.archive_reader import stream_telemetry_files
-from detectors.endpoint.event_parser import parse_telemetry_content
-from detectors.endpoint.event_normalizer import normalize_event, get_stats, clear_stats
-from detectors.endpoint.process_window_builder import build_process_windows, parse_timestamp
-from detectors.endpoint.feature_builder import build_features_for_window, save_features
+from sentinel_prime.detection.detectors.endpoint.dataset_discovery import discover_archives, DatasetNotFoundError
+from sentinel_prime.detection.detectors.endpoint.archive_reader import stream_telemetry_files
+from sentinel_prime.detection.detectors.endpoint.event_parser import parse_telemetry_content
+from sentinel_prime.detection.detectors.endpoint.event_normalizer import normalize_event, get_stats, clear_stats
+from sentinel_prime.detection.detectors.endpoint.process_window_builder import build_process_windows, parse_timestamp
+from sentinel_prime.detection.detectors.endpoint.feature_builder import build_features_for_window, save_features
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)

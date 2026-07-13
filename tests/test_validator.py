@@ -1,6 +1,6 @@
 import pytest
-from core.evidence.network_evidence import NetworkEvidence
-from core.evidence.validator import validate_evidence
+from sentinel_prime.core.evidence.network_evidence import NetworkEvidence
+from sentinel_prime.core.evidence.validator import validate_evidence
 
 def test_valid_evidence_passes():
     net_ev = NetworkEvidence(
