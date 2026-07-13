@@ -1,0 +1,36 @@
+# Sentient-Prime Risk Scoring Configuration
+# Formula: Score = (alpha * Containment) - (beta * Business_impact)
+
+weights:
+  alpha: 0.7  # Weight for containment
+  beta: 0.3   # Weight for business impact
+
+# Action Library
+# Note: Score will be calculated dynamically based on weights and adjusted for blast radius.
+actions:
+  - id: "isolate_endpoint"
+    name: "Isolate Endpoint"
+    containment: 0.9
+    business_impact: 0.2
+    
+  - id: "revoke_credentials"
+    name: "Revoke Credentials"
+    containment: 0.8
+    business_impact: 0.3
+    
+  - id: "block_ip"
+    name: "Block Source IP"
+    containment: 0.5
+    business_impact: 0.1
+    
+  - id: "snapshot_vm"
+    name: "Snapshot VM"
+    containment: 0.0
+    business_impact: 0.05
+
+# Routing Thresholds
+routing:
+  soar_confidence_threshold: 0.75
+  soar_blast_score_max: 15
+  # If confidence >= 0.75 AND blast_score < 15 AND reaches_ot = False, route to SOAR.
+  # Otherwise, route to human escalation gate.

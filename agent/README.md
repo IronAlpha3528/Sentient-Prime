@@ -41,3 +41,14 @@ agent/
 ## Key Design Decision
 
 Gemini Flash is **not the primary detector**. It receives pre-correlated evidence (from ML models) plus retrieved ATT&CK context (from Hybrid Graph-RAG). The AI reasons over structured evidence — it does not process raw logs.
+
+---
+
+## AI Reasoning Core (Hardik's Implementation)
+
+The core pipeline has been implemented specifically for Blocks 1-3 of the reasoning core:
+
+- `agent/pipeline.py`: The entry point that chains the blocks together. Takes a Common Evidence Object and returns the full AI decision JSON.
+- `agent/hypothesis_agent.py`: (Block 1) Generates 3-4 ranked hypotheses (including one benign) via Gemini Flash and FAISS RAG.
+- `agent/apt_attribution.py`: (Block 2) Attributes behavior to a threat actor, predicts next techniques, and computes blast radius using NetworkX against the configured topology (`config/topology.yaml`).
+- `agent/rag/build_index.py` & `query.py`: Builds and queries the FAISS index of MITRE ATT&CK STIX 2.1 data using SentenceTransformers.
