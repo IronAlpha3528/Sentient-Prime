@@ -1,0 +1,49 @@
+# Sentient-Prime CNI Topology Configuration
+# This defines the hardcoded network graph for blast radius calculation (Block 2)
+
+nodes:
+  - id: "internet"
+    criticality: 0
+  - id: "dmz_server"
+    criticality: 1
+  - id: "web_server"
+    criticality: 2
+  - id: "app_server"
+    criticality: 3
+  - id: "admin_workstation"
+    criticality: 3
+  - id: "db_server"
+    criticality: 4
+  - id: "scada_gateway"
+    criticality: 8
+  - id: "plc_controller"
+    criticality: 10
+  - id: "cooling_pump"
+    criticality: 10
+  - id: "sensor_array"
+    criticality: 10
+
+edges:
+  # IT side
+  - source: "internet"
+    target: "dmz_server"
+  - source: "dmz_server"
+    target: "web_server"
+  - source: "web_server"
+    target: "app_server"
+  - source: "app_server"
+    target: "db_server"
+  - source: "app_server"
+    target: "admin_workstation"
+  
+  # IT -> OT bridge
+  - source: "admin_workstation"
+    target: "scada_gateway"
+  
+  # OT side
+  - source: "scada_gateway"
+    target: "plc_controller"
+  - source: "plc_controller"
+    target: "cooling_pump"
+  - source: "plc_controller"
+    target: "sensor_array"

@@ -1,0 +1,33 @@
+{
+  "nodes_count": 2,
+  "edges_count": 2,
+  "degree_centrality": {
+    "HOST:192.168.1.1": 1.0,
+    "HOST:0.0.0.0": 3.0
+  },
+  "betweenness_centrality": {
+    "HOST:192.168.1.1": 0.0,
+    "HOST:0.0.0.0": 0.0
+  },
+  "closeness_centrality": {
+    "HOST:192.168.1.1": 1.0,
+    "HOST:0.0.0.0": 0.0
+  },
+  "pagerank": {
+    "HOST:192.168.1.1": 0.5,
+    "HOST:0.0.0.0": 0.5
+  },
+  "weakly_connected_components_count": 1,
+  "communities": [
+    [
+      "HOST:192.168.1.1",
+      "HOST:0.0.0.0"
+    ]
+  ],
+  "risk_distribution": {
+    "benign": 0,
+    "moderate": 2,
+    "high": 0,
+    "critical": 0
+  }
+}

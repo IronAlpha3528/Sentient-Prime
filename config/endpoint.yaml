@@ -1,0 +1,30 @@
+# Configuration for Endpoint Specialist
+
+# Preprocessing & Windowing
+window_seconds: 60
+feature_contract: "data/processed/endpoint/features/feature_contract.json"
+
+# Anomaly Scoring & Evidence Generation
+risk_threshold: 0.75
+
+# Models & Rules Path
+model_directory: "models/endpoint"
+sigma_directory: "detectors/sigma_rules"
+
+# Runtime Execution
+batch_size: 1000
+max_workers: 4
+logging_level: "INFO"
+
+# LightGBM Hyperparameters
+lightgbm_params:
+  boosting_type: "gbdt"
+  objective: "binary"
+  metric: "binary_logloss"
+  learning_rate: 0.05
+  n_estimators: 100
+  max_depth: 6
+  num_leaves: 31
+  class_weight: "balanced"
+  random_state: 42
+  verbose: -1
