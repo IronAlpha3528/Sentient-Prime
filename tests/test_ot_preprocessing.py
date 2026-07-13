@@ -5,12 +5,12 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
-from detectors.ot.dataset_discovery import discover_ot_datasets
-from detectors.ot.hai_loader import load_ot_dataset_incremental
-from detectors.ot.timeseries_normalizer import TimeseriesNormalizer, classify_columns, analyze_temporal_integrity, analyze_missing_values
-from detectors.ot.window_builder import build_sliding_windows
-from detectors.ot.feature_builder import build_features_for_window
-from detectors.ot.feature_contract import generate_feature_contract
+from sentinel_prime.detection.detectors.ot.dataset_discovery import discover_ot_datasets
+from sentinel_prime.detection.detectors.ot.hai_loader import load_ot_dataset_incremental
+from sentinel_prime.detection.detectors.ot.timeseries_normalizer import TimeseriesNormalizer, classify_columns, analyze_temporal_integrity, analyze_missing_values
+from sentinel_prime.detection.detectors.ot.window_builder import build_sliding_windows
+from sentinel_prime.detection.detectors.ot.feature_builder import build_features_for_window
+from sentinel_prime.detection.detectors.ot.feature_contract import generate_feature_contract
 
 @pytest.fixture
 def mock_ot_csv(tmp_path):

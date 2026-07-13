@@ -3,15 +3,15 @@ import json
 import pytest
 from pathlib import Path
 
-from detectors.endpoint.schemas import EndpointEvent
-from detectors.endpoint.event_normalizer import normalize_event
-from detectors.endpoint.process_window_builder import build_process_windows
-from detectors.endpoint.feature_builder import build_features_for_window
-from detectors.endpoint.endpoint_model import EndpointModel
-from detectors.endpoint.sigma_loader import SigmaRule
-from detectors.endpoint.sigma_engine import SigmaEngine
-from detectors.endpoint.evidence_fusion import fuse_predictions_and_rules
-from detectors.endpoint.endpoint_detector import EndpointDetector
+from sentinel_prime.detection.detectors.endpoint.schemas import EndpointEvent
+from sentinel_prime.detection.detectors.endpoint.event_normalizer import normalize_event
+from sentinel_prime.detection.detectors.endpoint.process_window_builder import build_process_windows
+from sentinel_prime.detection.detectors.endpoint.feature_builder import build_features_for_window
+from sentinel_prime.detection.detectors.endpoint.endpoint_model import EndpointModel
+from sentinel_prime.detection.detectors.endpoint.sigma_loader import SigmaRule
+from sentinel_prime.detection.detectors.endpoint.sigma_engine import SigmaEngine
+from sentinel_prime.detection.detectors.endpoint.evidence_fusion import fuse_predictions_and_rules
+from sentinel_prime.detection.detectors.endpoint.endpoint_detector import EndpointDetector
 
 def test_endpoint_specialist_integration(tmp_path):
     # 1. Synthetic Endpoint Events

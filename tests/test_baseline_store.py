@@ -15,7 +15,7 @@ import math
 
 import pytest
 
-from ingestion.baseline_store import BaselineStore, BaselineStats
+from sentinel_prime.core.ingestion.baseline_store import BaselineStore, BaselineStats
 
 
 @pytest.fixture

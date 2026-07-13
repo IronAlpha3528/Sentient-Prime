@@ -1,9 +1,9 @@
 import os
 import tempfile
 import pytest
-from core.evidence import NetworkEvidence, OTEvidence, EvidenceEvent, EventPriority, EventStatus
-from core.graph.graph_manager import GraphManager
-from core.graph.graph_schema import NodeType, EdgeType
+from sentinel_prime.core.evidence import NetworkEvidence, OTEvidence, EvidenceEvent, EventPriority, EventStatus
+from sentinel_prime.core.graph.graph_manager import GraphManager
+from sentinel_prime.core.graph.graph_schema import NodeType, EdgeType
 
 def test_node_edge_creation_and_merge():
     # Fresh GraphManager

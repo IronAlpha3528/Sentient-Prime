@@ -7,11 +7,11 @@ from dotenv import load_dotenv
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from agent.correlation_agent import CorrelationAgent
-from agent.hypothesis_agent import HypothesisAgent
-from agent.prediction_agent import PredictionAgent
-from agent.deception_agent import DeceptionAgent
-from agent.response_agent import ResponseAgent
+from sentinel_prime.ai.agents.correlation_agent import CorrelationAgent
+from sentinel_prime.ai.agents.hypothesis_agent import HypothesisAgent
+from sentinel_prime.ai.agents.prediction_agent import PredictionAgent
+from sentinel_prime.ai.agents.deception_agent import DeceptionAgent
+from sentinel_prime.ai.agents.response_agent import ResponseAgent
 
 # 1. Load the API key from .env
 load_dotenv()

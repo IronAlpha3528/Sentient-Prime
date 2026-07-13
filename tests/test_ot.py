@@ -4,11 +4,11 @@ import pytest
 from pathlib import Path
 import numpy as np
 
-from detectors.ot.ot_evidence import OTEvidence
-from detectors.ot.anomaly_calibrator import AnomalyCalibrator
-from detectors.ot.evidence_generator import OTEvidenceGenerator, generate_top_shifted_variables
-from detectors.ot.ot_detector import OTDetector
-from detectors.ot.ot_model import OTModel
+from sentinel_prime.detection.detectors.ot.ot_evidence import OTEvidence
+from sentinel_prime.detection.detectors.ot.anomaly_calibrator import AnomalyCalibrator
+from sentinel_prime.detection.detectors.ot.evidence_generator import OTEvidenceGenerator, generate_top_shifted_variables
+from sentinel_prime.detection.detectors.ot.ot_detector import OTDetector
+from sentinel_prime.detection.detectors.ot.ot_model import OTModel
 
 def test_anomaly_calibration():
     # Fit calibrator on simple sample raw scores (more negative is anomalous)

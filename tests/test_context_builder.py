@@ -1,9 +1,9 @@
 import tempfile
 import pytest
-from core.graph.graph_manager import GraphManager
-from core.context.context_builder import ContextBuilder
-from core.context.timeline_builder import TimelineBuilder
-from core.context.summary_builder import SummaryBuilder
+from sentinel_prime.core.graph.graph_manager import GraphManager
+from sentinel_prime.core.context.context_builder import ContextBuilder
+from sentinel_prime.core.context.timeline_builder import TimelineBuilder
+from sentinel_prime.core.context.summary_builder import SummaryBuilder
 
 def test_timeline_and_summary_builders():
     events = [

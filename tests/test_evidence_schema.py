@@ -1,10 +1,10 @@
 import pytest
-from core.evidence.network_evidence import NetworkEvidence
-from core.evidence.identity_evidence import IdentityEvidence
-from core.evidence.endpoint_evidence import EndpointEvidence
-from core.evidence.ot_evidence import OTEvidence
-from core.evidence.schemas import DetectorType, EntityType
-from core.evidence.severity import SeverityLevel
+from sentinel_prime.core.evidence.network_evidence import NetworkEvidence
+from sentinel_prime.core.evidence.identity_evidence import IdentityEvidence
+from sentinel_prime.core.evidence.endpoint_evidence import EndpointEvidence
+from sentinel_prime.core.evidence.ot_evidence import OTEvidence
+from sentinel_prime.core.evidence.schemas import DetectorType, EntityType
+from sentinel_prime.core.evidence.severity import SeverityLevel
 
 def test_network_evidence_schema():
     net_ev = NetworkEvidence(
