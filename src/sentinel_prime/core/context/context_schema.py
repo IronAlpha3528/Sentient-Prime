@@ -17,6 +17,15 @@ class CorrelationContext:
     risk_summary: str = ""
     supporting_evidence: List[Dict[str, Any]] = field(default_factory=list)
     timeline: List[Dict[str, Any]] = field(default_factory=list)
+    incident_id: str = ""
+    entities: Dict[str, List[str]] = field(default_factory=dict)
+    relationships: List[Dict[str, Any]] = field(default_factory=list)
+    evidence: List[Dict[str, Any]] = field(default_factory=list)
+    threat_intel: List[Dict[str, Any]] = field(default_factory=list)
+    graph_subgraph: Dict[str, Any] = field(default_factory=dict)
+    historical_incidents: List[Dict[str, Any]] = field(default_factory=list)
+    confidence_summary: str = ""
+    monitoring_snapshot: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         """Converts the correlation context to a dictionary."""
@@ -36,6 +45,7 @@ class CorrelationContext:
         
         md = f"""# Correlation Security Context: {self.entity}
 **Context ID**: `{self.context_id}`
+**Incident ID**: `{self.incident_id}`
 **Temporal Scope**: {self.time_window[0]} to {self.time_window[1]}
 
 ## Risk Assessment
@@ -52,6 +62,17 @@ class CorrelationContext:
 """
         for idx, ev in enumerate(self.supporting_evidence, start=1):
             md += f"- **[{ev.get('detector')}]** Entity: {ev.get('entity')} | Severity: {ev.get('severity')} | Risk Score: {ev.get('risk_score', 0.0):.2f}\n"
+
+        if self.threat_intel:
+            md += "\n## Threat Intelligence Enrichment\n"
+            for ti in self.threat_intel:
+                md += f"- **[{ti.get('technique_id')}] {ti.get('name')}**: {ti.get('description')} (Match Score: {ti.get('score', 0.0):.4f})\n"
+
+        if self.monitoring_snapshot:
+            md += "\n## Monitoring & Pipeline Status\n"
+            md += f"- **Pipeline Status**: {self.monitoring_snapshot.get('pipeline_status')}\n"
+            md += f"- **Total Events Processed**: {self.monitoring_snapshot.get('evidence_counts')}\n"
+            md += f"- **Queue Depth**: {self.monitoring_snapshot.get('current_queue_size')}\n"
 
         return md
 

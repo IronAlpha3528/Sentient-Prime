@@ -56,7 +56,7 @@ def test_network_detector_weak_evidence():
     assert evidence["score"] == s1_prob
 
     # 10. NetworkDetector remains BaseDetector compatible
-    from detectors.base_detector import BaseDetector
+    from sentinel_prime.detection.detectors.base_detector import BaseDetector
     assert isinstance(detector, BaseDetector)
 
 

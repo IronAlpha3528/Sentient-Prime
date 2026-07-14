@@ -4,26 +4,86 @@
   "graph": {},
   "nodes": [
     {
-      "node_id": "HOST:192.168.1.1",
-      "entity_type": "HOST",
-      "display_name": "192.168.1.1",
-      "risk_score": 0.4,
-      "confidence": 0.9,
-      "severity": "MEDIUM",
-      "first_seen": "2026-07-13T19:00:00+00:00",
-      "last_seen": "2026-07-13T19:00:00+00:00",
+      "node_id": "USER:adm_aanoush",
+      "entity_type": "USER",
+      "display_name": "adm_aanoush",
+      "risk_score": 0.0,
+      "confidence": 1.0,
+      "severity": "INFO",
+      "first_seen": "2026-07-14T09:01:00Z",
+      "last_seen": "2026-07-14T09:01:00Z",
       "metadata": {},
-      "id": "HOST:192.168.1.1"
+      "id": "USER:adm_aanoush"
+    },
+    {
+      "node_id": "HOST:ENG-WS-01",
+      "entity_type": "HOST",
+      "display_name": "ENG-WS-01",
+      "risk_score": 0.0,
+      "confidence": 1.0,
+      "severity": "INFO",
+      "first_seen": "2026-07-14T09:01:00Z",
+      "last_seen": "2026-07-14T09:01:00Z",
+      "metadata": {},
+      "id": "HOST:ENG-WS-01"
+    },
+    {
+      "node_id": "USER:USER:adm_aanoush",
+      "entity_type": "USER",
+      "display_name": "USER:adm_aanoush",
+      "risk_score": 0.94,
+      "confidence": 0.95,
+      "severity": "CRITICAL",
+      "first_seen": "2026-07-14T09:01:00+00:00",
+      "last_seen": "2026-07-14T09:01:00+00:00",
+      "metadata": {
+        "new_hosts": 12,
+        "auth_count": 0
+      },
+      "id": "USER:USER:adm_aanoush"
+    },
+    {
+      "node_id": "HOST:HOST:ENG-WS-01",
+      "entity_type": "HOST",
+      "display_name": "HOST:ENG-WS-01",
+      "risk_score": 0.97,
+      "confidence": 1.0,
+      "severity": "CRITICAL",
+      "first_seen": "2026-07-14T09:00:00+00:00",
+      "last_seen": "2026-07-14T09:03:00+00:00",
+      "metadata": {
+        "process_chain": [
+          "WINWORD.EXE",
+          "powershell.exe"
+        ],
+        "class": "infiltration",
+        "behaviour_summary": "SCADA gateway access"
+      },
+      "id": "HOST:HOST:ENG-WS-01"
+    },
+    {
+      "node_id": "PROCESS:HOST:ENG-WS-01:unknown",
+      "entity_type": "PROCESS",
+      "display_name": "unknown",
+      "risk_score": 0.97,
+      "confidence": 1.0,
+      "severity": "CRITICAL",
+      "first_seen": "2026-07-14T09:02:00+00:00",
+      "last_seen": "2026-07-14T09:02:00+00:00",
+      "metadata": {
+        "mitre_candidates": []
+      },
+      "id": "PROCESS:HOST:ENG-WS-01:unknown"
     },
     {
       "node_id": "HOST:0.0.0.0",
       "entity_type": "HOST",
       "display_name": "0.0.0.0",
-      "risk_score": 0.4,
+      "risk_score": 0.82,
       "confidence": 0.9,
-      "severity": "MEDIUM",
-      "first_seen": "2026-07-13T19:00:00+00:00",
-      "last_seen": "2026-07-13T19:00:00+00:00",
+      "severity": "HIGH",
+      "first_seen": "2026-07-14T09:00:00+00:00",
+      "last_seen": "2026-07-14T09:00:00+00:00",
       "metadata": {
         "role": "destination"
       },
@@ -32,14 +92,45 @@
   ],
   "edges": [
     {
-      "type": "CONNECTS_TO",
-      "first_seen": "2026-07-13T19:00:00+00:00",
-      "last_seen": "2026-07-13T19:00:00+00:00",
+      "type": "AUTHENTICATES_TO",
+      "first_seen": "2026-07-14T09:01:00Z",
+      "last_seen": "2026-07-14T09:01:00Z",
       "occurrence_count": 1,
-      "timestamp": "2026-07-13T19:00:00+00:00",
+      "timestamp": "2026-07-14T09:01:00Z",
+      "confidence": 1.0,
+      "source_detector": "unknown",
+      "risk": 0.94,
+      "metadata": {},
+      "source": "USER:adm_aanoush",
+      "target": "HOST:ENG-WS-01",
+      "key": 0
+    },
+    {
+      "type": "RUNS_PROCESS",
+      "first_seen": "2026-07-14T09:02:00+00:00",
+      "last_seen": "2026-07-14T09:02:00+00:00",
+      "occurrence_count": 1,
+      "timestamp": "2026-07-14T09:02:00+00:00",
+      "confidence": 1.0,
+      "source_detector": "ENDPOINT",
+      "risk": 0.97,
+      "metadata": {
+        "source_detector": "ENDPOINT",
+        "sigma_hits": []
+      },
+      "source": "HOST:HOST:ENG-WS-01",
+      "target": "PROCESS:HOST:ENG-WS-01:unknown",
+      "key": 0
+    },
+    {
+      "type": "CONNECTS_TO",
+      "first_seen": "2026-07-14T09:00:00+00:00",
+      "last_seen": "2026-07-14T09:00:00+00:00",
+      "occurrence_count": 1,
+      "timestamp": "2026-07-14T09:00:00+00:00",
       "confidence": 0.9,
       "source_detector": "NETWORK",
-      "risk": 0.4,
+      "risk": 0.82,
       "metadata": {
         "protocol": "unknown",
         "attack_family": "unknown",
@@ -52,18 +143,18 @@
     },
     {
       "type": "GENERATES",
-      "first_seen": "2026-07-13T19:00:00+00:00",
-      "last_seen": "2026-07-13T19:00:00+00:00",
+      "first_seen": "2026-07-14T09:00:00+00:00",
+      "last_seen": "2026-07-14T09:00:00+00:00",
       "occurrence_count": 1,
-      "timestamp": "2026-07-13T19:00:00+00:00",
+      "timestamp": "2026-07-14T09:00:00+00:00",
       "confidence": 0.9,
       "source_detector": "NETWORK",
-      "risk": 0.4,
+      "risk": 0.82,
       "metadata": {
         "source_detector": "NETWORK"
       },
       "source": "HOST:0.0.0.0",
-      "target": "HOST:192.168.1.1",
+      "target": "HOST:HOST:ENG-WS-01",
       "key": 0
     }
   ]

@@ -1,7 +1,7 @@
 import os
 import json
 import google.generativeai as genai
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from .rag.query import search
 
 # Ensure API key is configured
@@ -114,6 +114,31 @@ def generate_hypotheses(evidence: Dict[str, Any]) -> List[Dict[str, Any]]:
     except Exception as e:
         print(f"Error calling Gemini API: {e}")
         raise
+
+class HypothesisAgent:
+    def __init__(self):
+        from .base_agent import BaseAgent
+        from .prompts import HYPOTHESIS_PROMPT, HypothesisList
+        self.agent = BaseAgent(
+            system_instruction=HYPOTHESIS_PROMPT,
+            response_schema=HypothesisList
+        )
+        
+    def run(self, story: dict, context: Optional[Any] = None) -> dict:
+        import json
+        context_str = ""
+        if context:
+            context_dict = context.to_dict() if hasattr(context, "to_dict") else context
+            context_str = f"\nSECURITY CONTEXT:\n{json.dumps(context_dict, indent=2)}"
+            
+        prompt = f"""
+        Based on the provided cross-domain incident story and security context, generate the competing hypotheses.
+        
+        INCIDENT STORY:
+        {json.dumps(story, indent=2)}
+        {context_str}
+        """
+        return self.agent.run(prompt)
 
 if __name__ == "__main__":
     # Test Block 1

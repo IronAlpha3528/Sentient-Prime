@@ -80,3 +80,23 @@ class PolicyGate:
 
 def evaluate(incident: dict[str, Any], dry_run_result: dict[str, Any]) -> dict[str, str]:
     return PolicyGate().evaluate(incident, dry_run_result)
+
+def evaluate_policy(confidence: float, score: float, impact_level: str) -> dict[str, str]:
+    """
+    Evaluates policy gate constraints for automated response execution:
+    Rule: Confidence > 0.85 AND Impact == "Low"
+    """
+    if impact_level != "Low":
+        return {
+            "status": "HUMAN_APPROVAL",
+            "reason": f"Impact must be 'Low' (got '{impact_level}')"
+        }
+    if confidence <= 0.85:
+        return {
+            "status": "HUMAN_APPROVAL",
+            "reason": f"Confidence too low ({confidence} <= 0.85)"
+        }
+    return {
+        "status": "AUTO_EXECUTE",
+        "reason": "Policy gate constraints satisfied."
+    }

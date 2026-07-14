@@ -1,33 +1,59 @@
 {
-  "nodes_count": 2,
-  "edges_count": 2,
+  "nodes_count": 6,
+  "edges_count": 4,
   "degree_centrality": {
-    "HOST:192.168.1.1": 1.0,
-    "HOST:0.0.0.0": 3.0
+    "USER:adm_aanoush": 0.2,
+    "HOST:ENG-WS-01": 0.2,
+    "USER:USER:adm_aanoush": 0.0,
+    "HOST:HOST:ENG-WS-01": 0.4,
+    "PROCESS:HOST:ENG-WS-01:unknown": 0.2,
+    "HOST:0.0.0.0": 0.6000000000000001
   },
   "betweenness_centrality": {
-    "HOST:192.168.1.1": 0.0,
+    "USER:adm_aanoush": 0.0,
+    "HOST:ENG-WS-01": 0.0,
+    "USER:USER:adm_aanoush": 0.0,
+    "HOST:HOST:ENG-WS-01": 0.05,
+    "PROCESS:HOST:ENG-WS-01:unknown": 0.0,
     "HOST:0.0.0.0": 0.0
   },
   "closeness_centrality": {
-    "HOST:192.168.1.1": 1.0,
+    "USER:adm_aanoush": 0.0,
+    "HOST:ENG-WS-01": 0.2,
+    "USER:USER:adm_aanoush": 0.0,
+    "HOST:HOST:ENG-WS-01": 0.2,
+    "PROCESS:HOST:ENG-WS-01:unknown": 0.26666666666666666,
     "HOST:0.0.0.0": 0.0
   },
   "pagerank": {
-    "HOST:192.168.1.1": 0.5,
-    "HOST:0.0.0.0": 0.5
+    "USER:adm_aanoush": 0.10197287431849367,
+    "HOST:ENG-WS-01": 0.18865060868328937,
+    "USER:USER:adm_aanoush": 0.10197287431849367,
+    "HOST:HOST:ENG-WS-01": 0.17734412924955417,
+    "PROCESS:HOST:ENG-WS-01:unknown": 0.25271538418061473,
+    "HOST:0.0.0.0": 0.17734412924955417
   },
-  "weakly_connected_components_count": 1,
+  "weakly_connected_components_count": 3,
   "communities": [
     [
-      "HOST:192.168.1.1",
+      "HOST:ENG-WS-01",
+      "USER:adm_aanoush"
+    ],
+    [
+      "HOST:HOST:ENG-WS-01",
+      "PROCESS:HOST:ENG-WS-01:unknown"
+    ],
+    [
+      "USER:USER:adm_aanoush"
+    ],
+    [
       "HOST:0.0.0.0"
     ]
   ],
   "risk_distribution": {
-    "benign": 0,
-    "moderate": 2,
+    "benign": 2,
+    "moderate": 0,
     "high": 0,
-    "critical": 0
+    "critical": 4
   }
 }

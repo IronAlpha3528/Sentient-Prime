@@ -70,7 +70,7 @@ class MockClient:
 @patch('google.genai.Client', MockClient)
 @patch.dict(os.environ, {"GEMINI_API_KEY": "dummy_key"})
 def test_correlation_agent():
-    from agent.correlation_agent import CorrelationAgent
+    from sentinel_prime.ai.agents.correlation_agent import CorrelationAgent
     agent = CorrelationAgent()
     result = agent.run("INC-102")
     
@@ -80,7 +80,7 @@ def test_correlation_agent():
 @patch('google.genai.Client', MockClient)
 @patch.dict(os.environ, {"GEMINI_API_KEY": "dummy_key"})
 def test_hypothesis_agent():
-    from agent.hypothesis_agent import HypothesisAgent
+    from sentinel_prime.ai.agents.hypothesis_agent import HypothesisAgent
     agent = HypothesisAgent()
     result = agent.run({"summary": "test"})
     
@@ -90,7 +90,7 @@ def test_hypothesis_agent():
 @patch('google.genai.Client', MockClient)
 @patch.dict(os.environ, {"GEMINI_API_KEY": "dummy_key"})
 def test_prediction_agent():
-    from agent.prediction_agent import PredictionAgent
+    from sentinel_prime.ai.agents.prediction_agent import PredictionAgent
     agent = PredictionAgent()
     result = agent.run({"hypotheses": []})
     
@@ -99,7 +99,7 @@ def test_prediction_agent():
 @patch('google.genai.Client', MockClient)
 @patch.dict(os.environ, {"GEMINI_API_KEY": "dummy_key"})
 def test_deception_agent():
-    from agent.deception_agent import DeceptionAgent
+    from sentinel_prime.ai.agents.deception_agent import DeceptionAgent
     agent = DeceptionAgent()
     result = agent.run({"hypotheses": []}, {"prediction": "test"}, {"graph": "test"})
     
@@ -109,7 +109,7 @@ def test_deception_agent():
 @patch('google.genai.Client', MockClient)
 @patch.dict(os.environ, {"GEMINI_API_KEY": "dummy_key"})
 def test_response_agent():
-    from agent.response_agent import ResponseAgent
+    from sentinel_prime.ai.agents.response_agent import ResponseAgent
     agent = ResponseAgent()
     result = agent.run({"hypotheses": []}, {"prediction": "test"}, {"criticality": "high"})
     
