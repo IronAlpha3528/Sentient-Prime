@@ -603,13 +603,15 @@ Composite Score = α × Containment Effectiveness − β × Business Impact
 
 ## 8. Evaluation metrics
 
-- **Detection rate** and **false-positive rate** per detector, measured against dataset benchmarks
-- **ATT&CK attribution accuracy** at the technique level (Caldera/Atomic Red Team ground truth)
-- **Hypothesis ranking accuracy** — how often the correct explanation is ranked highest
-- **Automation coverage** — percentage of containment steps executing without human input
-- **Dry-run safety net** — how often dry-run correctly predicted a disruption
-- **MTTD/MTTR improvement** versus a simulated "manual SOC" baseline
-- **Auditability** — every hypothesis, score, action, and outcome traceable in the hash-chained ledger
+*(These metrics will be formally evaluated and benchmarked during the final sprint stage.)*
+
+- **Detection Rate (Recall)** — Percentage of actual attacks or anomalies correctly detected by the system.
+- **False Positive Rate (FPR)** — Percentage of benign events that are incorrectly classified as attacks.
+- **ATT&CK Attribution Accuracy** — Accuracy of mapping detected attacks to the correct MITRE ATT&CK techniques or tactics.
+- **Incident Response Automation Coverage** — Percentage of containment playbook steps that the system can execute autonomously without human intervention.
+- **Mean Time to Detect (MTTD)** — Average time taken from the start of an attack until it is detected by the system.
+- **Mean Time to Respond (MTTR)** — Average time taken from attack detection until containment or mitigation is completed.
+- **Auditability** — Degree to which every alert, decision, action, and outcome can be traced, verified, and audited through immutable logs.
 
 ---
 

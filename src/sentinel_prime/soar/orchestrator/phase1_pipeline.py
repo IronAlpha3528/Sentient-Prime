@@ -1,15 +1,21 @@
 from sentinel_prime.detection.correlation.evidence_stream import EvidenceStream
 from sentinel_prime.detection.detectors.network_detector import NetworkDetector
 from sentinel_prime.detection.detectors.identity_detector import IdentityDetector
+from sentinel_prime.detection.detectors.endpoint.endpoint_detector import EndpointDetector
+from sentinel_prime.detection.detectors.ot.ot_detector import OTDetector
 from sentinel_prime.core.ingestion.network_adapter import NetworkFlowAdapter
 from sentinel_prime.core.ingestion.identity_adapter import IdentityAdapter
 from sentinel_prime.core.ingestion.telemetry_router import TelemetryRouter
 
 
+class PassThroughAdapter:
+    def adapt(self, event: dict) -> dict:
+        return event
+
 class Phase1Pipeline:
     """Current Phase-1 runtime pipeline.
 
-    Only the network and identity routes are enabled, with endpoint and OT bypassed.
+    Network, identity, endpoint, and OT routes are enabled.
     """
 
     def __init__(self):
@@ -24,6 +30,14 @@ class Phase1Pipeline:
                     IdentityAdapter(),
                     IdentityDetector(),
                 ),
+                "endpoint": (
+                    PassThroughAdapter(),
+                    EndpointDetector(),
+                ),
+                "ot": (
+                    PassThroughAdapter(),
+                    OTDetector(),
+                ),
             }
         )
 
@@ -33,7 +47,7 @@ class Phase1Pipeline:
 
         # Publish to the new Evidence Bus
         try:
-            from core.evidence import EvidenceBus, NetworkEvidence, IdentityEvidence
+            from sentinel_prime.core.evidence import EvidenceBus, NetworkEvidence, IdentityEvidence, EndpointEvidence, OTEvidence
             from datetime import datetime, timezone
             
             detector_name = str(evidence.get("detector", "")).lower()
@@ -89,8 +103,60 @@ class Phase1Pipeline:
                     identity_features=evidence.get("features", {})
                 )
                 EvidenceBus.get_instance().push(id_ev)
+            elif detector_name == "endpoint":
+                endp_ev = EndpointEvidence(
+                    detector="ENDPOINT",
+                    entity=evidence.get("host", "unknown-host"),
+                    entity_type="HOST",
+                    timestamp=evidence.get("window_end") or datetime.now(timezone.utc).isoformat(),
+                    window_start=evidence.get("window_start") or datetime.now(timezone.utc).isoformat(),
+                    window_end=evidence.get("window_end") or datetime.now(timezone.utc).isoformat(),
+                    confidence=0.85,
+                    risk_score=float(evidence.get("fused_risk_score", 0.0)),
+                    severity="HIGH" if evidence.get("fused_risk_score", 0.0) >= 0.75 else "MEDIUM",
+                    top_reasons=[m.get("rule_name") for m in evidence.get("sigma_matches", [])][:3],
+                    metadata=evidence.get("features", {}),
+                    process=evidence.get("process", "unknown"),
+                    sigma_hits=evidence.get("sigma_matches", []),
+                    endpoint_features=evidence.get("features", {})
+                )
+                EvidenceBus.get_instance().push(endp_ev)
+            elif detector_name == "ot":
+                ot_ev = OTEvidence(
+                    detector="OT",
+                    entity=evidence.get("metadata", {}).get("host", "unknown-plc"),
+                    entity_type="PLC",
+                    timestamp=evidence.get("metadata", {}).get("end_time") or datetime.now(timezone.utc).isoformat(),
+                    window_start=evidence.get("metadata", {}).get("start_time") or datetime.now(timezone.utc).isoformat(),
+                    window_end=evidence.get("metadata", {}).get("end_time") or datetime.now(timezone.utc).isoformat(),
+                    confidence=0.8,
+                    risk_score=float(evidence.get("anomaly_score", 0.0)),
+                    severity=evidence.get("severity", "LOW"),
+                    top_reasons=[],
+                    metadata=evidence.get("features", {}),
+                    anomaly_score=float(evidence.get("anomaly_score", 0.0)),
+                    attack_probability=float(evidence.get("attack_probability", 0.0)),
+                    top_shifted_variables=[]
+                )
+                EvidenceBus.get_instance().push(ot_ev)
         except Exception as e:
             import logging
             logging.getLogger(__name__).error(f"Error publishing to Evidence Bus in pipeline: {e}")
+
+        # Link AI Reasoning Pipeline & SOAR Orchestrator
+        try:
+            from sentinel_prime.ai.agents.pipeline import run_pipeline
+            ai_output = run_pipeline(evidence)
+            
+            # Forward AI decisions to SOAR Dispatcher
+            from sentinel_prime.soar.orchestrator.dispatcher import SOARDispatcher
+            dispatcher = SOARDispatcher()
+            
+            # Merge original evidence with AI output so dispatcher has full context
+            combined_context = {**evidence, **ai_output}
+            dispatcher.dispatch(combined_context)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).error(f"Error executing AI Reasoning Pipeline or Dispatcher: {e}")
 
         return evidence

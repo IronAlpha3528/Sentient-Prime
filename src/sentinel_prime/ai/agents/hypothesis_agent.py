@@ -139,22 +139,4 @@ class HypothesisAgent:
         {context_str}
         """
         return self.agent.run(prompt)
-
-if __name__ == "__main__":
-    # Test Block 1
-    mock_evidence = {
-      "incident_id": "INC-102",
-      "entities": {
-        "users": ["U101"],
-        "ips": ["192.168.1.105"]
-      },
-      "network": {"score": 0.87, "class": "brute_force", "description": "12 failed SSH login attempts in 40 seconds"}
-    }
-    
-    # Needs GEMINI_API_KEY environment variable set
-    if os.environ.get("GEMINI_API_KEY"):
-        print("Testing Hypothesis Generation Agent...")
-        hypotheses = generate_hypotheses(mock_evidence)
-        print(json.dumps(hypotheses, indent=2))
-    else:
-        print("Set GEMINI_API_KEY to test the Gemini API call.")
+

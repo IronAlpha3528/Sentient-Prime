@@ -138,25 +138,4 @@ def run_pipeline(evidence: Dict[str, Any]) -> Dict[str, Any]:
     print("--- Pipeline Complete ---")
     return final_output
 
-if __name__ == "__main__":
-    # Simulate a pipeline run with the 5-step attack chain mock data
-    mock_evidence = {
-      "incident_id": "INC-999",
-      "entities": {
-        "users": ["admin"],
-        "hosts": ["app_server"],
-        "ips": ["192.168.1.105"]
-      },
-      "target_asset": "app_server",
-      "network": {"score": 0.87, "class": "brute_force"},
-      "endpoint": {"score": 0.95, "sigma_matches": ["Multiple Failed Logins"]}
-    }
-    
-    import os
-    if os.environ.get("GEMINI_API_KEY"):
-        print("Running end-to-end pipeline test...")
-        result = run_pipeline(mock_evidence)
-        print("\nFinal Output JSON:")
-        print(json.dumps(result, indent=2))
-    else:
-        print("Set GEMINI_API_KEY to test the full pipeline.")
+

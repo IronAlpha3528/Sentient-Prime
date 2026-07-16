@@ -159,25 +159,4 @@ def attribute_and_predict(hypothesis: dict, evidence: dict) -> dict:
     
     return result
 
-if __name__ == "__main__":
-    mock_hypothesis = {
-      "hypothesis": "APT41 initial credential access attempt",
-      "technique_id": "T1110",
-      "technique_name": "Brute Force"
-    }
-    mock_evidence = {
-      "target_asset": "app_server",
-      "entities": {}
-    }
-    
-    if os.environ.get("GEMINI_API_KEY"):
-        print("Testing APT Attribution Agent...")
-        result = attribute_and_predict(mock_hypothesis, mock_evidence)
-        print(json.dumps(result, indent=2))
-    else:
-        print("Set GEMINI_API_KEY to test the Gemini API call.")
-        # But we can still test the blast radius graph logic
-        print("Testing Blast Radius only...")
-        G = load_topology_graph()
-        br = compute_blast_radius(G, ["app_server"])
-        print(json.dumps(br, indent=2))
+

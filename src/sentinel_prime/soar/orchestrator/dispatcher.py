@@ -7,15 +7,8 @@ from typing import Any
 
 from sentinel_prime.soar.orchestrator import dry_run, policy_gate
 
-try:
-    from playbooks import get_playbook
-except ImportError:
-    from orchestrator.playbooks import get_playbook
-
-try:
-    from orchestrator.actions import execute_action
-except ImportError:
-    execute_action = None
+from sentinel_prime.soar.orchestrator.playbooks import get_playbook
+from sentinel_prime.soar.orchestrator.actions import execute_action
 
 
 logger = logging.getLogger(__name__)
@@ -28,7 +21,24 @@ class SOARDispatcher:
         incident_data = self._prepare_incident(incident)
         incident_id = incident_data.get("incident_id", "UNKNOWN")
         attack_type = incident_data.get("attack_type", "Unknown")
-        actions = get_playbook(attack_type)
+        
+        actions = []
+        # Extract AI Deception Strategy
+        deception = incident_data.get("deception_strategy", {})
+        if deception.get("is_testable"):
+            actions.append("deploy_decoy")
+            
+        # Extract AI Response Plan
+        response_plan = incident_data.get("response_agent_plan", {})
+        for rec_action in response_plan.get("recommended_actions", []):
+            name = rec_action.get("action_name", "").lower().replace(" ", "_")
+            if name:
+                actions.append(name)
+                
+        # Fallback to static playbook if AI provided no actions
+        if not actions:
+            actions = get_playbook(attack_type)
+            
         incident_data["recommended_actions"] = actions
 
         logger.info("Dispatching incident %s", incident_id)

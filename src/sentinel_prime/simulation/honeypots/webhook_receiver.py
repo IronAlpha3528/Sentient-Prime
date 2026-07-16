@@ -26,7 +26,7 @@ from flask import Flask, jsonify, request
 # Configuration (from environment or defaults)
 # ---------------------------------------------------------------------------
 
-ES_HOST = os.getenv("ES_HOST", "")  # empty = skip Elasticsearch, log locally
+ES_HOST = os.getenv("ES_HOST", "http://localhost:9200")  # default to local docker instance
 ES_INDEX = os.getenv("ES_INDEX", "sentinel-honeypot")
 ES_API_KEY = os.getenv("ES_API_KEY", "")
 LOG_DIR = Path(os.getenv("HONEYPOT_LOG_DIR", "data/honeypot_events"))
