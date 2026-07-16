@@ -1,11 +1,13 @@
-import os
+from pathlib import Path
+
 import yaml
-CONFIG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config")
-RISK_PARAMS_PATH = os.path.join(CONFIG_DIR, "risk_params.yaml")
+
+
+RISK_PARAMS_PATH = Path(__file__).resolve().parents[4] / "config" / "risk_params.yaml"
 
 def load_risk_config() -> dict:
     """Loads risk parameters and action library from config."""
-    with open(RISK_PARAMS_PATH, "r") as f:
+    with RISK_PARAMS_PATH.open("r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 def score_and_rank_actions(top_hypothesis: dict, attribution_data: dict) -> dict:

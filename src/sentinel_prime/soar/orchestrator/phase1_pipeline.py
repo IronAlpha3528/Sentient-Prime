@@ -154,7 +154,7 @@ class Phase1Pipeline:
             
             # Merge original evidence with AI output so dispatcher has full context
             combined_context = {**evidence, **ai_output}
-            dispatcher.dispatch(combined_context)
+            evidence["soar_result"] = dispatcher.dispatch(combined_context)
         except Exception as e:
             import logging
             logging.getLogger(__name__).error(f"Error executing AI Reasoning Pipeline or Dispatcher: {e}")

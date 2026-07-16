@@ -27,9 +27,9 @@ ACTION_RULES = {
 }
 
 UNKNOWN_ACTION_RULE = {
-    "blast_radius": "LOW",
+    "blast_radius": "HIGH",
     "service_disruption": "Unknown action impact",
-    "passes": True,
+    "passes": False,
 }
 
 

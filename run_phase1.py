@@ -1,9 +1,15 @@
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
+
 import pandas as pd
 
-from sentinel_prime.soar.orchestrator.phase1_pipeline import Phase1Pipeline
+PROJECT_ROOT = Path(__file__).resolve().parent
+SRC_DIR = PROJECT_ROOT / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+from sentinel_prime.soar.orchestrator.phase1_pipeline import Phase1Pipeline  # noqa: E402
 
 
 def run_network(pipeline: Phase1Pipeline) -> None:
@@ -39,7 +45,7 @@ def run_identity(pipeline: Phase1Pipeline) -> None:
 
     test_id = pd.read_parquet(identity_data_path)
     row_id = test_id.iloc[0]
-    
+
     # Send all aggregated features (excluding metadata index keys)
     exclude_keys = {"user", "window_id"}
     id_event = {
