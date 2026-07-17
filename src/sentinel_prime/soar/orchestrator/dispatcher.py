@@ -28,12 +28,15 @@ ACTION_ALIASES = {
 }
 
 
+from sentinel_prime.soar.orchestrator.verification import VerificationEngine, IncidentState
+
 class SOARDispatcher:
     """Coordinates dry run, policy gate, and action execution."""
 
     def __init__(self, ledger: AuditLedger | None = None, monitor: Monitor | None = None) -> None:
         self.ledger = ledger or AuditLedger()
         self.monitor = monitor or Monitor()
+        self.verification_engine = VerificationEngine(ledger=self.ledger)
 
     def dispatch(self, incident: dict[str, Any]) -> dict[str, Any]:
         incident_data = self._prepare_incident(incident)
@@ -62,6 +65,9 @@ class SOARDispatcher:
 
         logger.info("Dispatching incident %s", incident_id)
 
+        # Transition state to Investigating
+        self.verification_engine.states[incident_id] = IncidentState.INVESTIGATING
+
         dry_run_result = dry_run.simulate(incident_data, actions)
         self._record("dry_run", dry_run_result, incident_id)
         logger.info("Dry run completed for incident %s", incident_id)
@@ -81,6 +87,7 @@ class SOARDispatcher:
                 "status": "ESCALATED",
                 "message": result["reason"],
             }
+            self.verification_engine.states[incident_id] = IncidentState.ESCALATED
             self._record("escalation", result, incident_id)
             self._record("monitor_outcome", result["outcome"], incident_id)
             return result
@@ -97,8 +104,17 @@ class SOARDispatcher:
             "decision": "AUTO",
             "actions": action_results,
         }
-        result["outcome"] = self.monitor.check_status(incident_data, action_results)
+        outcome = self.monitor.check_status(incident_data, action_results)
+        result["outcome"] = outcome
         self._record("monitor_outcome", result["outcome"], incident_id)
+
+        # Trigger asynchronous closed-loop verification
+        if outcome.get("status") == "RESOLVED":
+            self.verification_engine.verify_incident(incident_data, action_results)
+        else:
+            self.verification_engine.transition_state(incident_id, IncidentState.FAILED, "Containment action execution failed")
+            self.verification_engine.transition_state(incident_id, IncidentState.ESCALATED, "Containment action execution failed")
+            
         return result
 
     def _prepare_incident(self, incident: dict[str, Any]) -> dict[str, Any]:
