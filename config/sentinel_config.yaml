@@ -47,3 +47,11 @@ orchestration:
 audit:
   ledger_path: "data/audit_ledger.jsonl"
   hash_algorithm: "sha256"
+
+# --- Verification ---
+verification:
+  delay_seconds: 2
+  retry_count: 3
+  retry_interval_seconds: 1
+  max_duration_seconds: 10
+  escalation_threshold: 0.8
