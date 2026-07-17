@@ -10,6 +10,7 @@ from sentinel_prime.core.context.timeline_builder import TimelineBuilder
 from sentinel_prime.core.context.summary_builder import SummaryBuilder
 from sentinel_prime.core.graph.graph_manager import GraphManager
 from sentinel_prime.core.evidence.evidence_bus import EvidenceBus
+from sentinel_prime.detection.correlation.meta_classifier import MetaClassifier
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,10 @@ class ContextBuilder:
         self.radius = self.config.get("graph_radius", 2)
         self.max_nodes = self.config.get("max_nodes", 50)
         self.max_edges = self.config.get("max_edges", 100)
+        
+        # Initialize Meta-Classifier with configured path if any
+        model_path = self.config.get("correlation", {}).get("model_path", "data/models/meta_lightgbm.pkl")
+        self.meta_classifier = MetaClassifier(model_path=model_path)
         
         # In-memory cache to avoid repeated graph queries for the same entity within a short time
         self._cache: Dict[str, Any] = {}
@@ -237,6 +242,186 @@ class ContextBuilder:
                 confidence_summary=conf_sum,
                 monitoring_snapshot=monitoring_snapshot
             )
+
+            # --- Feature Extraction for Meta-Classifier ---
+            # 1. Initialize detector values
+            net_score = 0.0
+            net_conf = 1.0
+            net_sev = "INFO"
+            
+            id_score = 0.0
+            id_conf = 1.0
+            id_sev = "INFO"
+            
+            ep_score = 0.0
+            ep_conf = 1.0
+            ep_sev = "INFO"
+            
+            ot_score = 0.0
+            ot_conf = 1.0
+            ot_sev = "INFO"
+            
+            honeypot_touched = 0.0
+            sigma_match_count = 0
+            
+            # Detect unique active detectors
+            active_detectors = set()
+            
+            # Extract from timeline_events and related_edges
+            for ev in timeline_events:
+                det = str(ev.get("detector", "")).upper()
+                score_val = float(ev.get("risk_score", 0.0))
+                conf_val = float(ev.get("confidence", 1.0))
+                
+                if score_val > 0.0:
+                    active_detectors.add(det)
+                    
+                if det == "NETWORK":
+                    net_score = max(net_score, score_val)
+                    net_conf = max(net_conf, conf_val)
+                elif det == "IDENTITY":
+                    id_score = max(id_score, score_val)
+                    id_conf = max(id_conf, conf_val)
+                elif det == "ENDPOINT":
+                    ep_score = max(ep_score, score_val)
+                    ep_conf = max(ep_conf, conf_val)
+                elif det in ["OT", "ICS"]:
+                    ot_score = max(ot_score, score_val)
+                    ot_conf = max(ot_conf, conf_val)
+                elif det in ["DECEPTION", "HONEYPOT", "CANARYTOKEN", "CONPOT"]:
+                    honeypot_touched = 1.0
+
+            # Scan related_edges for sigma match count, honeypot, and severities
+            for edge in related_edges:
+                det = str(edge.get("source_detector", "")).upper()
+                meta = edge.get("metadata", {})
+                
+                # Check for sigma matches
+                sigma_matches = meta.get("sigma_matches") or meta.get("sigma_hits") or []
+                if isinstance(sigma_matches, list):
+                    sigma_match_count += len(sigma_matches)
+                elif isinstance(sigma_matches, str):
+                    sigma_match_count += 1
+                    
+                if det in ["DECEPTION", "HONEYPOT", "CANARYTOKEN", "CONPOT"]:
+                    honeypot_touched = 1.0
+
+            # Extract severities from supporting_evidence (nodes)
+            for ev in supporting_evidence:
+                ent_type = ev.get("entity_type", "")
+                sev_val = ev.get("severity", "INFO")
+                # Map to corresponding detector based on heuristics
+                if ent_type == "USER":
+                    if id_sev == "INFO" or (id_sev == "LOW" and sev_val in ["MEDIUM", "HIGH", "CRITICAL"]):
+                        id_sev = sev_val
+                elif ent_type == "PROCESS":
+                    if ep_sev == "INFO" or (ep_sev == "LOW" and sev_val in ["MEDIUM", "HIGH", "CRITICAL"]):
+                        ep_sev = sev_val
+                elif ent_type in ["PLC", "ACTUATOR", "SENSOR"]:
+                    if ot_sev == "INFO" or (ot_sev == "LOW" and sev_val in ["MEDIUM", "HIGH", "CRITICAL"]):
+                        ot_sev = sev_val
+                else: # HOST/IP
+                    if net_sev == "INFO" or (net_sev == "LOW" and sev_val in ["MEDIUM", "HIGH", "CRITICAL"]):
+                        net_sev = sev_val
+
+            # Compute graph-level metrics
+            try:
+                g_metrics = self.graph_manager.metrics()
+            except Exception:
+                g_metrics = {}
+
+            # Centralities for the current matched_node
+            deg_centrality = g_metrics.get("degree_centrality", {}).get(matched_node, 0.0)
+            betweenness_centrality = g_metrics.get("betweenness_centrality", {}).get(matched_node, 0.0)
+            closeness_centrality = g_metrics.get("closeness_centrality", {}).get(matched_node, 0.0)
+            pagerank = g_metrics.get("pagerank", {}).get(matched_node, 0.0)
+            
+            wcc_count = g_metrics.get("weakly_connected_components_count", 0)
+            communities = g_metrics.get("communities", [])
+            communities_count = len(communities)
+            
+            # Find community size
+            community_size = 0
+            for comm in communities:
+                if matched_node in comm:
+                    community_size = len(comm)
+                    break
+                    
+            node_degree = 0
+            try:
+                if self.graph_manager.store._graph.has_node(matched_node):
+                    node_degree = self.graph_manager.store._graph.degree(matched_node)
+            except Exception:
+                pass
+
+            # Threat Intel features
+            threat_intel_match_count = len(threat_intel_results)
+            max_threat_intel_score = max([float(ti.get("score", 0.0)) for ti in threat_intel_results]) if threat_intel_results else 0.0
+
+            # Evidence features
+            evidence_diversity = len(active_detectors)
+            evidence_count = len(supporting_evidence)
+            historical_incident_frequency = len(context.historical_incidents) if hasattr(context, "historical_incidents") else 0
+
+            # Temporal Activity calculation
+            temporal_activity = 0.0
+            timestamps = []
+            for ev in timeline_events:
+                ts_str = ev.get("timestamp")
+                if ts_str:
+                    try:
+                        timestamps.append(datetime.datetime.fromisoformat(ts_str.replace('Z', '+00:00')))
+                    except Exception:
+                        pass
+            if len(timestamps) >= 2:
+                temporal_activity = (max(timestamps) - min(timestamps)).total_seconds() / 60.0
+
+            # Monitoring features
+            monitoring_queue_size = float(monitoring_snapshot.get("current_queue_size", 0.0))
+            monitoring_latency = float(monitoring_snapshot.get("average_latency_ms", 0.0))
+
+            # Bundle features
+            meta_features = {
+                "network_score": net_score,
+                "network_confidence": net_conf,
+                "network_severity": net_sev,
+                "identity_score": id_score,
+                "identity_confidence": id_conf,
+                "identity_severity": id_sev,
+                "endpoint_score": ep_score,
+                "endpoint_confidence": ep_conf,
+                "endpoint_severity": ep_sev,
+                "ot_score": ot_score,
+                "ot_confidence": ot_conf,
+                "ot_severity": ot_sev,
+                "honeypot_touched": honeypot_touched,
+                "degree_centrality": deg_centrality,
+                "betweenness_centrality": betweenness_centrality,
+                "closeness_centrality": closeness_centrality,
+                "pagerank": pagerank,
+                "weakly_connected_components_count": wcc_count,
+                "communities_count": communities_count,
+                "community_size": community_size,
+                "node_degree": node_degree,
+                "threat_intel_match_count": threat_intel_match_count,
+                "max_threat_intel_score": max_threat_intel_score,
+                "evidence_diversity": evidence_diversity,
+                "evidence_count": evidence_count,
+                "sigma_match_count": sigma_match_count,
+                "historical_incident_frequency": historical_incident_frequency,
+                "temporal_activity": temporal_activity,
+                "monitoring_queue_size": monitoring_queue_size,
+                "monitoring_latency": monitoring_latency
+            }
+
+            # Predict and enrich context
+            assessment = self.meta_classifier.predict(meta_features)
+            
+            context.unified_threat_score = assessment["unified_threat_score"]
+            context.confidence_score = assessment["confidence_score"]
+            context.risk_level = assessment["risk_level"]
+            context.top_features = assessment["top_features"]
+            context.detector_contributions = assessment["detector_contributions"]
 
             context_gen_time_ms = (time.time() - start_gen_time) * 1000.0
 

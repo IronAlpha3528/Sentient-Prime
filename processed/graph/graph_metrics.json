@@ -36,8 +36,8 @@
   "weakly_connected_components_count": 3,
   "communities": [
     [
-      "USER:adm_aanoush",
-      "HOST:ENG-WS-01"
+      "HOST:ENG-WS-01",
+      "USER:adm_aanoush"
     ],
     [
       "PROCESS:HOST:ENG-WS-01:unknown",

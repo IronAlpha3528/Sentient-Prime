@@ -27,6 +27,13 @@ class CorrelationContext:
     confidence_summary: str = ""
     monitoring_snapshot: Dict[str, Any] = field(default_factory=dict)
 
+    # Meta-Classifier outputs
+    unified_threat_score: float = 0.0
+    confidence_score: float = 0.0
+    risk_level: str = "LOW"
+    top_features: List[str] = field(default_factory=list)
+    detector_contributions: Dict[str, float] = field(default_factory=dict)
+
     def to_dict(self) -> Dict[str, Any]:
         """Converts the correlation context to a dictionary."""
         return asdict(self)
@@ -43,10 +50,21 @@ class CorrelationContext:
 
         related_md = ", ".join(self.related_entities) if self.related_entities else "None"
         
+        # Detector contributions formatting
+        contribs_str = ", ".join(f"{k}: {v:.2f}" for k, v in self.detector_contributions.items()) if self.detector_contributions else "None"
+        top_feats_str = ", ".join(self.top_features) if self.top_features else "None"
+
         md = f"""# Correlation Security Context: {self.entity}
 **Context ID**: `{self.context_id}`
 **Incident ID**: `{self.incident_id}`
 **Temporal Scope**: {self.time_window[0]} to {self.time_window[1]}
+
+## Unified Threat Assessment
+- **Unified Threat Score**: `{self.unified_threat_score:.4f}` (0.0 to 1.0 scale)
+- **Assessed Risk Level**: `{self.risk_level}`
+- **Assessment Confidence**: `{self.confidence_score:.4f}` (0.0 to 1.0 scale)
+- **Top Contributing Features**: {top_feats_str}
+- **Detector Contributions**: {contribs_str}
 
 ## Risk Assessment
 {self.risk_summary}
