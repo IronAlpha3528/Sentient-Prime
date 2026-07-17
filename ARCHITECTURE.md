@@ -430,6 +430,23 @@ flowchart TD
 
 ---
 
+## Production Architecture Upgrades (Addressing Hackathon Constraints)
+
+The current repository uses a one-shot demonstration wrapper (`run_phase1.py`) and a basic check-status monitor. To move to true production, the following architectural upgrades are required:
+
+### 1. Continuous Execution (The "Loop")
+Telemetry ingestion must be moved from a static parquet read to an asynchronous stream:
+- **Enterprise Standard:** Implement **Apache Kafka**. The SIEM publishes normalized events to a `siem-alerts` topic. A fleet of `consumer.py` workers continuously pull events and feed them into `Phase1Pipeline.process()`.
+- **Lightweight Alternative:** Stand up a **FastAPI** server with a `/api/v1/telemetry/ingest` webhook. The SIEM is configured to fire HTTP POST requests to this endpoint in real-time as anomalies occur.
+
+### 2. True Closed-Loop Outcome Monitoring
+The current `monitor.py` only verifies if a SOAR command (like "block IP") executed without API errors. It does not verify ground-truth reality.
+- **State Management:** Incidents must transition from `ACTIVE` to `VERIFICATION_PENDING` after a SOAR action, rather than immediately to `RESOLVED`.
+- **Asynchronous Verification:** Introduce a task queue (**Celery** or **APScheduler**). When an action executes, schedule a verification task for 5 minutes later.
+- **Ground-Truth Query:** The verification task must query the SIEM/EDR directly (e.g., *"Have there been any successful connections to the blocked IP in the last 5 minutes?"*). If the malicious behavior persists, the incident is marked `PERSISTING` and triggers a more aggressive playbook or human escalation.
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
