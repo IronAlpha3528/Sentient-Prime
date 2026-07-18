@@ -521,6 +521,10 @@ Composite Score = α × Containment Effectiveness − β × Business Impact
 | **Persisted** | Re-enter pipeline at stage 2 (SIEM), try alternative action |
 | **Escalated** | Re-enter at stage 6 (Meta-Classifier) with elevated priority |
 
+### 3.9 Explainable AI (XAI) Dashboard
+
+To establish trust with SOC analysts, the system exposes the internal "thought process" of the AI agents in real-time. Instead of presenting a black-box verdict, the backend utilizes Server-Sent Events (SSE) and WebSockets to stream the structured JSON outputs from the reasoning core. The frontend renders these intermediate steps—Correlation Story, ranked Hypotheses, MITRE Predictions, and Response Agent Plans—into distinct, interactive "thought bubbles." This allows administrators to audit exactly what context the LLM received and the mathematical logic behind its containment proposals before authorizing action.
+
 ---
 
 ## 4. Datasets
