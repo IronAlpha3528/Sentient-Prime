@@ -176,39 +176,42 @@ def test_graph_traversal_engine():
     assert expanded["subtechniques"][0]["relationship_source"] == "reverse-subtechnique-of"
 
 def test_query_search_graphrag_enrichment(monkeypatch):
-    # Setup mock FAISS and metadata chunks
-    class MockIndex:
-        def search(self, query_vector, k):
-            import numpy as np
-            # Return indices [0] and distance [1.5]
-            return np.array([[1.5]]), np.array([[0]])
-            
-    mock_metadata = [
-        {
-            "technique_id": "T1110",
-            "name": "Brute Force",
-            "description": "Original Description text."
-        }
-    ]
-    
     class MockModel:
         def encode(self, texts):
             import numpy as np
             return np.array([[0.1] * 384])
             
-    # Mock resources loading
-    monkeypatch.setattr(query, "_index", MockIndex())
-    monkeypatch.setattr(query, "_metadata", mock_metadata)
+    # Mock query dispatch functions to return the isolated mock record
+    def mock_query_dense(provider_name, query_str, limit):
+        if provider_name == "attack":
+            return [{
+                "source": "attack",
+                "document_id": "T1110",
+                "title": "Brute Force",
+                "name": "Brute Force",
+                "description": "Original Description text.",
+                "similarity_score": 1.5,
+                "distance": 1.5,
+                "confidence": 0.85,
+                "created_at": "2026-07-18T10:00:00Z",
+                "updated_at": "2026-07-18T10:00:00Z",
+                "tags": ["mitre_attack"],
+                "references": [],
+                "connected_groups": [{"name": "APT41", "id": "G0096", "stix_id": "intrusion-set--g1", "graph_depth": 1, "confidence": 0.8}],
+                "connected_software": [],
+                "connected_mitigations": [],
+                "connected_campaigns": [],
+                "connected_subtechniques": [],
+                "parent_technique": None
+            }]
+        return []
+
+    def mock_query_bm25(provider_name, query_str, limit):
+        return []
+
+    monkeypatch.setattr(query, "_query_dense_provider", mock_query_dense)
+    monkeypatch.setattr(query, "_query_bm25_provider", mock_query_bm25)
     monkeypatch.setattr(query, "_model", MockModel())
-    
-    # Setup NetworkX graph
-    G = nx.DiGraph()
-    G.add_node("attack-pattern--t1110", type="technique", external_id="T1110", name="Brute Force", description="Original Description text.")
-    G.add_node("intrusion-set--g1", type="group", external_id="G0096", name="APT41", description="Group description")
-    G.add_edge("intrusion-set--g1", "attack-pattern--t1110", relationship_type="uses")
-    
-    monkeypatch.setattr(query, "_graph", G)
-    monkeypatch.setattr(query, "_ext_to_stix_cache", None)
     
     # Run backward-compatible search
     results = query.search("ssh failures", top_k=1, enable_expansion=True, traversal_depth=2)
