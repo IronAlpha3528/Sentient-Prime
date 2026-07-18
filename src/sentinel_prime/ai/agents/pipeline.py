@@ -118,7 +118,7 @@ def run_pipeline(evidence: Dict[str, Any]) -> Dict[str, Any]:
     print("[Legacy compatibility] Running attribution and scoring with real context...")
     attribution_data = attribute_and_predict(top_hypothesis, context.to_dict())
     scoring_data = score_and_rank_actions(top_hypothesis, attribution_data)
-    
+
     # Combine final output (with all fields for new and old callers)
     final_output = {
         "incident_id": incident_id,
@@ -134,7 +134,23 @@ def run_pipeline(evidence: Dict[str, Any]) -> Dict[str, Any]:
         "attribution_and_prediction": attribution_data,
         "response_plan": scoring_data
     }
-    
+
+    # Persist each AI agent stage into the tamper-evident audit ledger
+    try:
+        from sentinel_prime.core.telemetry.ledger import AuditLedger
+
+        ledger = AuditLedger()
+        ledger.append_entry("ai_correlation", story_result, incident_id=incident_id)
+        ledger.append_entry("ai_hypotheses", {"hypotheses": mapped_hypotheses,
+                                              "top_hypothesis": top_hypothesis},
+                            incident_id=incident_id)
+        ledger.append_entry("ai_prediction", prediction_result, incident_id=incident_id)
+        ledger.append_entry("ai_deception", deception_result, incident_id=incident_id)
+        ledger.append_entry("ai_response", response_result, incident_id=incident_id)
+        ledger.append_entry("risk_scoring", scoring_data, incident_id=incident_id)
+    except OSError:
+        logger.exception("Unable to persist AI reasoning stages to the audit ledger")
+
     print("--- Pipeline Complete ---")
     return final_output
 

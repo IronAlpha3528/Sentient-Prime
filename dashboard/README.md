@@ -39,3 +39,15 @@ dashboard/
 - Elasticsearch (SIEM events, signals)
 - SQLite (honeytoken registry, baseline store)
 - JSON lines (audit ledger)
+
+## Run
+
+Install dependencies, then start the Streamlit app from the repository root:
+
+```bash
+streamlit run dashboard/app.py
+```
+
+The dashboard reads `data/audit_ledger.jsonl` without modifying it. Run a SOAR
+dispatch to populate the incident feed, action timeline, escalation queue, and
+audit trail.
