@@ -21,8 +21,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from flask import Flask, jsonify, request
-
-# ---------------------------------------------------------------------------
+from functools import wraps
 # Configuration (from environment or defaults)
 # ---------------------------------------------------------------------------
 
@@ -241,7 +240,22 @@ def health():
     )
 
 
+HONEYPOT_API_KEY = os.getenv("HONEYPOT_API_KEY")
+
+def require_api_key(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if HONEYPOT_API_KEY:
+            api_key = request.headers.get("X-API-Key")
+            if not api_key or api_key != HONEYPOT_API_KEY:
+                logger.warning("Unauthorized webhook attempt from %s", request.remote_addr)
+                return jsonify({"error": "Unauthorized"}), 401
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 @app.route("/webhook/canarytoken", methods=["POST"])
+@require_api_key
 def canarytoken_webhook():
     """
     Receive a Canarytoken webhook POST.
@@ -279,6 +293,7 @@ def canarytoken_webhook():
 
 
 @app.route("/webhook/conpot", methods=["POST"])
+@require_api_key
 def conpot_webhook():
     """
     Receive a Conpot OT/ICS honeypot event POST.

@@ -3,24 +3,17 @@ import logging
 from typing import Dict, Any, Optional
 
 from sentinel_prime.core.framework import Framework
-from .correlation_agent import CorrelationAgent
-from .hypothesis_agent import HypothesisAgent
-from .prediction_agent import PredictionAgent
-from .deception_agent import DeceptionAgent
-from .response_agent import ResponseAgent
+from .analysis_agent import AnalysisAgent
+from .critique_agent import CritiqueAgent
+from .action_agent import ActionAgent
 from .apt_attribution import attribute_and_predict
 from sentinel_prime.soar.risk_scoring.scorer import score_and_rank_actions
 
 logger = logging.getLogger(__name__)
 
 def run_pipeline(evidence: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Entry point for the AI Reasoning Core.
-    Takes a Common Evidence Object, builds Context using ContextBuilder, and runs
-    the 5-agent pipeline.
-    """
     incident_id = evidence.get("incident_id", "UNKNOWN")
-    print(f"--- Starting AI Reasoning Pipeline for Incident {incident_id} ---")
+    print(f"--- Starting Refactored 3-Stage AI Pipeline for Incident {incident_id} ---")
     
     # 1. Build context via Framework / ContextBuilder
     try:
@@ -37,11 +30,9 @@ def run_pipeline(evidence: Dict[str, Any]) -> Dict[str, Any]:
             
         print(f"Building context for entity: {entity_id}")
         context = framework.build_context(entity_id)
-        # Ensure incident_id is set
         context.incident_id = incident_id
     except Exception as e:
         logger.error(f"Failed to build context: {e}")
-        # Build an empty/fallback context
         import uuid, datetime
         from sentinel_prime.core.context import CorrelationContext
         now_str = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -53,14 +44,16 @@ def run_pipeline(evidence: Dict[str, Any]) -> Dict[str, Any]:
             incident_id=incident_id
         )
         
-    # Block 1: Correlation Agent (Cross-domain incident story)
-    print("[Agent 1] Running Correlation Agent...")
-    story_result = CorrelationAgent().run(context)
+    # Stage 1: Analysis Agent (Correlation, Hypothesis, Prediction)
+    print("[Stage 1] Running Analysis Agent...")
+    analysis_result = AnalysisAgent().run(context)
     
-    # Block 2: Hypothesis Agent
-    print("[Agent 2] Running Hypothesis Agent...")
-    hypothesis_result = HypothesisAgent().run(story_result, context)
-    hypotheses = hypothesis_result.get("hypotheses", [])
+    # Stage 2: Critique Agent (Self-Correction)
+    print("[Stage 2] Running Critique Agent (Devil's Advocate)...")
+    critique_result = CritiqueAgent().run(analysis_result, context)
+    
+    # Extract the validated hypotheses to use for legacy compatibility
+    hypotheses = critique_result.get("corrected_hypotheses", analysis_result.get("hypotheses", []))
     
     # Map hypotheses for legacy schemas compatibility
     mapped_hypotheses = []
@@ -101,36 +94,29 @@ def run_pipeline(evidence: Dict[str, Any]) -> Dict[str, Any]:
             "reasoning": "No hypotheses generated",
             "is_benign": True
         }
-
-    # Block 3: Prediction Agent
-    print("[Agent 3] Running Prediction Agent...")
-    prediction_result = PredictionAgent().run(hypothesis_result, context)
+        
+    # Stage 3: Action Agent (Structured Function Calling)
+    print("[Stage 3] Running Action Agent...")
+    action_result = ActionAgent().run(analysis_result, critique_result, context=context)
     
-    # Block 4: Deception Agent
-    print("[Agent 4] Running Deception Agent...")
-    deception_result = DeceptionAgent().run(hypothesis_result, prediction_result, context=context)
-    
-    # Block 5: Response Agent
-    print("[Agent 5] Running Response Agent...")
-    response_result = ResponseAgent().run(hypothesis_result, prediction_result, context=context)
-    
-    # Run legacy Block 2 & Block 3 with real context data to maintain compatibility
     print("[Legacy compatibility] Running attribution and scoring with real context...")
     attribution_data = attribute_and_predict(top_hypothesis, context.to_dict())
     scoring_data = score_and_rank_actions(top_hypothesis, attribution_data)
 
-    # Combine final output (with all fields for new and old callers)
+    response_agent_plan = {
+        "recommended_actions": action_result.get("recommended_actions", [])
+    }
+
     final_output = {
         "incident_id": incident_id,
         "original_evidence": evidence,
         "correlation_context": context.to_dict(),
-        "story": story_result,
+        "story": analysis_result.get("story", {}),
         "hypotheses": mapped_hypotheses,
         "top_hypothesis_selected": top_hypothesis,
-        "prediction": prediction_result,
-        "deception_strategy": deception_result,
-        "response_agent_plan": response_result,
-        # legacy fields
+        "prediction": analysis_result.get("prediction", {}),
+        "critique": critique_result,
+        "response_agent_plan": response_agent_plan,
         "attribution_and_prediction": attribution_data,
         "response_plan": scoring_data
     }
@@ -138,20 +124,13 @@ def run_pipeline(evidence: Dict[str, Any]) -> Dict[str, Any]:
     # Persist each AI agent stage into the tamper-evident audit ledger
     try:
         from sentinel_prime.core.telemetry.ledger import AuditLedger
-
         ledger = AuditLedger()
-        ledger.append_entry("ai_correlation", story_result, incident_id=incident_id)
-        ledger.append_entry("ai_hypotheses", {"hypotheses": mapped_hypotheses,
-                                              "top_hypothesis": top_hypothesis},
-                            incident_id=incident_id)
-        ledger.append_entry("ai_prediction", prediction_result, incident_id=incident_id)
-        ledger.append_entry("ai_deception", deception_result, incident_id=incident_id)
-        ledger.append_entry("ai_response", response_result, incident_id=incident_id)
+        ledger.append_entry("ai_analysis", analysis_result, incident_id=incident_id)
+        ledger.append_entry("ai_critique", critique_result, incident_id=incident_id)
+        ledger.append_entry("ai_action_plan", action_result, incident_id=incident_id)
         ledger.append_entry("risk_scoring", scoring_data, incident_id=incident_id)
     except OSError:
         logger.exception("Unable to persist AI reasoning stages to the audit ledger")
 
-    print("--- Pipeline Complete ---")
+    print("--- 3-Stage Pipeline Complete ---")
     return final_output
-
-

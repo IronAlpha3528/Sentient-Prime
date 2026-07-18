@@ -386,6 +386,74 @@ def run_ai(incident_id: str) -> Any:
     return jsonify(result)
 
 
+@app.post("/api/incidents/<incident_id>/approve")
+def approve_incident(incident_id: str) -> Any:
+    entries = _read_jsonl(LEDGER_PATH)
+    incident_entries = [e for e in entries if e.get("incident_id") == incident_id]
+    if not incident_entries:
+        return jsonify({"status": "error", "message": "Incident not found"}), 404
+
+    if not AuditLedger:
+        return jsonify({"status": "error", "message": "AuditLedger not available"}), 500
+
+    from sentinel_prime.soar.orchestrator.dispatcher import SOARDispatcher
+    dispatcher = SOARDispatcher()
+
+    # Find the incident data containing the AI response plan
+    incident_data = {}
+    for e in incident_entries:
+        if "response_agent_plan" in (e.get("data") or {}):
+            incident_data = e.get("data")
+            break
+    if not incident_data:
+        incident_data = incident_entries[0].get("data", {})
+
+    # Extract recommended actions
+    actions = []
+    response_plan = incident_data.get("response_agent_plan", {})
+    for rec_action in response_plan.get("recommended_actions", []):
+        name = dispatcher._canonical_action(rec_action.get("action_name", ""))
+        if name:
+            actions.append(name)
+            
+    # Fallback to statically getting playbook
+    if not actions:
+        from sentinel_prime.soar.orchestrator.playbooks import get_playbook
+        actions = get_playbook(incident_data.get("attack_type", "Unknown"))
+        actions = list(dict.fromkeys(actions))
+
+    # Execute actions
+    action_results = []
+    for action in actions:
+        result = dispatcher._run_action(action, incident_data)
+        action_results.append(result)
+        dispatcher._record("action_execution", result, incident_id)
+
+    outcome = dispatcher.monitor.check_status(incident_data, action_results)
+    dispatcher._record("monitor_outcome", outcome, incident_id)
+
+    return jsonify({"status": "SUCCESS", "actions": action_results, "outcome": outcome})
+
+
+@app.post("/api/incidents/<incident_id>/reject")
+def reject_incident(incident_id: str) -> Any:
+    entries = _read_jsonl(LEDGER_PATH)
+    incident_entries = [e for e in entries if e.get("incident_id") == incident_id]
+    if not incident_entries:
+        return jsonify({"status": "error", "message": "Incident not found"}), 404
+
+    if not AuditLedger:
+        return jsonify({"status": "error", "message": "AuditLedger not available"}), 500
+
+    from sentinel_prime.soar.orchestrator.dispatcher import SOARDispatcher
+    dispatcher = SOARDispatcher()
+
+    outcome = {"status": "REJECTED", "message": "Manually rejected by administrator"}
+    dispatcher._record("monitor_outcome", outcome, incident_id)
+
+    return jsonify({"status": "SUCCESS", "outcome": outcome})
+
+
 @app.get("/api/topology")
 def topology() -> Any:
     return jsonify(_topology())
