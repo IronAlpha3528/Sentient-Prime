@@ -55,3 +55,52 @@ verification:
   retry_interval_seconds: 1
   max_duration_seconds: 10
   escalation_threshold: 0.8
+
+# --- GraphRAG ---
+graph_rag:
+  traversal_depth: 2
+  expansion_size: 5
+  max_related_entities: 20
+  enable_graph_expansion: true
+  cache_size: 1000
+  graph_file_path: "src/sentinel_prime/ai/agents/rag/index/attack_graph.pkl"
+  enabled_providers: ["attack", "d3fend", "sigma", "yara", "cve", "kev", "playbook", "policy", "threat_report", "historical_incident"]
+  provider_weights:
+    attack: 1.0
+    d3fend: 1.0
+    sigma: 0.8
+    yara: 0.8
+    cve: 0.9
+    kev: 0.9
+    playbook: 1.0
+    policy: 0.9
+    threat_report: 0.8
+    historical_incident: 1.0
+  max_documents: 15
+  per_provider_limit: 5
+  cache_ttl_seconds: 300
+  timeout_seconds: 3.0
+  max_retrieved_incidents: 3
+  similarity_threshold: 1.8
+  storage_path: "src/sentinel_prime/ai/agents/rag/index/historical_incidents_db.json"
+  enable_dense: true
+  enable_bm25: true
+  enable_hybrid: true
+  rrf_k: 60
+  dense_weight: 1.0
+  bm25_weight: 0.8
+  enable_reranking: true
+  reranking_model: "cross-encoder/ms-marco-MiniLM-L-6-v2"
+  reranking_top_n: 15
+  final_top_k: 5
+  trust_weights:
+    official_source: 1.0
+    community_source: 0.8
+    internal_knowledge: 0.95
+    confidence_factor: 0.2
+    completeness_factor: 0.1
+  freshness_thresholds:
+    fresh_max_days: 180
+    stale_max_days: 365
+
+

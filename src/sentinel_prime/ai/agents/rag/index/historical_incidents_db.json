@@ -1,0 +1,31 @@
+[
+  {
+    "incident_id": "INC-2024-089",
+    "timestamp": "2026-07-18T10:00:00Z",
+    "resolved_threat": "APT41 SSH Brute Force Campaign",
+    "attack_summary": "Brute force attack attempts on SSH logging services followed by credential access.",
+    "timeline": [
+      "2026-07-18T10:00:00Z - Failed SSH logins recorded from external IP 198.51.100.42",
+      "2026-07-18T10:05:00Z - Successful login on admin account after 15 attempts"
+    ],
+    "evidence": [
+      {"detector": "SSH_Auth", "severity": "HIGH", "risk_score": 0.85}
+    ],
+    "affected_assets": ["cni-firewall-01"],
+    "attack_techniques": ["T1110", "T1078"],
+    "threat_groups": ["APT41"],
+    "malware": [],
+    "detection_scores": {"ssh_bruteforce": 0.9},
+    "graph_snapshot": {},
+    "unified_threat_score": 0.85,
+    "confidence": 0.95,
+    "soar_actions": ["Block source IP 198.51.100.42", "Disable admin account credentials"],
+    "containment_status": "Contained",
+    "resolution": "IP blocked on firewall and admin account disabled.",
+    "recovery_time": "12 minutes",
+    "lessons_learned": "Enforce strict multi-factor authentication (MFA) and implement fail2ban rate-limits.",
+    "tags": ["ssh", "brute_force", "cni"],
+    "version": "1.0",
+    "references": []
+  }
+]

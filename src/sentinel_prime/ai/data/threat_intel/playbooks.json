@@ -1,0 +1,20 @@
+[
+  {
+    "id": "PB-ISOLATE",
+    "name": "Host Isolation Playbook",
+    "description": "Deterministic procedures to disconnect compromised network hosts via EDR or firewall policies.",
+    "entity_type": "containment_playbook",
+    "version": "2.0",
+    "tags": ["response", "host", "containment"],
+    "references": ["https://sentinel-prime.org/playbooks/isolate_host"]
+  },
+  {
+    "id": "PB-REVOKE",
+    "name": "Credential Revocation Playbook",
+    "description": "Procedures to disable AD/OAuth credentials for compromised identity accounts.",
+    "entity_type": "containment_playbook",
+    "version": "1.4",
+    "tags": ["response", "identity", "revoke"],
+    "references": ["https://sentinel-prime.org/playbooks/revoke_credentials"]
+  }
+]

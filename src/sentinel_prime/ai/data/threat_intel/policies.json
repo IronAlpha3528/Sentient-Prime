@@ -1,0 +1,20 @@
+[
+  {
+    "id": "POL-CNI-01",
+    "name": "Critical National Infrastructure Containment Policy",
+    "description": "Establishes authorization gates for automated containment actions in industrial networks.",
+    "entity_type": "security_policy",
+    "version": "4.0",
+    "tags": ["governance", "cni", "ot"],
+    "references": ["https://sentinel-prime.org/policies/cni_containment"]
+  },
+  {
+    "id": "POL-DECEP-02",
+    "name": "Deception Network Deployment Policy",
+    "description": "Defines safety rails and placement budgets for deploying honeypots inside operational subnets.",
+    "entity_type": "security_policy",
+    "version": "2.2",
+    "tags": ["governance", "deception", "canary"],
+    "references": ["https://sentinel-prime.org/policies/deception_deployment"]
+  }
+]

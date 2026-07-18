@@ -1,0 +1,20 @@
+[
+  {
+    "id": "KEV-2023-38606",
+    "name": "Apple macOS/iOS Kernel Exploit Active in the Wild",
+    "description": "CISA cataloged Apple Kernel vulnerability as actively exploited in target attacks.",
+    "entity_type": "exploited_vulnerability",
+    "version": "CISA KEV 2023",
+    "tags": ["active_exploit", "cisa_kev", "macos"],
+    "references": ["https://www.cisa.gov/known-exploited-vulnerabilities-catalog"]
+  },
+  {
+    "id": "KEV-2021-44228",
+    "name": "Apache Log4j RCE Active in the Wild",
+    "description": "Log4j RCE is widely targeted by automated exploit scanners and APT groups.",
+    "entity_type": "exploited_vulnerability",
+    "version": "CISA KEV 2021",
+    "tags": ["active_exploit", "rce", "log4j"],
+    "references": ["https://www.cisa.gov/known-exploited-vulnerabilities-catalog"]
+  }
+]

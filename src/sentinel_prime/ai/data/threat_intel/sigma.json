@@ -1,0 +1,20 @@
+[
+  {
+    "id": "SIG-001",
+    "name": "Encoded PowerShell Script Execution",
+    "description": "Detects execution of PowerShell commands containing base64 encoded payloads.",
+    "entity_type": "detection_rule",
+    "version": "2.1",
+    "tags": ["host", "windows", "powershell"],
+    "references": ["https://github.com/SigmaHQ/sigma/rules/windows/powershell/sysmon_powershell_encoded.yml"]
+  },
+  {
+    "id": "SIG-002",
+    "name": "Failed SSH Logins Threshold Exceeded",
+    "description": "Detects high frequency of failed SSH login attempts from a single source host IP address.",
+    "entity_type": "detection_rule",
+    "version": "1.0",
+    "tags": ["network", "linux", "ssh"],
+    "references": ["https://github.com/SigmaHQ/sigma/rules/linux/auth/ssh_bruteforce.yml"]
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "REP-APT41",
+    "name": "APT41 Campaign Targeting Energy Sector",
+    "description": "Analysis of threat actors using brute-force, web shells, and valid accounts against SCADA systems.",
+    "entity_type": "threat_report",
+    "version": "2024.1",
+    "tags": ["threat_actor", "apt41", "energy"],
+    "references": ["https://sentinel-prime.org/reports/apt41_energy_campaign"]
+  },
+  {
+    "id": "REP-LAZARUS",
+    "name": "Lazarus Group Operations targeting Critical Subnets",
+    "description": "Technical brief detailing compromised admin credentials for subsequent lateral movement.",
+    "entity_type": "threat_report",
+    "version": "2023.4",
+    "tags": ["threat_actor", "lazarus", "credentials"],
+    "references": ["https://sentinel-prime.org/reports/lazarus_operations"]
+  }
+]
