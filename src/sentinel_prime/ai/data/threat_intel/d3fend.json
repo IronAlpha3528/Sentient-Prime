@@ -1,0 +1,20 @@
+[
+  {
+    "id": "D3-MAEC",
+    "name": "Message Authentication",
+    "description": "A process of verifying the integrity of a message using authentication protocols.",
+    "entity_type": "mitigation",
+    "version": "1.1",
+    "tags": ["network", "mitigation"],
+    "references": ["https://d3fend.mitre.org/technique/d3f:MessageAuthentication"]
+  },
+  {
+    "id": "D3-SP",
+    "name": "System Process Isolation",
+    "description": "Isolating security-critical processes from untrusted system components.",
+    "entity_type": "mitigation",
+    "version": "1.0",
+    "tags": ["host", "isolation"],
+    "references": ["https://d3fend.mitre.org/technique/d3f:ProcessIsolation"]
+  }
+]

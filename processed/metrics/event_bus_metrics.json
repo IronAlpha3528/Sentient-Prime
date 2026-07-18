@@ -1,11 +1,11 @@
 {
-  "events_received": 1,
-  "events_published": 0,
-  "events_dropped": 1,
+  "events_received": 4,
+  "events_published": 4,
+  "events_dropped": 0,
   "validation_failures": 0,
-  "duplicates_removed": 1,
-  "average_latency": 0.0,
+  "duplicates_removed": 0,
+  "average_latency": 12.129249999999999,
   "peak_queue_size": 1,
-  "current_queue_size": 1,
+  "current_queue_size": 0,
   "subscriber_count": 0
 }

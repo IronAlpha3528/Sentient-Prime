@@ -86,6 +86,11 @@ class CorrelationContext:
             for ti in self.threat_intel:
                 md += f"- **[{ti.get('technique_id')}] {ti.get('name')}**: {ti.get('description')} (Match Score: {ti.get('score', 0.0):.4f})\n"
 
+        if hasattr(self, "historical_incidents") and self.historical_incidents:
+            md += "\n## Historical Incidents Recall\n"
+            for hi in self.historical_incidents:
+                md += f"- **[{hi.get('incident_id')}] {hi.get('resolved_threat')}** (Similarity Score: {hi.get('similarity_score', 0.0):.4f}): {hi.get('summary')} (Lessons Learned: {hi.get('lessons_learned', 'None')})\n"
+
         if self.monitoring_snapshot:
             md += "\n## Monitoring & Pipeline Status\n"
             md += f"- **Pipeline Status**: {self.monitoring_snapshot.get('pipeline_status')}\n"

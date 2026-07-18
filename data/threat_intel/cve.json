@@ -1,0 +1,20 @@
+[
+  {
+    "id": "CVE-2023-38606",
+    "name": "Apple macOS/iOS Kernel Vulnerability",
+    "description": "An issue in Apple kernel state management allows a malicious application to modify sensitive state.",
+    "entity_type": "vulnerability",
+    "version": "CVSSv3: 8.8",
+    "tags": ["host", "kernel", "apple"],
+    "references": ["https://nvd.nist.gov/vuln/detail/CVE-2023-38606"]
+  },
+  {
+    "id": "CVE-2021-44228",
+    "name": "Apache Log4j RCE Vulnerability",
+    "description": "Apache Log4j2 JNDI features do not protect against attacker controlled LDAP configurations.",
+    "entity_type": "vulnerability",
+    "version": "CVSSv3: 10.0",
+    "tags": ["network", "java", "rce"],
+    "references": ["https://nvd.nist.gov/vuln/detail/CVE-2021-44228"]
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "YARA-COBALT",
+    "name": "Cobalt Strike Beacon Signature",
+    "description": "Matches binary patterns associated with the Cobalt Strike listener shellcode beacon.",
+    "entity_type": "signature",
+    "version": "4.5",
+    "tags": ["malware", "host", "agent"],
+    "references": ["https://github.com/Yara-Rules/rules/malware/cobaltstrike.yar"]
+  },
+  {
+    "id": "YARA-LOG4J",
+    "name": "Log4j Exploit Exploit Pattern",
+    "description": "Matches exploit strings targeting CVE-2021-44228 within web app logs.",
+    "entity_type": "signature",
+    "version": "1.2",
+    "tags": ["exploit", "network", "web"],
+    "references": ["https://github.com/Yara-Rules/rules/exploits/log4j.yar"]
+  }
+]

@@ -222,6 +222,23 @@ class ContextBuilder:
             else:
                 conf_sum = "N/A (No events)"
 
+            # Historical Incidents memory enrichment
+            historical_incidents_results = []
+            try:
+                # Search historical incident memories
+                hist_results = rag_search(query_str, enabled_providers=["historical_incident"], top_k=2)
+                for r in hist_results:
+                    historical_incidents_results.append({
+                        "incident_id": r.get("incident_id"),
+                        "similarity_score": r.get("similarity_score"),
+                        "summary": r.get("summary"),
+                        "resolved_threat": r.get("resolved_threat"),
+                        "timestamp": r.get("timestamp"),
+                        "lessons_learned": r.get("lessons_learned", "")
+                    })
+            except Exception as e:
+                logger.warning(f"Failed to query Historical Incident Memory: {e}")
+
             context = CorrelationContext(
                 context_id=str(uuid.uuid4()),
                 entity=matched_node,
@@ -238,7 +255,7 @@ class ContextBuilder:
                 evidence=supporting_evidence,
                 threat_intel=threat_intel_results,
                 graph_subgraph={"nodes": subgraph_nodes, "edges": related_edges},
-                historical_incidents=[],
+                historical_incidents=historical_incidents_results,
                 confidence_summary=conf_sum,
                 monitoring_snapshot=monitoring_snapshot
             )
