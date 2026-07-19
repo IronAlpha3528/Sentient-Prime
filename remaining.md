@@ -1,12 +1,14 @@
 # Current Focus
 
-The project has reached the stage where **most of the routing pipelines and SOAR integrations (Sprint 1) are complete**, but a deep cross-check against `ARCHITECTURE.md` reveals that a few critical core components are still missing.
+The project has reached the stage where **most of the routing pipelines and SOAR integrations (Sprint 1) are complete**, and the **Core Architectural Components (Meta-Classifier and Audit Ledger)** have been successfully implemented. 
+
+However, a deep cross-check against `ARCHITECTURE.md` reveals that a few critical integrations and dashboard features are still missing.
 
 The remaining work is primarily:
-- Filling backend gaps (Meta-Classifier & Audit Ledger)
-- Dashboard (Sprint 2)
-- Infrastructure & APIs (Sprint 3)
-- Production readiness (Sprint 4)
+- Filling runtime pipeline gaps (Continuous Execution & Closed-Loop Verification)
+- Dashboard Polish (Live Monitoring, Cyber Graph, Timeline)
+- FastAPI Migration & Production Readiness
+- Advanced AI Features
 
 ---
 
@@ -14,19 +16,12 @@ The remaining work is primarily:
 
 ---
 
-## 1. Missing Core Architectural Components (Sprint 1.5 - Immediate Priority)
+## 1. Missing Runtime Pipeline Features
 
-A review of the `ARCHITECTURE.md` against the codebase reveals that two major components are designed but missing their implementation files:
-
-### LightGBM Meta-Classifier (`src/sentinel_prime/detection/correlation/meta_classifier.py`)
-- **What it is:** Phase 3 of the architecture. It combines specialist detector scores, graph features, and deception evidence into a `unified_threat_score`.
-- **Status:** The README in `correlation/` mentions it, but the file doesn't exist. The AI agents currently rely on hardcoded or pass-through scores instead of the meta-classifier's statistical correlation.
-- **Requirement:** Build the LightGBM classifier that fuses evidence bands and graph centrality metrics.
-
-### Tamper-Evident Audit Ledger (`src/sentinel_prime/core/telemetry/ledger/audit_ledger.py`)
-- **What it is:** Phase 7 of the architecture. A SHA-256 hash chain that immutably logs every hypothesis, risk score, and SOAR action.
-- **Status:** The `ledger/` directory has an `__init__.py` and a `README.md`, but `audit_ledger.py` is missing.
-- **Requirement:** Build the hash-chain logging mechanism. We need this to satisfy the **Auditability** evaluation metric!
+### Continuous Execution & Closed-Loop Verification
+- **What it is:** The architecture requires an asynchronous task queue (Celery/APScheduler) or a Kafka/FastAPI streaming webhook to transition incidents to `VERIFICATION_PENDING` and check the SIEM 5 minutes after a SOAR action.
+- **Status:** The system currently relies on a static, one-shot demonstration wrapper (`run_phase1.py`) and simple sync checks.
+- **Requirement:** Implement the asynchronous deferred verification task loop.
 
 ---
 
@@ -50,12 +45,7 @@ The dashboard should include:
 - A chronological timeline of events leading to an incident
 
 ### AI Reasoning Panel
-- Display the output of the 5 AI agents in real-time:
-  - Correlation Story
-  - Hypotheses (with confidence)
-  - Predictions (MITRE techniques, likely target)
-  - Deception strategy
-  - Response recommendations
+**DONE:** Display the output of the 3 AI agents in real-time via WebSockets/SSE on the frontend `AIReasoning.tsx` page.
 
 ---
 
@@ -66,24 +56,24 @@ The dashboard should include:
 ## 1.5 Codebase Technical Debt
 
 ### Resolve Frontend Split-Brain
-The repository currently contains both `dashboard/app.py` (a Streamlit dashboard) and `dashboard/frontend/` (a React dashboard). This duplication creates confusion over which is the official interface and splits development efforts. The Streamlit app should be deleted.
+**DONE:** `dashboard/app.py` (Streamlit) has been deleted. The React SPA at `dashboard/frontend/` is now the sole official interface.
 
-### Migrate Flask API to FastAPI
+### Migrate Flask API to FastAPI & Unified Backend
 The `README.md` and `ARCHITECTURE.md` explicitly mandate a "Unified FastAPI Backend". However, the `dashboard/api_server.py` is written in Flask. We must rewrite the API server in FastAPI to align with the documentation.
+Instead of multiple services exposing independent endpoints, create a single FastAPI gateway: `Frontend → FastAPI → Internal Services`
 
 ---
 
 ## 2. Infrastructure & APIs (Sprint 3)
 
-### Unified FastAPI Backend
-Instead of multiple services exposing independent endpoints, create a single FastAPI gateway:
-`Frontend → FastAPI → Internal Services`
+### AI-Driven Adaptive Deception (Active Decoys)
+**DONE:** Phase 5 of the architecture. The Action Agent actively selects a decoy, places it via a `decoy_deployer.py` and it is reflected on the frontend.
 
 ### Human Approval Queue
-Currently, the AI automatically evaluates and routes through SOAR via the `policy_gate`. We need a manual validation UI where high-risk actions wait for a human to click "Approve" before execution.
+**DONE:** A manual validation UI where high-risk actions wait for a human operator to click "Approve" before execution exists on `/approval-queue`.
 
 ### Secure Webhooks
-Implement Authentication, TLS, API Keys, and Rate limiting for the honeypot webhook receiver.
+**DONE:** Authentication (API Keys) and Rate limiting for the honeypot webhook receiver have been implemented.
 
 ---
 
@@ -107,10 +97,10 @@ Resolve ImportErrors in old tests and ensure `pytest` passes successfully across
 ## 4. Advanced AI Features (Sprint 5)
 
 ### Incident Memory
-Instead of AI agents passing information sequentially, have every AI agent read and update a shared persistent `Incident Memory` object to make reasoning significantly more coherent across multiple events.
+**DONE:** Incident memory has been injected into the context via `IncidentStateDB().get_recent_memory()`.
 
 ### Feedback Loop
-Feed the outcome of SOAR actions (e.g., "Host Isolated") back into the Evidence Bus so the AI is aware if its containment succeeded or failed, creating a true closed-loop defense.
+**DONE:** Feed the outcome of SOAR actions back into the Evidence Bus so the AI is aware if its containment succeeded or failed, creating a true closed-loop defense.
 
 ### D3FEND Integration
 Enhance the MITRE ATT&CK RAG with MITRE D3FEND for improved, standardized defensive recommendations.

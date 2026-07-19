@@ -1,6 +1,6 @@
 # Sentinel-Prime — Agentic AI Cyber Resilience Platform
 
-A hybrid, AI-centric cyber resilience and autonomous threat containment platform for critical national infrastructure. Combines **specialist ML detectors** (LightGBM, Isolation Forest) monitoring network, identity, endpoint, and OT behavior, with an **adaptive deception layer** (honeypots/honeytokens) providing near-zero-false-positive compromise signals. Evidence is correlated using a **LightGBM meta-classifier**, then evaluated by **5 constrained Gemini Flash AI agents** powered by **MITRE ATT&CK Hybrid Graph-RAG** to analyze threats, predict next-stage attacks, test hypotheses via adaptive deception, and plan containment — all authorized by a **deterministic policy gate**, never the LLM.
+A hybrid, AI-centric cyber resilience and autonomous threat containment platform for critical national infrastructure. Combines **specialist ML detectors** (LightGBM, Isolation Forest) monitoring network, identity, endpoint, and OT behavior, with an **adaptive deception layer** (honeypots/honeytokens) providing near-zero-false-positive compromise signals. Evidence is correlated using a **LightGBM meta-classifier**, then evaluated by **3 constrained Gemini Flash AI agents** in a sequential Analysis → Critique → Action pipeline powered by **MITRE ATT&CK Hybrid Graph-RAG** to analyze threats, predict next-stage attacks, test hypotheses via adaptive deception, and plan containment — all authorized by a **deterministic policy gate**, never the LLM.
 
 Built for: AI-powered Cyber Resilience for Critical National Infrastructure (hackathon challenge — behavioral anomaly detection, APT attribution, autonomous incident response).
 
@@ -155,17 +155,15 @@ ATT&CK RAG is **inside** the decision pipeline — not attached after the AI has
 - **ATT&CK Knowledge Graph** (NetworkX from STIX relationships): "What tactics, techniques, software, and mitigations are structurally related?"
 - Combined context is attached to every AI agent's input.
 
-### 3.5 The 5 AI Agents (Gemini Flash)
+### 3.5 The 3 AI Agents (Gemini Flash)
 
-The prototype uses Gemini Flash as the underlying model for 5 logically separate agents, each with a separate prompt, restricted task, and structured JSON output schema:
+The prototype uses Gemini Flash as the underlying model for 3 logically separate, sequentially chained agents, each with a separate prompt, restricted task, and structured JSON output schema:
 
-| Agent | What it does |
-|---|---|
-| **Correlation** | Creates a cross-domain incident story linking identity, endpoint, network, and OT signals |
-| **Hypothesis** | Produces 2–4 ranked hypotheses (including benign) — forces the system to preserve alternative explanations |
-| **Prediction** | Estimates current ATT&CK stage, next stage, next technique, likely target, and candidate attack path |
-| **Deception** | Selects a testable uncertain hypothesis, predicts attacker action, chooses a matching decoy, and determines graph-guided placement |
-| **Response** | Proposes ATT&CK-grounded containment candidates with reasons and expected impact — never executes directly |
+| Agent | Stage | What it does |
+|---|---|---|
+| **Analysis** | 1 | Creates a cross-domain incident story linking identity, endpoint, network, and OT signals; generates 2–4 ranked hypotheses (including benign); predicts current ATT&CK stage, next technique, likely target, and candidate attack path |
+| **Critique** | 2 | Reviews the Analysis output as Devil's Advocate — scrutinizes hypotheses for logical leaps, unlikely MITRE techniques, or hallucinations; outputs corrected hypotheses if flaws are found |
+| **Action** | 3 | Proposes parameterized containment or deception action candidates (e.g., `isolate_host`, `block_ip`, `deploy_decoy`) with exact function names and targets — never executes directly |
 
 ### 3.6 Adaptive Deception — AI-Driven Active Hypothesis Testing
 
@@ -248,12 +246,12 @@ Composite Score = α × Containment Effectiveness − β × Business Impact
 | Threat knowledge | MITRE ATT&CK STIX 2.1 |
 | Vector DB | FAISS |
 | Embeddings | Small pretrained Sentence Transformer |
-| AI decision layer | Gemini Flash (5 constrained agents) |
+| AI decision layer | Gemini Flash (3 constrained agents: Analysis → Critique → Action) |
 | Graphs | NetworkX (Cyber Entity Graph + ATT&CK Knowledge Graph) |
 | Risk scoring | Deterministic Python/NumPy |
 | Orchestration | SOAR playbooks with action allowlist |
 | Audit ledger | SHA-256 hash chain |
-| Dashboard | React SPA / Streamlit + FastAPI + WebSocket/SSE |
+| Dashboard | React SPA + Flask API + WebSocket/SSE |
 | Preprocessing | pandas, scikit-learn, LightGBM, imbalanced-learn |
 
 ---
@@ -481,17 +479,15 @@ ATT&CK RAG is **inside** the decision pipeline — not attached after the AI has
 - **ATT&CK Knowledge Graph** (NetworkX from STIX relationships): "What tactics, techniques, software, and mitigations are structurally related?"
 - Combined context is attached to every AI agent's input.
 
-### 3.5 The 5 AI Agents (Gemini Flash)
+### 3.5 The 3 AI Agents (Gemini Flash)
 
-The prototype uses Gemini Flash as the underlying model for 5 logically separate agents, each with a separate prompt, restricted task, and structured JSON output schema:
+The prototype uses Gemini Flash as the underlying model for 3 logically separate, sequentially chained agents, each with a separate prompt, restricted task, and structured JSON output schema:
 
-| Agent | What it does |
-|---|---|
-| **Correlation** | Creates a cross-domain incident story linking identity, endpoint, network, and OT signals |
-| **Hypothesis** | Produces 2–4 ranked hypotheses (including benign) — forces the system to preserve alternative explanations |
-| **Prediction** | Estimates current ATT&CK stage, next stage, next technique, likely target, and candidate attack path |
-| **Deception** | Selects a testable uncertain hypothesis, predicts attacker action, chooses a matching decoy, and determines graph-guided placement |
-| **Response** | Proposes ATT&CK-grounded containment candidates with reasons and expected impact — never executes directly |
+| Agent | Stage | What it does |
+|---|---|---|
+| **Analysis** | 1 | Creates a cross-domain incident story linking identity, endpoint, network, and OT signals; generates 2–4 ranked hypotheses (including benign); predicts current ATT&CK stage, next technique, likely target, and candidate attack path |
+| **Critique** | 2 | Reviews the Analysis output as Devil's Advocate — scrutinizes hypotheses for logical leaps, unlikely MITRE techniques, or hallucinations; outputs corrected hypotheses if flaws are found |
+| **Action** | 3 | Proposes parameterized containment or deception action candidates (e.g., `isolate_host`, `block_ip`, `deploy_decoy`) with exact function names and targets — never executes directly |
 
 ### 3.6 Adaptive Deception — AI-Driven Active Hypothesis Testing
 
@@ -578,7 +574,7 @@ To establish trust with SOC analysts, the system exposes the internal "thought p
 | Threat knowledge | MITRE ATT&CK STIX 2.1 |
 | Vector DB | FAISS |
 | Embeddings | Small pretrained Sentence Transformer |
-| AI decision layer | Gemini Flash (5 constrained agents) |
+| AI decision layer | Gemini Flash (3 constrained agents: Analysis → Critique → Action) |
 | Graphs | NetworkX (Cyber Entity Graph + ATT&CK Knowledge Graph) |
 | Risk scoring | Deterministic Python/NumPy |
 | Orchestration | SOAR playbooks with action allowlist |

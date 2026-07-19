@@ -1,6 +1,8 @@
 # Sentinel-Prime — Final Combined Architecture
 
 > **Version 3 — Specialist ML detectors + LightGBM meta-correlation + constrained AI decision reasoning + adaptive deception.**
+>
+> **Agent Architecture: 3-stage AI pipeline (Analysis → Critique → Action).**
 
 ---
 
@@ -24,7 +26,7 @@ The revised design:
 - Trains a **specialist detector for each behavioral layer** (network, identity, endpoint, OT)
 - Each detector produces a structured **Common Evidence Object**
 - A **LightGBM meta-classifier** correlates the evidence signals
-- **5 constrained Gemini Flash AI agents** reason over the correlated evidence + ATT&CK knowledge
+- **3 constrained Gemini Flash AI agents** reason over the correlated evidence + ATT&CK knowledge in a sequential pipeline
 - **Deterministic policy** controls execution
 
 ---
@@ -65,7 +67,7 @@ The revised design:
 | **Threat correlation** | LightGBM Meta-Classifier | Combined evidence is low-dimensional tabular; a Fusion Transformer would need unavailable synchronized data |
 | **ATT&CK retrieval** | FAISS + Sentence Transformer | Small pretrained encoder + efficient vector search; no embedding pretraining required |
 | **ATT&CK structure** | ATT&CK Knowledge Graph (NetworkX) | Preserves tactic→technique→software→group→mitigation relationships for graph traversal |
-| **AI reasoning** | Gemini Flash (5 constrained agents) | Reasoning across heterogeneous evidence; API inference avoids local LLM training |
+| **AI reasoning** | Gemini Flash (3 constrained agents) | Analysis → Critique → Action pipeline; API inference avoids local LLM training |
 | **Graph analytics** | NetworkX (Cyber Entity Graph) | Attack paths, reachability, centrality, community-crossing, blast-radius features |
 | **Risk scoring** | Deterministic Python/NumPy | Business impact and blast radius must not depend on free-form LLM judgment |
 | **Execution** | Deterministic Policy Gate + SOAR | The LLM must never directly execute CNI containment actions |
@@ -188,15 +190,11 @@ LightGBM Meta-Classifier → Unified Threat Score
         ↓
 MITRE ATT&CK Hybrid Graph-RAG (FAISS + Knowledge Graph)
         ↓
-AI Correlation Agent → cross-domain incident story
+[Stage 1] AI Analysis Agent → cross-domain story + hypotheses + attack prediction
         ↓
-AI Hypothesis Agent → ranked malicious + benign explanations
+[Stage 2] AI Critique Agent → self-correction, logical validation of hypotheses
         ↓
-AI Attack Prediction Agent → next stage, technique, target, path
-        ↓
-AI Deception Agent (moderate uncertainty) → graph-guided active hypothesis testing
-        ↓
-AI Response Agent → ATT&CK-grounded containment candidates
+[Stage 3] AI Action Agent → structured, parameterized containment/deception actions
         ↓
 Deterministic Risk Engine → operational impact scoring
         ↓
@@ -207,17 +205,15 @@ Deterministic Policy Gate → ≥0.75 + low blast → SOAR; else → Human Appro
 Outcome Monitoring → resolved / persisted / escalated feedback
 ```
 
-The prototype uses **Gemini Flash as the underlying reasoning model for all 5 logically separate agents**. Each agent has a separate prompt, restricted task, structured JSON output schema, and limited context.
+The prototype uses **Gemini Flash as the underlying reasoning model for 3 logically separate, sequentially chained agents**. Each agent has a separate prompt, restricted task, structured JSON output schema, and limited context.
 
-### The 5 AI Agents
+### The 3 AI Agents
 
-| Agent | Input | Output | Why it exists |
-|---|---|---|---|
-| **Correlation** | Evidence + graph + threat score + ATT&CK context | Cross-domain incident story linking identity, endpoint, network, OT signals | LightGBM correlates statistically; the AI explains *what story* the signals tell |
-| **Hypothesis** | Incident story + evidence + ATT&CK context | 2–4 ranked hypotheses (including benign) with confidence + evidence | Forces the system to preserve a benign alternative — not every anomaly is an attack |
-| **Prediction** | Hypotheses + ATT&CK RAG + graph + asset criticality | Current stage, next stage, next technique, likely target, candidate attack path | Proactive warning — tells defenders what may happen next |
-| **Deception** | Uncertain hypothesis + prediction + graph topology | Decoy type, placement location, observation window | AI-driven hypothesis testing — chooses *what* to test, *what decoy* matches, *where* to place it |
-| **Response** | Hypotheses + prediction + ATT&CK mitigations + asset criticality + SOAR allowlist | Ranked containment action candidates with reason + expected impact | Evidence-grounded response planning; the AI only *proposes*, never executes |
+| Agent | Stage | Input | Output | Why it exists |
+|---|---|---|---|---|
+| **Analysis** | 1 | Evidence + graph + threat score + ATT&CK context | Cross-domain incident story, 2–4 ranked hypotheses (incl. benign), attack stage prediction & path | Consolidates Correlation, Hypothesis, and Prediction into a single structured reasoning pass; reduces API latency and prompt complexity |
+| **Critique** | 2 | Analysis Agent output + original context | Validation verdict, critique feedback, corrected hypotheses | Acts as Devil's Advocate — scrutinizes the Analysis for logical leaps, unlikely MITRE techniques, or hallucinations before action is taken |
+| **Action** | 3 | Validated analysis + critique + ATT&CK mitigations + SOAR allowlist | Ranked, parameterized containment/deception action candidates with reasoning | Evidence-grounded response planning; the AI only *proposes* exact function calls (e.g., `isolate_host`, `block_ip`, `deploy_decoy`), never executes |
 
 ---
 
@@ -465,13 +461,13 @@ The current `monitor.py` only verifies if a SOAR command (like "block IP") execu
 | Threat knowledge | MITRE ATT&CK STIX 2.1 |
 | Vector DB | FAISS |
 | Embeddings | Small pretrained Sentence Transformer |
-| AI decision layer | Gemini Flash (5 constrained agents) |
+| AI decision layer | Gemini Flash (3 constrained agents: Analysis → Critique → Action) |
 | Graph — Cyber Entity | NetworkX |
 | Graph — ATT&CK Knowledge | NetworkX |
 | Risk scoring | Deterministic Python/NumPy policy logic |
 | Orchestration | SOAR playbooks with action allowlist |
 | Audit ledger | SHA-256 hash chain |
-| Dashboard | React SPA / Streamlit + FastAPI + WebSocket/SSE |
+| Dashboard | React SPA + Flask API + WebSocket/SSE |
 | Preprocessing | pandas, scikit-learn, LightGBM, imbalanced-learn |
 
 ---

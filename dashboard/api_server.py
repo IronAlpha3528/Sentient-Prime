@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, Response, jsonify, request, send_from_directory, stream_with_context
 from flask_cors import CORS
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -367,6 +367,23 @@ def incident_reasoning(incident_id: str) -> Any:
     return jsonify(_normalize_reasoning(incident_id, {}, {}, {}, {}, {}, {}, source="artifacts"))
 
 
+@app.get("/api/incidents/<incident_id>/timeline")
+def incident_timeline(incident_id: str) -> Any:
+    entries = [entry for entry in _read_jsonl(LEDGER_PATH) if entry.get("incident_id") == incident_id]
+    if not entries:
+        return jsonify([])
+    return jsonify([
+        {
+            "timestamp": entry.get("timestamp"),
+            "event_type": str(entry.get("event_type", "EVENT")).upper(),
+            "incident_id": entry.get("incident_id") or "UNASSIGNED",
+            "hash": str(entry.get("hash", ""))[:12] + "...",
+            "data": entry.get("data", {})
+        }
+        for entry in entries
+    ])
+
+
 @app.post("/api/incidents/<incident_id>/run-ai")
 def run_ai(incident_id: str) -> Any:
     if not config.GEMINI_API_KEY:
@@ -386,6 +403,152 @@ def run_ai(incident_id: str) -> Any:
 
     result = run_pipeline(evidence)
     return jsonify(result)
+
+
+@app.post("/api/incidents/<incident_id>/run-ai-stream")
+def run_ai_stream(incident_id: str) -> Any:
+    """SSE endpoint that streams the 3-stage AI pipeline progress as each agent completes."""
+    if not config.GEMINI_API_KEY:
+        return jsonify({"error": "GEMINI_API_KEY is not configured."}), 503
+    payload = request.get_json(silent=True) or {}
+    incident = next((item for item in _all_incidents() if item["incident_id"] == incident_id), None) or _incident_from_graph()
+    evidence = {
+        "incident_id": incident_id,
+        "entity_id": incident.get("target_asset"),
+        "target_asset": incident.get("target_asset"),
+        "entities": incident.get("entities", {}),
+        "network": {"score": incident.get("unified_threat_score"), "class": incident.get("attack_class")},
+        "endpoint": {"score": incident.get("unified_threat_score"), "sigma_matches": ["Encoded PowerShell"]},
+    }
+    evidence.update(payload.get("evidence", {}))
+
+    def _generate():
+        import time
+        def _sse(event: str, data: Any) -> str:
+            return f"event: {event}\ndata: {json.dumps(data, default=str)}\n\n"
+
+        try:
+            from sentinel_prime.core.framework import Framework
+            from sentinel_prime.ai.agents.analysis_agent import AnalysisAgent
+            from sentinel_prime.ai.agents.critique_agent import CritiqueAgent
+            from sentinel_prime.ai.agents.action_agent import ActionAgent
+            from sentinel_prime.soar.risk_scoring.scorer import score_and_rank_actions
+            from sentinel_prime.core.telemetry.state_db import IncidentStateDB
+            from sentinel_prime.core.telemetry.ledger import AuditLedger
+
+            yield _sse("pipeline_start", {"incident_id": incident_id, "stages": 3})
+
+            # Build context
+            framework = Framework()
+            entity_id = evidence.get("entity_id") or evidence.get("target_asset") or "internet"
+            try:
+                context = framework.build_context(entity_id)
+                context.incident_id = incident_id
+            except Exception:
+                context = evidence
+
+            try:
+                memory = IncidentStateDB().get_recent_memory(limit=3)
+                if hasattr(context, "to_dict"):
+                    ctx_dict = context.to_dict()
+                    ctx_dict["incident_memory"] = memory
+                    context = ctx_dict
+                elif isinstance(context, dict):
+                    context["incident_memory"] = memory
+            except Exception:
+                pass
+
+            # Stage 1 — Analysis Agent
+            yield _sse("stage_start", {"stage": 1, "name": "Analysis Agent", "description": "Correlating evidence, generating hypotheses, and predicting attack path..."})
+            analysis_result = AnalysisAgent().run(context)
+            yield _sse("stage_complete", {"stage": 1, "name": "Analysis Agent", "result": analysis_result})
+
+            # Stage 2 — Critique Agent
+            yield _sse("stage_start", {"stage": 2, "name": "Critique Agent", "description": "Validating hypotheses for logical leaps and hallucinations..."})
+            critique_result = CritiqueAgent().run(analysis_result, context)
+            yield _sse("stage_complete", {"stage": 2, "name": "Critique Agent", "result": critique_result})
+
+            # Stage 3 — Action Agent
+            yield _sse("stage_start", {"stage": 3, "name": "Action Agent", "description": "Proposing parameterized containment and deception actions..."})
+            action_result = ActionAgent().run(analysis_result, critique_result, context=context)
+            yield _sse("stage_complete", {"stage": 3, "name": "Action Agent", "result": action_result})
+
+            # Assemble final reasoning output
+            hypotheses = critique_result.get("corrected_hypotheses", analysis_result.get("hypotheses", []))
+            mapped_hypotheses = [
+                {
+                    "title": h.get("title", "Untitled"),
+                    "confidence": float(h.get("confidence", 0)),
+                    "is_malicious": bool(h.get("is_malicious", True)),
+                    "description": h.get("description", ""),
+                    "mitre_techniques": h.get("mitre_techniques", []),
+                    "supporting_evidence": h.get("supporting_evidence", []),
+                }
+                for h in hypotheses
+            ]
+            top = next((h for h in sorted(mapped_hypotheses, key=lambda x: x["confidence"], reverse=True) if h["is_malicious"]), None) or (mapped_hypotheses[0] if mapped_hypotheses else {})
+            attribution = {"attributed_actor": "Live Pipeline", "predicted_next_techniques": [{"name": analysis_result.get("prediction", {}).get("likely_next_technique", "Unknown")}]}
+            scoring = score_and_rank_actions(top, attribution)
+            final_output = {
+                "incident_id": incident_id,
+                "source": "live_stream",
+                "story": {"narrative": (analysis_result.get("story") or {}).get("summary") or (analysis_result.get("story") or {}).get("narrative", ""), "domains_involved": (analysis_result.get("story") or {}).get("domains_involved", [])},
+                "hypotheses": mapped_hypotheses,
+                "prediction": analysis_result.get("prediction", {}),
+                "deception_strategy": {
+                    "should_deploy": True,
+                    "hypothesis_to_test": (mapped_hypotheses[0]["title"] if mapped_hypotheses else "Unknown"),
+                    "decoy_type": "Fake SMB Share with honeytoken document",
+                    "placement_node": "db_server",
+                    "observation_window_minutes": 30,
+                    "rationale": "Live pipeline deception recommendation based on predicted attack path.",
+                },
+                "response_plan": {
+                    "recommended_actions": action_result.get("recommended_actions", []),
+                    "routing_decision": "SOAR_AUTO" if scoring.get("route_to_soar", True) else "HUMAN_ESCALATION",
+                    "policy_gate_passed": bool(scoring.get("route_to_soar", True)),
+                    "dry_run_warnings": ["Live pipeline dry-run completed."],
+                },
+            }
+
+            try:
+                ledger = AuditLedger()
+                ledger.append_entry("ai_analysis", analysis_result, incident_id=incident_id)
+                ledger.append_entry("ai_critique", critique_result, incident_id=incident_id)
+                ledger.append_entry("ai_action_plan", action_result, incident_id=incident_id)
+            except OSError:
+                pass
+
+            yield _sse("pipeline_complete", final_output)
+        except Exception as exc:
+            yield _sse("error", {"message": str(exc)})
+
+    return Response(
+        stream_with_context(_generate()),
+        mimetype="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+@app.get("/api/approval-queue")
+def approval_queue() -> Any:
+    """Return all incidents in ACTIVE or ESCALATED state that need human review."""
+    all_incidents = _all_incidents()
+    pending = [item for item in all_incidents if item.get("status") in {"ACTIVE", "ESCALATED"}]
+    pending.sort(key=lambda x: x.get("unified_threat_score", 0), reverse=True)
+    return jsonify(pending)
+
+
+@app.get("/api/decoys")
+def list_decoys() -> Any:
+    """Return active deployed honeypot decoys from the registry file."""
+    import sys
+    try:
+        from sentinel_prime.simulation.honeypots.decoy_deployer import DecoyDeployer
+        active = DecoyDeployer().list_active()
+        return jsonify(active)
+    except Exception:
+        return jsonify([])
 
 
 @app.post("/api/incidents/<incident_id>/approve")

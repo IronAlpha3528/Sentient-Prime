@@ -56,6 +56,6 @@ Goal: a working lab-scale prototype demonstrating the full pipeline end-to-end (
 ## PHASE 4 — Dashboard & Benchmarking
 
 - [ ] **4.1 SOC Dashboard**
-  Build React/Streamlit frontend showing hypothesis ladder, TTP map, alert feed, and action timeline.
+  Build React frontend showing hypothesis ladder, TTP map, alert feed, and action timeline.
 - [ ] **4.2 Benchmarking**
   Run Caldera/Atomic Red Team. Measure TP/FP rates, ATT&CK attribution accuracy, MTTD/MTTR vs manual baseline, and automation coverage. Document in `docs/benchmarks/`.

@@ -1,23 +1,21 @@
 # Dashboard — SOC Dashboard
 
 Real-time web interface for the full incident lifecycle, from raw alerts to final outcomes.
+The dashboard is a **React SPA** served by the Flask API backend.
 
 ## Directory Structure
 
 ```
 dashboard/
 ├── __init__.py
-├── app.py                   # Main dashboard application (Streamlit or Flask)
-├── api.py                   # API endpoints for data retrieval
-├── views/                   # Dashboard view components
-│   ├── alert_feed.py        # Live incoming signals + honeypot triggers
-│   ├── hypothesis_ladder.py # 2-4 ranked hypotheses with confidence bars
-│   ├── ttp_map.py           # ATT&CK matrix heatmap of observed techniques
-│   ├── action_timeline.py   # Risk scores → dry-run → execution → outcome
-│   ├── deception_status.py  # Active adaptive decoys, touch/decay status
-│   ├── metrics.py           # MTTD/MTTR charts
-│   ├── audit_trail.py       # Hash-chained ledger entries per incident
-│   └── escalation_queue.py  # Pending actions awaiting human approval
+├── api_server.py            # Flask API backend (serves React SPA + REST endpoints)
+├── frontend/                # React SPA (Vite + TypeScript)
+│   ├── src/
+│   │   ├── components/      # UI components (Topology, Incidents, AI Reasoning, etc.)
+│   │   ├── App.tsx
+│   │   └── main.tsx
+│   ├── package.json
+│   └── vite.config.ts
 └── README.md
 ```
 
@@ -38,16 +36,26 @@ dashboard/
 
 - Elasticsearch (SIEM events, signals)
 - SQLite (honeytoken registry, baseline store)
-- JSON lines (audit ledger)
+- JSON lines (audit ledger at `data/audit_ledger.jsonl`)
 
-## Run
+## Run (Development)
 
-Install dependencies, then start the Streamlit app from the repository root:
+Start the API backend and the React dev server separately:
 
 ```bash
-streamlit run dashboard/app.py
+# Terminal 1 — Flask API backend
+python dashboard/api_server.py
+
+# Terminal 2 — React frontend (hot-reloading)
+cd dashboard/frontend
+npm install
+npm run dev
 ```
 
-The dashboard reads `data/audit_ledger.jsonl` without modifying it. Run a SOAR
-dispatch to populate the incident feed, action timeline, escalation queue, and
-audit trail.
+Or start both together via Docker Compose:
+
+```bash
+docker-compose up
+```
+
+The React dev server runs on `http://localhost:5173` and proxies API calls to the Flask backend on `http://localhost:8000`.

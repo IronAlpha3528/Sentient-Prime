@@ -11,12 +11,21 @@ export default function Overview() {
   const [topology, setTopology] = useState<Topology | null>(null)
   const [audit, setAudit] = useState<AuditEntry[]>([])
   const [metrics, setMetrics] = useState<any>(null)
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
 
   useEffect(() => {
-    getIncidents().then(setIncidents)
-    getTopology().then(setTopology)
-    getAuditLog().then(setAudit)
-    getMetrics().then(setMetrics)
+    const load = () => {
+      Promise.all([getIncidents(), getTopology(), getAuditLog(), getMetrics()]).then(([inc, top, aud, met]) => {
+        setIncidents(inc)
+        setTopology(top)
+        setAudit(aud)
+        setMetrics(met)
+        setLastUpdated(new Date())
+      }).catch(() => {})
+    }
+    load()
+    const id = setInterval(load, 10_000)
+    return () => clearInterval(id)
   }, [])
 
   const topScore = Math.max(...incidents.map((incident) => incident.unified_threat_score), 0)
@@ -25,7 +34,17 @@ export default function Overview() {
   return (
     <div className="grid overview-layout">
       <div className="page-header">
-        <div><p className="eyebrow">Command Center</p><h1>Sentient-Prime Cyber Resilience</h1><p className="subtle">AI-led detection, deception, orchestration, and auditability for CNI operations.</p></div>
+        <div>
+          <p className="eyebrow">
+            Command Center 
+            <span className="badge danger pulse" style={{ marginLeft: 8 }}>LIVE</span>
+          </p>
+          <h1>Sentient-Prime Cyber Resilience</h1>
+          <p className="subtle">
+            AI-led detection, deception, orchestration, and auditability for CNI operations. 
+            <span style={{ marginLeft: 12, fontSize: 12 }}>Last updated: {lastUpdated.toLocaleTimeString()}</span>
+          </p>
+        </div>
       </div>
       <div className="grid metrics-grid">
         <MetricCard label="Threat Score" value={topScore.toFixed(2)} subtitle="Highest Active" tone="danger" />

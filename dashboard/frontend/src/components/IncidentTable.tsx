@@ -18,7 +18,7 @@ export default function IncidentTable({ incidents, compact = false }: { incident
       <table>
         <thead>
           <tr>
-            <th>ID</th><th>Status</th><th>Score</th><th>Target</th>{!compact && <th>Attack Class</th>}<th>{compact ? 'Time' : 'Entities'}</th>
+            <th>ID</th><th>Status</th><th>Score</th><th>Target</th>{!compact && <th>Attack Class</th>}<th>{compact ? 'Time' : 'Entities'}</th><th></th>
           </tr>
         </thead>
         <tbody>
@@ -32,6 +32,11 @@ export default function IncidentTable({ incidents, compact = false }: { incident
                 <td>{incident.target_asset}</td>
                 {!compact && <td>{incident.attack_class}</td>}
                 <td>{compact ? relativeTime(incident.timestamp) : `${entityCount} entities`}</td>
+                <td onClick={(e) => e.stopPropagation()}>
+                  <button className="btn secondary" style={{ padding: '2px 8px', fontSize: 11 }} onClick={() => navigate(`/timeline/${incident.incident_id}`)}>
+                    Timeline →
+                  </button>
+                </td>
               </tr>
             )
           })}
