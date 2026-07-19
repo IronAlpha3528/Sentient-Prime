@@ -160,27 +160,34 @@ class VerificationEngine:
                 logger.error("Closed-loop verification failed: %s", reason)
                 break
 
-            # Search CKG for any new events/edges associated with target asset after start_time
+            # Search CKG for any new events/edges associated with target asset after start_time.
+            # Build candidate node IDs using the known TYPE:name prefix convention,
+            # then use edges(nbunch=...) which is O(degree) instead of O(E).
             new_events = []
             with graph_manager.store.lock:
-                for u, v, k, attrs in graph_manager.store._graph.edges(keys=True, data=True):
-                    u_clean = u.split(":")[-1] if ":" in u else u
-                    v_clean = v.split(":")[-1] if ":" in v else v
-                    if u_clean == asset or v_clean == asset:
-                        ts_str = attrs.get("timestamp") or attrs.get("last_seen")
-                        if ts_str:
-                            try:
-                                ts = datetime.datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
-                                if ts >= start_time:
-                                    new_events.append({
-                                        "source": u,
-                                        "target": v,
-                                        "detector": attrs.get("source_detector"),
-                                        "risk_score": float(attrs.get("risk", 0.0)),
-                                        "timestamp": ts_str
-                                    })
-                            except Exception:
-                                pass
+                g = graph_manager.store._graph
+                node_prefixes = ["HOST", "USER", "PROCESS", "IP", "PLC"]
+                candidates = [f"{p}:{asset}" for p in node_prefixes] + [asset]
+                # Only keep nodes that actually exist in the graph
+                existing = [n for n in candidates if g.has_node(n)]
+                if not existing:
+                    # Fallback: scan all nodes for suffix match (graph is small in this branch)
+                    existing = [n for n in g.nodes() if n.split(":")[-1] == asset]
+                for u, v, k, attrs in g.edges(nbunch=existing, keys=True, data=True):
+                    ts_str = attrs.get("timestamp") or attrs.get("last_seen")
+                    if ts_str:
+                        try:
+                            ts = datetime.datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+                            if ts >= start_time:
+                                new_events.append({
+                                    "source": u,
+                                    "target": v,
+                                    "detector": attrs.get("source_detector"),
+                                    "risk_score": float(attrs.get("risk", 0.0)),
+                                    "timestamp": ts_str
+                                })
+                        except Exception:
+                            pass
 
             evidence_collected = new_events
             if not new_events:

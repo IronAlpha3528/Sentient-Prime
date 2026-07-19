@@ -66,7 +66,7 @@ export default function AIReasoning() {
       </section>
       <PredictionFlow prediction={reasoning.prediction} />
       <DeceptionCard strategy={reasoning.deception_strategy} />
-      <ResponsePlan plan={reasoning.response_plan} />
+      <ResponsePlan plan={reasoning.response_plan} incidentId={id} />
     </div>
   )
 }

@@ -5,6 +5,7 @@ import os
 import pathlib
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Optional, Union
 
 import yaml
@@ -63,6 +64,9 @@ class StreamManager:
             "LOW": "LOW",
             "INFO": "LOW"
         })
+
+        # Thread pool for non-blocking subscriber dispatch
+        self._subscriber_executor = ThreadPoolExecutor(max_workers=8, thread_name_prefix="EvtSubscriber")
 
         # Background dispatcher thread
         self._stop_event = threading.Event()
@@ -146,17 +150,20 @@ class StreamManager:
         return self.queue.dequeue()
 
     def broadcast(self, event: EvidenceEvent) -> None:
-        """Broadcasts an event to matching subscribers."""
+        """Broadcasts an event to matching subscribers (non-blocking)."""
         event.status = EventStatus.PROCESSING
-        
+
         with self.subscribers_lock:
             targets = [sub for sub in self.subscribers if sub.matches(event)]
 
-        for sub in targets:
+        def _call_subscriber(sub):
             try:
                 sub.receive(event)
             except Exception as e:
                 logger.error(f"Subscriber {sub.name} failed to process event {event.event_id}: {e}")
+
+        for sub in targets:
+            self._subscriber_executor.submit(_call_subscriber, sub)
 
         event.status = EventStatus.PROCESSED
 
@@ -245,6 +252,7 @@ class StreamManager:
     def shutdown(self) -> None:
         """Triggers clean shutdown of dispatcher and exports final metrics."""
         self._stop_event.set()
+        self._subscriber_executor.shutdown(wait=False)
         if self._dispatcher_thread.is_alive():
             self._dispatcher_thread.join(timeout=2.0)
 

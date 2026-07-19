@@ -42,6 +42,20 @@ export async function runLiveAiPipeline(id: string): Promise<ReasoningOutput> {
   })
 }
 
+export async function approveIncident(id: string): Promise<{ status: string; actions: unknown[]; outcome: unknown }> {
+  return requestJson(`/api/incidents/${id}/approve`, async () => ({ status: 'ok', actions: [], outcome: {} }), {
+    method: 'POST',
+    body: JSON.stringify({}),
+  })
+}
+
+export async function rejectIncident(id: string): Promise<{ status: string; outcome: unknown }> {
+  return requestJson(`/api/incidents/${id}/reject`, async () => ({ status: 'ok', outcome: {} }), {
+    method: 'POST',
+    body: JSON.stringify({}),
+  })
+}
+
 export type {
   AuditEntry,
   Hypothesis,

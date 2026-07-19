@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 from typing import Dict, Any, Optional
 
 from sentinel_prime.core.framework import Framework
@@ -9,6 +10,26 @@ from .action_agent import ActionAgent
 from sentinel_prime.soar.risk_scoring.scorer import score_and_rank_actions
 
 logger = logging.getLogger(__name__)
+
+
+def _run_with_retry(fn, *args, max_retries=3, backoff=2.0, **kwargs):
+    """Call fn(*args, **kwargs) with simple exponential-backoff retry.
+    Retries up to max_retries times on any exception before re-raising.
+    """
+    last_exc = None
+    for attempt in range(1, max_retries + 1):
+        try:
+            return fn(*args, **kwargs)
+        except Exception as exc:
+            last_exc = exc
+            if attempt < max_retries:
+                wait = backoff * (2 ** (attempt - 1))
+                logger.warning(
+                    "LLM call %s failed (attempt %d/%d): %s. Retrying in %.1fs",
+                    getattr(fn, '__name__', repr(fn)), attempt, max_retries, exc, wait
+                )
+                time.sleep(wait)
+    raise last_exc
 
 def run_pipeline(evidence: Dict[str, Any]) -> Dict[str, Any]:
     incident_id = evidence.get("incident_id", "UNKNOWN")
@@ -48,11 +69,11 @@ def run_pipeline(evidence: Dict[str, Any]) -> Dict[str, Any]:
         logger.error(f"Failed to load incident memory: {e}")
     # Stage 1: Analysis Agent (Correlation, Hypothesis, Prediction)
     print("[Stage 1] Running Analysis Agent...")
-    analysis_result = AnalysisAgent().run(context)
-    
+    analysis_result = _run_with_retry(AnalysisAgent().run, context)
+
     # Stage 2: Critique Agent (Self-Correction)
     print("[Stage 2] Running Critique Agent (Devil's Advocate)...")
-    critique_result = CritiqueAgent().run(analysis_result, context)
+    critique_result = _run_with_retry(CritiqueAgent().run, analysis_result, context)
     
     # Extract the validated hypotheses to use for legacy compatibility
     hypotheses = critique_result.get("corrected_hypotheses", analysis_result.get("hypotheses", []))
@@ -99,7 +120,7 @@ def run_pipeline(evidence: Dict[str, Any]) -> Dict[str, Any]:
         
     # Stage 3: Action Agent (Structured Function Calling)
     print("[Stage 3] Running Action Agent...")
-    action_result = ActionAgent().run(analysis_result, critique_result, context=context)
+    action_result = _run_with_retry(ActionAgent().run, analysis_result, critique_result, context=context)
     
     print("[Legacy compatibility] Synthesizing attribution data for frontend...")
     prediction_data = analysis_result.get("prediction", {})
@@ -116,7 +137,7 @@ def run_pipeline(evidence: Dict[str, Any]) -> Dict[str, Any]:
     final_output = {
         "incident_id": incident_id,
         "original_evidence": evidence,
-        "correlation_context": context.to_dict(),
+        "correlation_context": context.to_dict() if hasattr(context, "to_dict") else context,
         "story": analysis_result.get("story", {}),
         "hypotheses": mapped_hypotheses,
         "top_hypothesis_selected": top_hypothesis,
