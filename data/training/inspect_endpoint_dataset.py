@@ -7,12 +7,18 @@ import zipfile
 from collections import defaultdict
 import numpy as np
 
+# Inject SRC into PYTHONPATH for local execution
+SRC_DIR = Path(__file__).resolve().parents[2] / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+from sentinel_prime.core.config_manager import config
+
 # Resolve OTRF_DATASET_PATH (Task O1)
-OTRF_ENV_VAR = "OTRF_DATASET_PATH"
 DEFAULT_PATH = r"C:\Users\Aanoush Surana\OneDrive\Desktop\ET Hackathon\OTRF-Endpoint-Data\datasets\atomic\windows"
 
 def get_otrf_path() -> Path:
-    path_str = os.environ.get(OTRF_ENV_VAR)
+    path_str = config.OTRF_DATASET_PATH
     if not path_str:
         # Fallback to local development path if it exists
         if Path(DEFAULT_PATH).exists():

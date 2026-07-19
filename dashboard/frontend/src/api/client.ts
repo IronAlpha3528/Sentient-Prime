@@ -23,8 +23,9 @@ async function requestJson<T>(path: string, fallback: () => Promise<T>, options?
     }
     return (await response.json()) as T
   } catch (error) {
-    console.warn(`Falling back to local mock data for ${path}:`, error)
-    return fallback()
+    console.error(`API request failed for ${path}:`, error)
+    throw error
+    // return fallback()
   }
 }
 

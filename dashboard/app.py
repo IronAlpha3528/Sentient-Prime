@@ -58,7 +58,7 @@ STATUS_COLORS = {
 def load_ledger_entries(path: Path = LEDGER_PATH) -> list[dict[str, Any]]:
     """Read valid JSONL ledger records without modifying the audit log."""
     if not path.exists():
-        return []
+        raise FileNotFoundError(f"Audit ledger not found at {path}. Is the backend running?")
 
     entries = []
     with path.open(encoding="utf-8") as ledger_file:

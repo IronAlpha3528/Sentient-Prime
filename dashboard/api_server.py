@@ -10,7 +10,6 @@ This module exposes the dashboard JSON contract from real repository state:
 from __future__ import annotations
 
 import json
-import os
 import sys
 from collections import defaultdict
 from datetime import datetime, timezone
@@ -22,12 +21,15 @@ from flask_cors import CORS
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SRC_DIR = PROJECT_ROOT / "src"
-FRONTEND_DIST = PROJECT_ROOT / "dashboard" / "frontend" / "dist"
-LEDGER_PATH = PROJECT_ROOT / "data" / "audit_ledger.jsonl"
-GRAPH_PATH = PROJECT_ROOT / "processed" / "graph" / "graph.json"
 
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
+
+from sentinel_prime.core.config_manager import config
+
+FRONTEND_DIST = PROJECT_ROOT / "dashboard" / "frontend" / "dist"
+LEDGER_PATH = PROJECT_ROOT / "data" / "audit_ledger.jsonl"
+GRAPH_PATH = PROJECT_ROOT / "processed" / "graph" / "graph.json"
 
 try:
     from sentinel_prime.core.telemetry.ledger import AuditLedger
@@ -345,7 +347,7 @@ def health() -> Any:
     return jsonify(
         {
             "status": "ok",
-            "gemini_configured": bool(os.getenv("GEMINI_API_KEY")),
+            "gemini_configured": bool(config.GEMINI_API_KEY),
             "ledger_exists": LEDGER_PATH.exists(),
             "graph_exists": GRAPH_PATH.exists(),
         }
@@ -367,7 +369,7 @@ def incident_reasoning(incident_id: str) -> Any:
 
 @app.post("/api/incidents/<incident_id>/run-ai")
 def run_ai(incident_id: str) -> Any:
-    if not os.getenv("GEMINI_API_KEY"):
+    if not config.GEMINI_API_KEY:
         return jsonify({"error": "GEMINI_API_KEY is not configured; live AI agent execution is unavailable."}), 503
     payload = request.get_json(silent=True) or {}
     incident = next((item for item in _all_incidents() if item["incident_id"] == incident_id), None) or _incident_from_graph()
@@ -388,25 +390,17 @@ def run_ai(incident_id: str) -> Any:
 
 @app.post("/api/incidents/<incident_id>/approve")
 def approve_incident(incident_id: str) -> Any:
-    entries = _read_jsonl(LEDGER_PATH)
-    incident_entries = [e for e in entries if e.get("incident_id") == incident_id]
-    if not incident_entries:
-        return jsonify({"status": "error", "message": "Incident not found"}), 404
+    from sentinel_prime.core.telemetry.state_db import IncidentStateDB
+    db = IncidentStateDB()
+    incident_record = db.get_incident(incident_id)
+    
+    if not incident_record:
+        return jsonify({"status": "error", "message": "Incident not found in state DB"}), 404
 
-    if not AuditLedger:
-        return jsonify({"status": "error", "message": "AuditLedger not available"}), 500
+    incident_data = incident_record.get("incident_data", {})
 
     from sentinel_prime.soar.orchestrator.dispatcher import SOARDispatcher
     dispatcher = SOARDispatcher()
-
-    # Find the incident data containing the AI response plan
-    incident_data = {}
-    for e in incident_entries:
-        if "response_agent_plan" in (e.get("data") or {}):
-            incident_data = e.get("data")
-            break
-    if not incident_data:
-        incident_data = incident_entries[0].get("data", {})
 
     # Extract recommended actions
     actions = []
@@ -431,26 +425,30 @@ def approve_incident(incident_id: str) -> Any:
 
     outcome = dispatcher.monitor.check_status(incident_data, action_results)
     dispatcher._record("monitor_outcome", outcome, incident_id)
+    
+    db.upsert_incident(incident_id, "RESOLVED" if outcome.get("status") == "RESOLVED" else "FAILED", incident_data)
 
     return jsonify({"status": "SUCCESS", "actions": action_results, "outcome": outcome})
 
 
 @app.post("/api/incidents/<incident_id>/reject")
 def reject_incident(incident_id: str) -> Any:
-    entries = _read_jsonl(LEDGER_PATH)
-    incident_entries = [e for e in entries if e.get("incident_id") == incident_id]
-    if not incident_entries:
-        return jsonify({"status": "error", "message": "Incident not found"}), 404
-
-    if not AuditLedger:
-        return jsonify({"status": "error", "message": "AuditLedger not available"}), 500
+    from sentinel_prime.core.telemetry.state_db import IncidentStateDB
+    db = IncidentStateDB()
+    incident_record = db.get_incident(incident_id)
+    
+    if not incident_record:
+        return jsonify({"status": "error", "message": "Incident not found in state DB"}), 404
+        
+    incident_data = incident_record.get("incident_data", {})
 
     from sentinel_prime.soar.orchestrator.dispatcher import SOARDispatcher
     dispatcher = SOARDispatcher()
-
-    outcome = {"status": "REJECTED", "message": "Manually rejected by administrator"}
+    
+    outcome = {"status": "REJECTED", "message": "Human operator rejected the containment action."}
     dispatcher._record("monitor_outcome", outcome, incident_id)
-
+    db.upsert_incident(incident_id, "REJECTED", incident_data)
+    
     return jsonify({"status": "SUCCESS", "outcome": outcome})
 
 
@@ -524,4 +522,4 @@ def static_or_spa(path: str) -> Any:
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=int(os.getenv("PORT", "8000")), debug=True)
+    app.run(host=config.API_HOST, port=config.API_PORT, debug=True)

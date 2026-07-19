@@ -11,9 +11,10 @@ logger = logging.getLogger(__name__)
 class DatasetNotFoundError(FileNotFoundError):
     """Custom exception raised when the OTRF dataset directory cannot be found."""
     pass
+from sentinel_prime.core.config_manager import config
 
 def get_otrf_path() -> Path:
-    env_path = os.environ.get("OTRF_DATASET_PATH")
+    env_path = config.OTRF_DATASET_PATH
     if env_path:
         path = Path(env_path)
         if path.exists():

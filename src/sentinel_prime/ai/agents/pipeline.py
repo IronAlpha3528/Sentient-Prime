@@ -6,7 +6,6 @@ from sentinel_prime.core.framework import Framework
 from .analysis_agent import AnalysisAgent
 from .critique_agent import CritiqueAgent
 from .action_agent import ActionAgent
-from .apt_attribution import attribute_and_predict
 from sentinel_prime.soar.risk_scoring.scorer import score_and_rank_actions
 
 logger = logging.getLogger(__name__)
@@ -33,17 +32,20 @@ def run_pipeline(evidence: Dict[str, Any]) -> Dict[str, Any]:
         context.incident_id = incident_id
     except Exception as e:
         logger.error(f"Failed to build context: {e}")
-        import uuid, datetime
-        from sentinel_prime.core.context import CorrelationContext
-        now_str = datetime.datetime.now(datetime.timezone.utc).isoformat()
-        context = CorrelationContext(
-            context_id=str(uuid.uuid4()),
-            entity="unknown",
-            time_window=(now_str, now_str),
-            risk_summary=f"ContextBuilder failed to run: {e}",
-            incident_id=incident_id
-        )
-        
+        context = evidence
+
+    # --- INCIDENT MEMORY INJECTION ---
+    from sentinel_prime.core.telemetry.state_db import IncidentStateDB
+    try:
+        memory = IncidentStateDB().get_recent_memory(limit=3)
+        if hasattr(context, "to_dict"):
+            context_dict = context.to_dict()
+            context_dict["incident_memory"] = memory
+            context = context_dict
+        elif isinstance(context, dict):
+            context["incident_memory"] = memory
+    except Exception as e:
+        logger.error(f"Failed to load incident memory: {e}")
     # Stage 1: Analysis Agent (Correlation, Hypothesis, Prediction)
     print("[Stage 1] Running Analysis Agent...")
     analysis_result = AnalysisAgent().run(context)
@@ -99,8 +101,12 @@ def run_pipeline(evidence: Dict[str, Any]) -> Dict[str, Any]:
     print("[Stage 3] Running Action Agent...")
     action_result = ActionAgent().run(analysis_result, critique_result, context=context)
     
-    print("[Legacy compatibility] Running attribution and scoring with real context...")
-    attribution_data = attribute_and_predict(top_hypothesis, context.to_dict())
+    print("[Legacy compatibility] Synthesizing attribution data for frontend...")
+    prediction_data = analysis_result.get("prediction", {})
+    attribution_data = {
+        "attributed_actor": "Unknown (Refactored to AnalysisAgent)",
+        "predicted_next_techniques": [{"name": prediction_data.get("likely_next_technique", "Unknown")}]
+    }
     scoring_data = score_and_rank_actions(top_hypothesis, attribution_data)
 
     response_agent_plan = {

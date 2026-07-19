@@ -11,6 +11,7 @@ from sentinel_prime.soar.orchestrator.playbooks import get_playbook
 from sentinel_prime.soar.orchestrator.actions import execute_action
 from sentinel_prime.core.telemetry.ledger import AuditLedger
 from sentinel_prime.core.telemetry.monitoring.monitor import Monitor
+from sentinel_prime.core.telemetry.state_db import IncidentStateDB
 
 
 logger = logging.getLogger(__name__)
@@ -37,6 +38,7 @@ class SOARDispatcher:
         self.ledger = ledger or AuditLedger()
         self.monitor = monitor or Monitor()
         self.verification_engine = VerificationEngine(ledger=self.ledger)
+        self.state_db = IncidentStateDB()
 
     def dispatch(self, incident: dict[str, Any]) -> dict[str, Any]:
         incident_data = self._prepare_incident(incident)
@@ -90,6 +92,7 @@ class SOARDispatcher:
             self.verification_engine.states[incident_id] = IncidentState.ESCALATED
             self._record("escalation", result, incident_id)
             self._record("monitor_outcome", result["outcome"], incident_id)
+            self.state_db.upsert_incident(incident_id, "ESCALATED", incident_data)
             return result
 
         action_results = []
@@ -108,12 +111,29 @@ class SOARDispatcher:
         result["outcome"] = outcome
         self._record("monitor_outcome", result["outcome"], incident_id)
 
-        # Trigger asynchronous closed-loop verification
         if outcome.get("status") == "RESOLVED":
             self.verification_engine.verify_incident(incident_data, action_results)
+            self.state_db.upsert_incident(incident_id, "RESOLVED", incident_data)
         else:
             self.verification_engine.transition_state(incident_id, IncidentState.FAILED, "Containment action execution failed")
             self.verification_engine.transition_state(incident_id, IncidentState.ESCALATED, "Containment action execution failed")
+            self.state_db.upsert_incident(incident_id, "ESCALATED", incident_data)
+            
+        # --- FEEDBACK LOOP ---
+        try:
+            from datetime import datetime, timezone
+            from sentinel_prime.detection.correlation.evidence_stream import EvidenceStream
+            stream = EvidenceStream()
+            stream.publish({
+                "source": "soar_dispatcher",
+                "type": "containment_feedback",
+                "incident_id": incident_id,
+                "status": outcome.get("status"),
+                "actions_executed": [a.get("action") for a in action_results],
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            })
+        except Exception as e:
+            logger.error("Failed to publish feedback loop: %s", e)
             
         return result
 

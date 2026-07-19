@@ -1,12 +1,12 @@
-import os
 import json
 from google import genai
 from google.genai import types
 from pydantic import BaseModel
 from typing import Type, Any, Dict
+from sentinel_prime.core.config_manager import config
 
 def get_gemini_client():
-    api_key = os.getenv("GEMINI_API_KEY")
+    api_key = config.GEMINI_API_KEY
     if not api_key:
         raise ValueError("GEMINI_API_KEY environment variable is missing. Please set it in your .env file or environment.")
     return genai.Client(api_key=api_key)

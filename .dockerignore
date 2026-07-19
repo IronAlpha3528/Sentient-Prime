@@ -1,0 +1,11 @@
+node_modules/
+venv/
+.git/
+.gitignore
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+dashboard/frontend/node_modules/
+dashboard/frontend/dist/
+.vscode/

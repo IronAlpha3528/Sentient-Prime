@@ -63,6 +63,16 @@ The dashboard should include:
 
 ---
 
+## 1.5 Codebase Technical Debt
+
+### Resolve Frontend Split-Brain
+The repository currently contains both `dashboard/app.py` (a Streamlit dashboard) and `dashboard/frontend/` (a React dashboard). This duplication creates confusion over which is the official interface and splits development efforts. The Streamlit app should be deleted.
+
+### Migrate Flask API to FastAPI
+The `README.md` and `ARCHITECTURE.md` explicitly mandate a "Unified FastAPI Backend". However, the `dashboard/api_server.py` is written in Flask. We must rewrite the API server in FastAPI to align with the documentation.
+
+---
+
 ## 2. Infrastructure & APIs (Sprint 3)
 
 ### Unified FastAPI Backend

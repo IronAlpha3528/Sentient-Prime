@@ -23,14 +23,14 @@ from pathlib import Path
 from flask import Flask, jsonify, request
 from functools import wraps
 # Configuration (from environment or defaults)
-# ---------------------------------------------------------------------------
+from sentinel_prime.core.config_manager import config
 
-ES_HOST = os.getenv("ES_HOST", "http://localhost:9200")  # default to local docker instance
-ES_INDEX = os.getenv("ES_INDEX", "sentinel-honeypot")
-ES_API_KEY = os.getenv("ES_API_KEY", "")
-LOG_DIR = Path(os.getenv("HONEYPOT_LOG_DIR", "data/honeypot_events"))
-RECEIVER_PORT = int(os.getenv("RECEIVER_PORT", "5050"))
-RECEIVER_HOST = os.getenv("RECEIVER_HOST", "0.0.0.0")
+ES_HOST = config.ES_HOST
+ES_INDEX = config.ES_INDEX
+ES_API_KEY = config.ES_API_KEY
+LOG_DIR = config.HONEYPOT_LOG_DIR
+RECEIVER_PORT = config.RECEIVER_PORT
+RECEIVER_HOST = config.RECEIVER_HOST
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -240,11 +240,34 @@ def health():
     )
 
 
-HONEYPOT_API_KEY = os.getenv("HONEYPOT_API_KEY")
+import time
+
+# --- RATE LIMITING ---
+RATE_LIMIT = 20 # requests per minute
+RATE_LIMIT_WINDOW = 60 # seconds
+ip_tracker = {}
+
+def rate_limit(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        client_ip = request.remote_addr
+        now = time.time()
+        if client_ip in ip_tracker:
+            ip_tracker[client_ip] = [t for t in ip_tracker[client_ip] if now - t < RATE_LIMIT_WINDOW]
+        else:
+            ip_tracker[client_ip] = []
+            
+        if len(ip_tracker[client_ip]) >= RATE_LIMIT:
+            return jsonify({"error": "Too Many Requests (Rate Limited)"}), 429
+            
+        ip_tracker[client_ip].append(now)
+        return f(*args, **kwargs)
+    return decorated_function
 
 def require_api_key(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        HONEYPOT_API_KEY = config.HONEYPOT_API_KEY
         if HONEYPOT_API_KEY:
             api_key = request.headers.get("X-API-Key")
             if not api_key or api_key != HONEYPOT_API_KEY:
@@ -255,6 +278,7 @@ def require_api_key(f):
 
 
 @app.route("/webhook/canarytoken", methods=["POST"])
+@rate_limit
 @require_api_key
 def canarytoken_webhook():
     """
@@ -293,6 +317,7 @@ def canarytoken_webhook():
 
 
 @app.route("/webhook/conpot", methods=["POST"])
+@rate_limit
 @require_api_key
 def conpot_webhook():
     """
