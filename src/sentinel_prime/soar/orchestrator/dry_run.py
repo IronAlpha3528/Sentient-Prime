@@ -45,8 +45,22 @@ class DryRun:
         overall_passes = True
         overall_blast_radius = "LOW"
 
+        graph = incident.get("graph_topology")
+        target = incident.get("entity_id") or incident.get("asset")
+
         for action in actions:
             rule = ACTION_RULES.get(action, UNKNOWN_ACTION_RULE)
+            
+            # Use dynamic graph traversal for isolation impact
+            if action == "isolate_host" and graph and target:
+                dynamic = simulate_action(action, target, graph)
+                blast = dynamic["simulated_impact_level"].upper()
+                rule = rule.copy()
+                rule["blast_radius"] = blast
+                if blast == "LOW":
+                    rule["passes"] = True
+                else:
+                    rule["passes"] = False
 
             predictions.append(
                 {

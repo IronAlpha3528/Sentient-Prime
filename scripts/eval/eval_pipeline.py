@@ -528,16 +528,34 @@ class PipelineEvaluator:
                             seen.add(t)
                             unique_techs.append(t)
                     predicted_techniques = unique_techs
+                    
+                    # Store for the SOAR dispatcher
+                    ai_response_plan = pipeline_out
+                    
                 except Exception as e:
                     print(f"          ⚠️  Pipeline failed: {e}")
                     predicted_techniques = rag_candidates
                     timings.append(0.0)
+                    ai_response_plan = {}
             else:
                 # Fallback directly to blind RAG candidate set
                 predicted_techniques = rag_candidates
                 timings.append(0.0)
+                ai_response_plan = {}
 
             # --- 5. SOAR DISPATCHER ---
+            # Build an adjacency list for the dry run simulator to calculate blast radius
+            graph_topology = {}
+            if hasattr(self.framework.graph_manager.store, '_graph'):
+                g = self.framework.graph_manager.store._graph
+                for u, v in g.edges():
+                    if u not in graph_topology:
+                        graph_topology[u] = []
+                    graph_topology[u].append(v)
+                    if v not in graph_topology:
+                        graph_topology[v] = []
+                    graph_topology[v].append(u)
+
             incident = {
                 "incident_id": incident_id,
                 "entity_id": entity_id,
@@ -548,13 +566,16 @@ class PipelineEvaluator:
                 "risk_score": score_meta * 100,
                 "asset": entity_id,
                 "entities": sample["entities"],
-                "response_agent_plan": {
-                    "recommended_actions": [
-                        {"action_name": "block_ip", "confidence": score_meta, "rationale": "Unified Meta Threat alert"},
-                    ]
-                } if score_meta >= 0.5 else {"recommended_actions": []},
+                "response_agent_plan": ai_response_plan if ai_response_plan else (
+                    {
+                        "recommended_actions": [
+                            {"action_name": "block_ip", "confidence": score_meta, "rationale": "Unified Meta Threat alert"},
+                        ]
+                    } if score_meta >= 0.5 else {"recommended_actions": []}
+                ),
                 "deception_strategy": {"is_testable": False},
                 "top_hypothesis_selected": {"confidence": score_meta, "is_malicious": score_meta >= 0.5},
+                "graph_topology": graph_topology,
             }
 
             # Emit trace events for the audit ledger

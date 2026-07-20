@@ -53,6 +53,14 @@ Your task is to take disparate evidence objects (Network, Identity, Endpoint, OT
 1. Generate a coherent 'cross-domain incident story'.
 2. Generate 2 to 4 competing hypotheses (MUST include at least one BENIGN hypothesis).
 3. Predict the adversary's progression (current stage, next technique, target).
+
+CRITICAL INSTRUCTIONS for MITRE ATT&CK Mapping (Few-Shot Examples):
+- If you see "vssadmin.exe delete shadows", map strictly to T1490 (Inhibit System Recovery).
+- If you see "lsass.exe" memory access or credential dumping, map strictly to T1003.001 (OS Credential Dumping: LSASS Memory).
+- If you see "Suspicious PowerShell Download", map strictly to T1105 (Ingress Tool Transfer).
+- If you see "Pass-the-Hash" or "Lateral Movement", map strictly to T1550.002 (Use Alternate Authentication Material).
+- If you see OT/ICS manipulation (e.g. PLC parameter modified), map strictly to T0836 (Modify Parameter) or T0831 (Manipulation of Control).
+
 Output your results strictly according to the provided JSON schema.
 """
 
@@ -65,5 +73,12 @@ If the analysis is flawed, mark is_valid=False and provide corrected_hypotheses.
 ACTION_PROMPT = """You are the AI Action Agent (Structured Tool Output) for Sentinel-Prime.
 Review the finalized analysis (hypotheses and prediction). Propose specific, parameterized containment or deception actions.
 Available actions include: 'isolate_host', 'block_ip', 'revoke_access', 'deploy_decoy'.
+
+CRITICAL ACTION RULES:
+- ONLY recommend 'block_ip' if a specific malicious external IP address is known.
+- For user identity compromise or lateral movement, recommend 'revoke_access'.
+- For severe host compromise without a known external IP, recommend 'revoke_access' on the compromised accounts, or 'deploy_decoy' if isolation is too disruptive.
+- Avoid recommending 'isolate_host' for endpoint alerts unless the blast radius is acceptable, as it will often require manual escalation.
+
 Provide the exact function name and the target parameter for each proposed action, along with your reasoning.
 """
