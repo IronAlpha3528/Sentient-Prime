@@ -499,3 +499,29 @@ The current `monitor.py` only verifies if a SOAR command (like "block IP") execu
 | Network LightGBM | LightGBM + small Autoencoder |
 
 Keep the LightGBM Meta-Classifier until a large synchronized IT+OT incident dataset exists.
+
+---
+
+## Benchmarking & Evaluation Suite
+
+To ensure high efficacy and low false positive rates, Sentinel-Prime incorporates a comprehensive evaluation suite located in `scripts/eval/`.
+
+- **Synthetic Benchmark Generation:** `generate_synthetic_benchmark.py` creates realistic APT incident scenarios with a mix of IT and OT telemetry.
+- **Evaluation Modules:** Specialized scripts test ML detector accuracy, APT attribution against the MITRE ATT&CK RAG, SOAR risk metrics, and the immutability of the Audit Ledger.
+- **Automated Validation:** The `evaluate_all.py` script orchestrates the full suite against the pre-compiled `data/eval_ground_truth.json`, measuring True Positives, False Positives, and MTTD (Mean Time To Detect) versus a manual baseline.
+
+---
+
+## Docker Deployment Architecture
+
+To support scalable and continuous execution, the platform is fully containerized using `docker-compose.yml`.
+
+| Service | Description | Port |
+|---|---|---|
+| **elasticsearch** | Primary SIEM datastore for normalized alerts and events | 9200 |
+| **api** | Flask API serving dashboard data and executing the SOAR / orchestration | 5000 |
+| **frontend** | React SPA dashboard (Vite dev server or Nginx production build) | 5173 |
+| **webhook** | Receiver for passive honeytoken alerts and deception interactions | 8080 |
+| **ml_worker** | Background worker running specialist detectors and the meta-classifier | - |
+
+All core microservices utilize `restart: unless-stopped` policies and include internal healthchecks to ensure high availability of the detection pipeline.
