@@ -189,7 +189,14 @@ class MetaClassifier:
                 # Model-based inference
                 df = pd.DataFrame([cleaned_feats], columns=self.feature_columns)
                 probs = self.model.predict_proba(df)[0]
-                unified_score = float(probs[1]) # probability of malicious class
+                raw_prob = float(probs[1]) # probability of malicious class
+                
+                # Pseudo-calibration: soften extreme probabilities to prevent threshold blowout
+                # Maps 0.999 -> ~0.90, preserving rank order but compacting extremes
+                if raw_prob > 0.5:
+                    unified_score = 0.5 + 0.45 * (1.0 - np.exp(-3.0 * (raw_prob - 0.5)))
+                else:
+                    unified_score = 0.5 - 0.45 * (1.0 - np.exp(-3.0 * (0.5 - raw_prob)))
                 
                 # Confidence estimation: 0.5 * model probability certainty + 0.5 * input confidence
                 model_certainty = 2.0 * abs(unified_score - 0.5)
@@ -324,28 +331,32 @@ class MetaClassifier:
         
         base_score = weighted_sum / weight_normalizer if weight_normalizer > 0 else 0.0
 
-        # Adjust score upwards if there is evidence diversity (multi-stage attack indicators)
+        # Adjust score via multipliers rather than additive bounds-busting
+        multiplier = 1.0
+        
         diversity = cleaned_feats["evidence_diversity"]
         if diversity > 1:
-            base_score += 0.05 * (diversity - 1)
+            multiplier += 0.05 * min(diversity - 1, 4.0)
 
         # Incorporate graph metrics (blast-radius / reachability multiplier)
         pagerank = cleaned_feats["pagerank"]
         deg_centrality = cleaned_feats["degree_centrality"]
         if pagerank > 0.1 or deg_centrality > 0.1:
-            base_score += 0.05
+            multiplier += 0.05
 
         # Incorporate Threat Intel matches
         ti_score = cleaned_feats["max_threat_intel_score"]
         if ti_score > 0.5:
-            base_score += 0.05
+            multiplier += 0.05
+            
+        base_score = min(base_score * multiplier, 0.99)
 
         # max_active override: only applied when 2+ detectors are firing to reduce
         # single-detector false-positive propagation. Multiplier reduced to 0.75.
         if n_active >= 2:
-            unified_score = float(np.clip(max(base_score, max_active * 0.75), 0.0, 1.0))
+            unified_score = float(np.clip(max(base_score, max_active * 0.75), 0.0, 0.99))
         else:
-            unified_score = float(np.clip(base_score, 0.0, 1.0))
+            unified_score = float(np.clip(base_score, 0.0, 0.99))
 
         # Fallback confidence calculation based on mean detector confidence
         detector_confs = [
