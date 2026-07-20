@@ -7,7 +7,7 @@ class RateLimiter:
     A thread-safe rate limiter that tracks API requests per key.
     Ensures that no single key exceeds the limit of 15 requests per minute.
     """
-    def __init__(self, limit: int = 15, window_seconds: int = 60):
+    def __init__(self, limit: int = 14, window_seconds: int = 62):
         self.limit = limit
         self.window_seconds = window_seconds
         self.requests_per_key = {}

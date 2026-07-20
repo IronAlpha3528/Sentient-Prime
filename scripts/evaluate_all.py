@@ -20,6 +20,10 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+# Force UTF-8 output on Windows to handle box-drawing characters in banners
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
@@ -187,6 +191,9 @@ def _build_markdown(ml: dict, apt: dict, soar: dict, ledger: dict) -> str:
         "## 4. MTTD / MTTR Improvement vs Manual SOC Baseline\n",
         "> Baseline: IBM X-Force Threat Intelligence Index 2023 (MTTD ≈ 45 min alert-to-triage),",
         "> IBM Cost of a Data Breach 2023 (MTTR ≈ 12 hours triage-to-contain).\n",
+        "> **Scope note:** Sentient-Prime MTTD = time from event intake to detection flag & routing.",
+        "> Sentient-Prime MTTR = AI analysis + SOAR dispatch decision latency (not physical containment).",
+        "> The improvement factor reflects **AI-assisted triage speed**, not end-to-end remediation time.\n",
     ]
     mttd_ms = soar.get("avg_mttd_ms", "N/A")
     mttr_ms = soar.get("avg_mttr_ms", "N/A")
@@ -197,8 +204,8 @@ def _build_markdown(ml: dict, apt: dict, soar: dict, ledger: dict) -> str:
     lines += [
         "| | Sentient-Prime | Manual SOC Baseline | Improvement |",
         "|---|---|---|---|",
-        f"| MTTD | **{mttd_ms}ms** | {base_mttd} min | **{mttd_x}× faster** |",
-        f"| MTTR | **{mttr_ms}ms** | {base_mttr} min | **{mttr_x}× faster** |",
+        f"| MTTD (alert-to-detection flag) | **{mttd_ms}ms** | {base_mttd} min | **{mttd_x}× faster** |",
+        f"| MTTR (AI analysis + dispatch) | **{mttr_ms}ms** | {base_mttr} min | **{mttr_x}× faster (triage only)** |",
     ]
 
     lines += [

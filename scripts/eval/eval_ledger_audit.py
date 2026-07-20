@@ -53,9 +53,9 @@ def verify_hash_chain(entries: list[dict]) -> dict:
     errors = []
     genesis_ok = True
 
-    # First entry should have prev_hash = "0" * 64 or null
+    # First entry should have prev_hash = "0" * 64, null, "genesis", or ""
     first = entries[0]
-    if first.get("prev_hash") not in (None, "0" * 64, "genesis"):
+    if first.get("prev_hash") not in (None, "0" * 64, "genesis", ""):
         genesis_ok = False
         errors.append(f"Entry 0: unexpected genesis prev_hash = {first.get('prev_hash')!r}")
 
@@ -65,7 +65,7 @@ def verify_hash_chain(entries: list[dict]) -> dict:
 
         # Recompute hash of prev_entry (excluding its own 'hash' field to avoid circularity)
         prev_for_hash = {k: v for k, v in prev_entry.items() if k != "hash"}
-        canonical = json.dumps(prev_for_hash, sort_keys=True, ensure_ascii=False)
+        canonical = json.dumps(prev_for_hash, sort_keys=True, separators=(",", ":"), default=str)
         expected_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
         actual_prev_hash = curr_entry.get("prev_hash", "")

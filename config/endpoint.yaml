@@ -9,7 +9,7 @@ risk_threshold: 0.75
 
 # Models & Rules Path
 model_directory: "models/endpoint"
-sigma_directory: "detectors/sigma_rules"
+sigma_directory: "src/sentinel_prime/detection/detectors/sigma_rules"
 
 # Runtime Execution
 batch_size: 1000

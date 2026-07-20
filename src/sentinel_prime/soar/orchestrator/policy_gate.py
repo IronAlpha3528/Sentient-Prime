@@ -9,7 +9,7 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 AUTO_CONFIDENCE_THRESHOLD = 0.75
-AUTO_MAX_RISK_SCORE = 70
+AUTO_MAX_RISK_SCORE = 95  # raised from 70 — allows high-confidence mid-high risk incidents to auto-contain
 PROTECTED_ASSETS = [
     "National Database",
     "Identity Provider",

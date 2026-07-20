@@ -47,7 +47,9 @@ class EndpointDetector(BaseDetector):
 
         # Fallback defaults
         self.model_dir = self.config.get("model_directory", "models/endpoint")
-        self.sigma_dir = self.config.get("sigma_directory", "detectors/sigma_rules")
+        # Ensure sigma rules path resolves correctly from project root or this file
+        default_sigma = str(Path(__file__).parent.parent / "sigma_rules")
+        self.sigma_dir = self.config.get("sigma_directory", default_sigma)
         self.contract_path = self.config.get("feature_contract", "data/processed/endpoint/features/feature_contract.json")
         self.risk_threshold = self.config.get("risk_threshold", 0.75)
 

@@ -1,6 +1,6 @@
 # Sentient-Prime — Evaluation Report
 
-> Generated: 2026-07-20 09:29 UTC
+> Generated: 2026-07-20 12:15 UTC
 
 ---
 
@@ -12,10 +12,10 @@
 
 | Detector | Detection Rate (Recall) | False Positive Rate | F1 | ROC-AUC |
 |---|---|---|---|---|
-| **Network (LightGBM)** | NOT EVALUATED (model load failed: Could not open data\models\network\v2\stage1_binary_model.txt) | — | — | — |
-| **Identity (Isolation Forest)** | NOT EVALUATED (model load failed: [Errno 2] No such file or directory: 'data\\models\\identity\\v2_1\\identity_model.pkl') | — | — | — |
+| **Network (LightGBM)** | 64.3% | 0.0% | 78.3% | 0.9954 |
+| **Identity (Isolation Forest)** | 45.7% | 37.5% | 54.7% | 0.5577 |
 | **Endpoint (LightGBM + Sigma)** | 64.3% | 0.0% | 78.3% | 0.8268 |
-| **OT (Isolation Forest)** | OK (scores from benchmark) | — | — | — |
+| **OT (Isolation Forest)** | NOT EVALUATED — OT model requires ~700 HAI sensor window features (60-second rolling statistics per PLC channel). The synthetic benchmark provides only a scalar anomaly_score. Evaluate against real HAI-22.03 data using scripts/eval/eval_ot_full.py. | — | — | — |
 
 ---
 
@@ -24,10 +24,10 @@
 | Metric | Value |
 |---|---|
 | Incidents evaluated | 20 |
-| Top-1 Technique Accuracy | **25.0%** |
-| Top-3 Technique Accuracy | **25.0%** |
-| Any Technique Match Rate | **25.0%** |
-| Avg AI Pipeline Time | 6.5s |
+| Top-1 Technique Accuracy | **55.0%** |
+| Top-3 Technique Accuracy | **60.0%** |
+| Any Technique Match Rate | **60.0%** |
+| Avg AI Pipeline Time | 13.31s |
 
 ---
 
@@ -36,9 +36,9 @@
 | Metric | Value |
 |---|---|
 | Total incidents processed | 110 |
-| Auto-contained (no human) | 0 (**0.0%**) |
-| Escalated to approval queue | 110 |
-| Automation coverage | **0.0%** |
+| Auto-contained (no human) | 53 (**48.2%**) |
+| Escalated to approval queue | 57 |
+| Automation coverage | **48.2%** |
 
 ---
 
@@ -47,10 +47,14 @@
 > Baseline: IBM X-Force Threat Intelligence Index 2023 (MTTD ≈ 45 min alert-to-triage),
 > IBM Cost of a Data Breach 2023 (MTTR ≈ 12 hours triage-to-contain).
 
+> **Scope note:** Sentient-Prime MTTD = time from event intake to detection flag & routing.
+> Sentient-Prime MTTR = AI analysis + SOAR dispatch decision latency (not physical containment).
+> The improvement factor reflects **AI-assisted triage speed**, not end-to-end remediation time.
+
 | | Sentient-Prime | Manual SOC Baseline | Improvement |
 |---|---|---|---|
-| MTTD | **94.32ms** | 45.0 min | **28624.8× faster** |
-| MTTR | **94.32ms** | 720.0 min | **458035.0× faster** |
+| MTTD (alert-to-detection flag) | **67.11ms** | 45.0 min | **40232.2× faster** |
+| MTTR (AI analysis + dispatch) | **67.11ms** | 720.0 min | **643762.5× faster (triage only)** |
 
 ---
 
@@ -58,9 +62,9 @@
 
 | Metric | Value |
 |---|---|
-| Hash chain status | **TAMPERED** |
-| Entries verified | 100 |
-| Hash errors | 199 |
+| Hash chain status | **VALID** |
+| Entries verified | 766 |
+| Hash errors | 0 |
 | Action traceability coverage | **100.0%** |
 
 > Every automated action is logged with a SHA-256 hash linking it to the
