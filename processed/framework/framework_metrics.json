@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-18T14:01:14.384623+00:00",
+  "timestamp": "2026-07-20T05:50:13.329003+00:00",
   "evidence_processed": 1,
   "nodes_created": 2,
   "edges_created": 2,
@@ -8,8 +8,8 @@
     "edges": 2
   },
   "contexts_generated": 1,
-  "average_context_generation_time_ms": 705.6329250335693,
-  "average_graph_query_time_ms": 70.56329250335693,
+  "average_context_generation_time_ms": 1332.8542709350586,
+  "average_graph_query_time_ms": 133.28542709350586,
   "duplicates_removed": 0,
   "validation_failures": 0
 }

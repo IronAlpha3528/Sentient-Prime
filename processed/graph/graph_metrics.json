@@ -40,8 +40,8 @@
       "USER:adm_aanoush"
     ],
     [
-      "PROCESS:HOST:ENG-WS-01:unknown",
-      "HOST:HOST:ENG-WS-01"
+      "HOST:HOST:ENG-WS-01",
+      "PROCESS:HOST:ENG-WS-01:unknown"
     ],
     [
       "USER:USER:adm_aanoush"

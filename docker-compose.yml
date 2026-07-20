@@ -1,4 +1,5 @@
 services:
+  # ── SIEM (Elasticsearch) ────────────────────────────────────────────────────
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
     container_name: sentinel-elasticsearch
@@ -11,7 +12,15 @@ services:
       - "9300:9300"
     volumes:
       - esdata:/usr/share/elasticsearch/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
+  # ── Flask API Backend ───────────────────────────────────────────────────────
   api:
     build: 
       context: .
@@ -23,13 +32,23 @@ services:
       - ES_HOST=http://elasticsearch:9200
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - API_HOST=0.0.0.0
+      - LOG_LEVEL=INFO
     volumes:
       - .:/app
       - ./data:/app/data
       - ./processed:/app/processed
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/api/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
 
+  # ── React Frontend (dev server) ─────────────────────────────────────────────
   frontend:
     build:
       context: .
@@ -43,23 +62,53 @@ services:
       - ./dashboard/frontend:/app
       - /app/node_modules
     depends_on:
-      - api
+      api:
+        condition: service_healthy
+    restart: unless-stopped
 
-#   webhook:
-#     build:
-#       context: .
-#       dockerfile: Dockerfile.webhook
-#     container_name: sentinel-webhook
-#     ports:
-#       - "5050:5050"
-#     environment:
-#       - ES_HOST=http://elasticsearch:9200
-#       - RECEIVER_HOST=0.0.0.0
-#       - HONEYPOT_API_KEY=${HONEYPOT_API_KEY}
-#     volumes:
-#       - ./data:/app/data
-#     depends_on:
-#       - elasticsearch
+  # ── Honeypot Webhook Receiver ────────────────────────────────────────────────
+  webhook:
+    build:
+      context: .
+      dockerfile: Dockerfile.webhook
+    container_name: sentinel-webhook
+    ports:
+      - "5050:5050"
+    environment:
+      - ES_HOST=http://elasticsearch:9200
+      - RECEIVER_HOST=0.0.0.0
+      - RECEIVER_PORT=5050
+      - HONEYPOT_API_KEY=${HONEYPOT_API_KEY:-}
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ── ML Worker / Demo Pipeline Runner ─────────────────────────────────────────
+  # Runs the Phase-1 ingestion and AI pipeline once on startup for demo purposes.
+  # Remove or change `command` to run a long-running worker if needed.
+  ml_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: sentinel-ml-worker
+    command: ["python", "run_phase1.py"]
+    environment:
+      - ES_HOST=http://elasticsearch:9200
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - LOG_LEVEL=INFO
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./processed:/app/processed
+      - ./models:/app/models
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: "no"
 
 volumes:
   esdata:
