@@ -8,7 +8,18 @@ from sentinel_prime.ai.agents.rag.providers.historical_incident import Historica
 from sentinel_prime.core.context.context_builder import ContextBuilder
 from sentinel_prime.core.graph.graph_manager import GraphManager
 
-def test_incident_memory_crud_and_indexing(tmp_path):
+def test_incident_memory_crud_and_indexing(tmp_path, monkeypatch):
+    class MockModel:
+        def encode(self, texts, **kwargs):
+            import numpy as np
+            if isinstance(texts, list):
+                return np.array([[0.1] * 384] * len(texts))
+            return np.array([[0.1] * 384])
+    monkeypatch.setattr(
+        "sentinel_prime.ai.agents.rag.providers.historical_incident.SentenceTransformer",
+        lambda *args, **kwargs: MockModel()
+    )
+
     index_dir = str(tmp_path / "index")
     db_path = str(tmp_path / "historical_incidents_db.json")
     
@@ -74,6 +85,36 @@ def test_incident_memory_crud_and_indexing(tmp_path):
     assert len(provider._incidents) == 0
 
 def test_context_builder_integration(tmp_path, monkeypatch):
+    class MockModel:
+        def encode(self, texts, **kwargs):
+            import numpy as np
+            if isinstance(texts, list):
+                return np.array([[0.1] * 384] * len(texts))
+            return np.array([[0.1] * 384])
+    monkeypatch.setattr(
+        "sentinel_prime.ai.agents.rag.providers.historical_incident.SentenceTransformer",
+        lambda *args, **kwargs: MockModel()
+    )
+    monkeypatch.setattr(query, "_model", MockModel())
+    if not query._graph_config:
+        query.load_config()
+    monkeypatch.setitem(query._graph_config, "enable_reranking", False)
+
+    original_query_dense = query._query_dense_provider
+    original_query_bm25 = query._query_bm25_provider
+
+    # Mock attack provider to avoid loading it
+    def mock_query_dense(provider_name, query_str, limit):
+        if provider_name == "attack":
+            return []
+        return original_query_dense(provider_name, query_str, limit)
+    def mock_query_bm25(provider_name, query_str, limit):
+        if provider_name == "attack":
+            return []
+        return original_query_bm25(provider_name, query_str, limit)
+    monkeypatch.setattr(query, "_query_dense_provider", mock_query_dense)
+    monkeypatch.setattr(query, "_query_bm25_provider", mock_query_bm25)
+
     index_dir = str(tmp_path / "index")
     db_path = str(tmp_path / "historical_incidents_db.json")
     
