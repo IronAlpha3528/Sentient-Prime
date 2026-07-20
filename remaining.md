@@ -1,25 +1,22 @@
 # Current Focus
 
-The project has reached the stage where **all Sprint 1–3 features are implemented**, the Flask API is fully operational, and the dashboard is complete. The remaining work is infrastructure hardening, a deferred async verification loop, and the (optional) FastAPI migration.
+The project has reached the stage where **all Sprint 1–4 features are implemented**, the FastAPI backend is fully operational, and the dashboard is complete. All critical milestones have been met.
 
 ---
 
-# 🔴 MUST COMPLETE BEFORE HACKATHON
+# ✅ COMPLETED
 
 ---
 
 ## 1. Continuous Execution & Closed-Loop Verification
-- **What it is:** The architecture requires an asynchronous task queue (Celery/APScheduler) or a Kafka/FastAPI streaming webhook to transition incidents to `VERIFICATION_PENDING` and check the SIEM 5 minutes after a SOAR action.
-- **Status:** The system currently relies on a static, one-shot demonstration wrapper (`run_phase1.py`) and simple sync checks.
-- **Requirement:** Implement the asynchronous deferred verification task loop.
+**DONE:**
+- `VerificationEngine` in `soar/orchestrator/verification.py` runs asynchronous daemon-thread verification loops after every SOAR action.
+- Full `IncidentState` machine: `OPEN → INVESTIGATING → CONTAINMENT_IN_PROGRESS → VERIFICATION_PENDING → CONTAINED / PARTIALLY_CONTAINED / ESCALATED / RESOLVED / FAILED`.
+- Ground-truth check queries the Cyber Knowledge Graph for fresh telemetry post-containment, with configurable retry count, delay, and timeout.
+- Escalation triggers backup playbooks automatically; verification results fed back into the EvidenceBus as closed-loop feedback.
+- Wired into `SOARDispatcher.dispatch()` — fires automatically on every resolved incident.
 
----
-
-# 🟡 SHOULD COMPLETE
-
----
-
-## 2. Dashboard Polish (Sprint 2)
+## 2. Dashboard Polish
 **DONE:**
 - **AI Reasoning Panel** — Live SSE streaming panel in `AIReasoning.tsx` showing all 3 agent stages.
 - **Human Approval Queue** — Full page at `/approval-queue` with Approve/Reject buttons.
@@ -27,23 +24,20 @@ The project has reached the stage where **all Sprint 1–3 features are implemen
 - **Live Monitoring** — `Overview.tsx` auto-refreshes every 10 seconds with a LIVE badge.
 - **Cyber Graph Visualization** — `ThreatGraphPage.tsx` has interactive canvas graph with filters.
 
-## 3. Migrate Flask API to FastAPI
-**SKIPPED (by user request).** Flask API is stable and fully functional. Can be migrated in the future when time permits.
-
-## 4. Full Docker Support
+## 3. Full Docker Support
 **DONE:**
 - `docker-compose.yml` expanded with 5 services: `elasticsearch`, `api`, `frontend`, `webhook`, `ml_worker`.
 - Healthchecks added for `elasticsearch` and `api`.
 - `restart: unless-stopped` policy on all long-running services.
 - `Dockerfile.webhook` already exists and is now wired in.
 
-## 5. Central Configuration Manager
+## 4. Central Configuration Manager
 **DONE:**
 - `config_manager.py` expanded with all missing keys: `DATA_DIR`, `PROCESSED_DIR`, `DECOY_DIR`, `AUDIT_LEDGER_PATH`, `MODEL_PATH`, `LOG_LEVEL`.
 - Type annotations added throughout.
 - All modules already import via `from sentinel_prime.core.config_manager import config`.
 
-## 6. Benchmarking & Evaluation Suite
+## 5. Benchmarking & Evaluation Suite
 **DONE:**
 - Full benchmarking suite merged into `scripts/eval/`.
 - Synthetic benchmark generation added (`scripts/generate_synthetic_benchmark.py`).
