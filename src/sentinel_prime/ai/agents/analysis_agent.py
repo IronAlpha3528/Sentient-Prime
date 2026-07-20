@@ -3,11 +3,14 @@ from typing import Optional, Any
 from .base_agent import BaseAgent
 from .prompts import ANALYSIS_PROMPT, AnalysisResult
 
+from sentinel_prime.core.config_manager import config
+
 class AnalysisAgent:
     def __init__(self):
         self.agent = BaseAgent(
             system_instruction=ANALYSIS_PROMPT,
-            response_schema=AnalysisResult
+            response_schema=AnalysisResult,
+            api_key=config.GEMINI_API_KEY_ANALYSIS
         )
         
     def run(self, context: Optional[Any] = None) -> dict:

@@ -3,11 +3,14 @@ from typing import Optional, Any
 from .base_agent import BaseAgent
 from .prompts import ACTION_PROMPT, ActionPlan
 
+from sentinel_prime.core.config_manager import config
+
 class ActionAgent:
     def __init__(self):
         self.agent = BaseAgent(
             system_instruction=ACTION_PROMPT,
-            response_schema=ActionPlan
+            response_schema=ActionPlan,
+            api_key=config.GEMINI_API_KEY_ACTION
         )
         
     def run(self, analysis: dict, critique: dict, context: Optional[Any] = None) -> dict:

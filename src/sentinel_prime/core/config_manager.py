@@ -19,6 +19,18 @@ class ConfigManager:
     @property
     def GEMINI_API_KEY(self) -> str:
         return os.getenv("GEMINI_API_KEY", "")
+        
+    @property
+    def GEMINI_API_KEY_ANALYSIS(self) -> str:
+        return os.getenv("GEMINI_API_KEY_ANALYSIS", self.GEMINI_API_KEY)
+        
+    @property
+    def GEMINI_API_KEY_CRITIQUE(self) -> str:
+        return os.getenv("GEMINI_API_KEY_CRITIQUE", self.GEMINI_API_KEY)
+        
+    @property
+    def GEMINI_API_KEY_ACTION(self) -> str:
+        return os.getenv("GEMINI_API_KEY_ACTION", self.GEMINI_API_KEY)
     
     # ── Elasticsearch / SIEM ─────────────────────────────────────────────────
     @property

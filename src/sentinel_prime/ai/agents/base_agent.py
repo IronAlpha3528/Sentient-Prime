@@ -4,21 +4,26 @@ from google.genai import types
 from pydantic import BaseModel
 from typing import Type, Any, Dict
 from sentinel_prime.core.config_manager import config
+from sentinel_prime.ai.agents.rate_limiter import rate_limiter
 
-def get_gemini_client():
-    api_key = config.GEMINI_API_KEY
+def get_gemini_client(api_key: str):
     if not api_key:
-        raise ValueError("GEMINI_API_KEY environment variable is missing. Please set it in your .env file or environment.")
+        raise ValueError("API key is missing.")
     return genai.Client(api_key=api_key)
 
 class BaseAgent:
-    def __init__(self, system_instruction: str, response_schema: Type[BaseModel]):
+    def __init__(self, system_instruction: str, response_schema: Type[BaseModel], api_key: str):
         self.system_instruction = system_instruction
         self.response_schema = response_schema
-        self.client = get_gemini_client()
+        self.api_key = api_key
+        self.client = get_gemini_client(self.api_key)
         
     def run(self, prompt: str) -> Dict[str, Any]:
         """Runs the agent with the given prompt and returns a structured JSON dictionary."""
+        
+        # Enforce rate limiting based on the specific API key
+        rate_limiter.wait(self.api_key)
+        
         config = types.GenerateContentConfig(
             system_instruction=self.system_instruction,
             temperature=0.0, # Maximum determinism
