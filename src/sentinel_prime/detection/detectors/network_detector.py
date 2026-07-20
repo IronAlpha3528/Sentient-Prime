@@ -24,12 +24,14 @@ class NetworkDetector(BaseDetector):
         self.load_model()
 
     def load_model(self) -> None:
-        self.model_s1 = lgb.Booster(
-            model_file=str(self.model_dir / "stage1_binary_model.txt")
-        )
-        self.model_s2 = lgb.Booster(
-            model_file=str(self.model_dir / "stage2_family_model.txt")
-        )
+        stage1_path = self.model_dir / "stage1_binary_model.txt"
+        stage2_path = self.model_dir / "stage2_family_model.txt"
+        
+        if not stage1_path.exists() or not stage2_path.exists():
+            raise FileNotFoundError(f"Network models not found in {self.model_dir}. Run training scripts first.")
+            
+        self.model_s1 = lgb.Booster(model_file=str(stage1_path))
+        self.model_s2 = lgb.Booster(model_file=str(stage2_path))
         self.family_encoder = joblib.load(
             self.model_dir / "family_label_encoder.pkl"
         )

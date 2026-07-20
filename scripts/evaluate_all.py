@@ -43,13 +43,18 @@ def main() -> None:
 
     _banner("Sentient-Prime — Full Evaluation Suite")
 
-    # ── Step 0: Generate the dataset if missing ───────────────────────────────
+    _banner("Step 0: Generating synthetic benchmark dataset...")
     if not DATASET_PATH.exists():
-        _banner("Step 0: Generating synthetic benchmark dataset...")
         from generate_synthetic_benchmark import main as gen_main
         gen_main()
     else:
         print(f"\n  ✅ Dataset found: {DATASET_PATH.name}  ({_count_lines(DATASET_PATH)} incidents)")
+
+    # Wipe the ledger to ensure a clean hash chain for this evaluation run
+    LEDGER_PATH = PROJECT_ROOT / "data" / "audit_ledger.jsonl"
+    if LEDGER_PATH.exists():
+        LEDGER_PATH.unlink()
+        print(f"  🧹 Cleared previous audit ledger: {LEDGER_PATH.name}")
 
     # ── Step 1: ML Detectors ──────────────────────────────────────────────────
     _banner("Step 1 / 4 — ML Detection Rate & FPR")
