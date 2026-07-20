@@ -1,0 +1,9 @@
+[
+  "auth_count_zscore",
+  "unique_computers_zscore",
+  "mean_auth_gap_zscore",
+  "has_auth_gap",
+  "fanout_rate_zscore",
+  "new_computer_ratio",
+  "off_hours_flag"
+]
