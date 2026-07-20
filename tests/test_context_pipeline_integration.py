@@ -3,7 +3,22 @@ import pytest
 from sentinel_prime.core.framework import Framework
 from sentinel_prime.core.evidence.base_evidence import BaseEvidence
 
-def test_full_context_pipeline_integration():
+def test_full_context_pipeline_integration(monkeypatch):
+    # Mock RAG search to return a mock threat intel technique and prevent model load hangs
+    def mock_rag_search(query_str, **kwargs):
+        if kwargs.get("enabled_providers") == ["historical_incident"]:
+            return []
+        return [{
+            "technique_id": "T1110",
+            "name": "Brute Force",
+            "description": "Mocked brute force description.",
+            "distance": 0.85
+        }]
+    monkeypatch.setattr(
+        "sentinel_prime.ai.agents.rag.query.search",
+        mock_rag_search
+    )
+
     # Instantiate framework with default config
     framework = Framework()
     framework.graph_manager.store.clear()

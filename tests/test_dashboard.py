@@ -2,16 +2,17 @@ import pytest
 import json
 from dashboard.api_server import app, _incidents_from_ledger, _score_from_entries, _status_from_entries
 
+from fastapi.testclient import TestClient
+
 @pytest.fixture
 def client():
-    app.config['TESTING'] = True
-    with app.test_client() as client:
-        yield client
+    with TestClient(app) as c:
+        yield c
 
 def test_api_health(client):
     response = client.get('/api/health')
     assert response.status_code == 200
-    data = json.loads(response.data)
+    data = response.json()
     assert data["status"] == "ok"
 
 def test_status_from_entries():
