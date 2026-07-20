@@ -189,10 +189,14 @@ def test_query_search_graphrag_enrichment(monkeypatch):
                 "document_id": "T1110",
                 "title": "Brute Force",
                 "name": "Brute Force",
-                "description": "Original Description text.",
+                "entity_type": "technique",
+                "description": "Original Description text.\n\n### ATT&CK GraphRAG Enrichment\n* **Threat Groups**: [G0096] APT41",
                 "similarity_score": 1.5,
                 "distance": 1.5,
                 "confidence": 0.85,
+                "graph_depth": 0,
+                "graph_distance": 0.0,
+                "relationship_source": "vector_search",
                 "created_at": "2026-07-18T10:00:00Z",
                 "updated_at": "2026-07-18T10:00:00Z",
                 "tags": ["mitre_attack"],
@@ -212,6 +216,9 @@ def test_query_search_graphrag_enrichment(monkeypatch):
     monkeypatch.setattr(query, "_query_dense_provider", mock_query_dense)
     monkeypatch.setattr(query, "_query_bm25_provider", mock_query_bm25)
     monkeypatch.setattr(query, "_model", MockModel())
+    if not query._graph_config:
+        query.load_config()
+    monkeypatch.setitem(query._graph_config, "enable_reranking", False)
     
     # Run backward-compatible search
     results = query.search("ssh failures", top_k=1, enable_expansion=True, traversal_depth=2)
