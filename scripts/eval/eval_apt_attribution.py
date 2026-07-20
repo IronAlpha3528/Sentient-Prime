@@ -27,8 +27,13 @@ import sys
 import time
 from pathlib import Path
 
+# Force UTF-8 output on Windows
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
+sys.path.insert(0, str(PROJECT_ROOT / "scripts" / "eval"))
 
 DATASET_PATH = PROJECT_ROOT / "data" / "eval_ground_truth.json"
 
@@ -160,94 +165,14 @@ def run() -> dict:
     print("  ℹ️  Blind evaluation: AI receives RAG-retrieved candidates,")
     print("      NOT the ground-truth technique IDs.")
 
-    if not DATASET_PATH.exists():
-        print(f"  ❌ Dataset not found. Run: python scripts/generate_synthetic_benchmark.py")
-        return {}
-
-    dataset = json.loads(DATASET_PATH.read_text(encoding="utf-8"))
-    malicious = [
-        d for d in dataset
-        if d["ground_truth"]["label"] == "malicious"
-        and d["ground_truth"]["mitre_techniques"]
-    ]
-
+    import importlib
     try:
-        from sentinel_prime.ai.agents.analysis_agent import AnalysisAgent
-        from sentinel_prime.ai.agents.critique_agent import CritiqueAgent
-        from sentinel_prime.ai.agents.action_agent import ActionAgent
-        analysis_agent = AnalysisAgent()
-        critique_agent = CritiqueAgent()
-        action_agent = ActionAgent()
-        agents_available = True
-    except Exception as e:
-        print(f"  ⚠️  AI Agents could not be loaded: {e}")
-        print("  ℹ️  Falling back to RAG-retrieved technique list as proxy prediction.")
-        agents_available = False
-
-    # Use only up to 20 malicious samples (API cost control)
-    sample = malicious[:20]
-
-    top1_correct = 0
-    top3_correct = 0
-    any_match = 0
-    total = len(sample)
-    timings: list[float] = []
-
-    for idx, record in enumerate(sample):
-        gt_techniques = set(record["ground_truth"]["mitre_techniques"])
-        scenario = record["ground_truth"]["scenario_name"]
-
-        print(f"\n  [{idx+1}/{total}] {scenario}")
-        print(f"          GT techniques : {', '.join(gt_techniques)}")
-
-        # ── Blind RAG retrieval from the project's FAISS ATT&CK index ──────
-        rag_query = _build_rag_query(record)
-        rag_candidates = _retrieve_rag_candidates(rag_query, top_k=6)
-        print(f"          RAG candidates : {', '.join(rag_candidates[:6]) or 'full pool'}")
-
-        if agents_available:
-            ctx = _build_agent_context(record, rag_candidates)
-            t0 = time.time()
-            try:
-                analysis = analysis_agent.run(ctx)
-                critique = critique_agent.run(analysis, ctx)
-                action = action_agent.run(analysis, critique, ctx)
-                pipeline_out = {**analysis, **critique, **action}
-                elapsed = round(time.time() - t0, 2)
-                timings.append(elapsed)
-            except Exception as e:
-                print(f"          ⚠️  Pipeline failed: {e}")
-                continue
-
-            predicted = _extract_predicted_techniques(pipeline_out)
-        else:
-            # Fallback: use the RAG-retrieved candidates as predicted (still blind)
-            predicted = rag_candidates
-            timings.append(0.0)
-
-        print(f"          AI predicted  : {', '.join(predicted[:5]) or 'none'}")
-
-        # Top-1: predicted[0] is insertion-ordered (highest-confidence first)
-        if predicted and predicted[0] in gt_techniques:
-            top1_correct += 1
-
-        # Top-3: any of the first 3 predictions match ground truth
-        if set(predicted[:3]).intersection(gt_techniques):
-            top3_correct += 1
-
-        # Any match: anywhere in the full predicted list
-        if set(predicted).intersection(gt_techniques):
-            any_match += 1
-
-    results = {
-        "total_incidents_evaluated": total,
-        "top1_accuracy": round(top1_correct / total, 4) if total > 0 else 0,
-        "top3_accuracy": round(top3_correct / total, 4) if total > 0 else 0,
-        "any_technique_match_rate": round(any_match / total, 4) if total > 0 else 0,
-        "avg_pipeline_time_s": round(sum(timings) / len(timings), 2) if timings else 0,
-        "agents_used": agents_available,
-        "blind_eval": True,
-    }
+        eval_pipeline = importlib.import_module("eval.eval_pipeline")
+    except ImportError:
+        eval_pipeline = importlib.import_module("eval_pipeline")
+    get_or_run_eval = eval_pipeline.get_or_run_eval
+    eval_results = get_or_run_eval()
+    results = eval_results["apt_attribution"]
 
     print("\n" + "─" * 60)
     print(f"  Top-1 Technique Accuracy  : {results['top1_accuracy']:.1%}")

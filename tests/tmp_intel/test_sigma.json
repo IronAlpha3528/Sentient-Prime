@@ -1,1 +1,0 @@
-[{"id": "SIG-TEST", "name": "Test Sigma Rule", "description": "Used to test schema.", "entity_type": "detection_rule", "version": "1.0", "tags": ["test"], "references": ["http://ref.com"]}]

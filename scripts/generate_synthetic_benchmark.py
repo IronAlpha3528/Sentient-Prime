@@ -192,29 +192,111 @@ ATTACK_PROFILES = [
     },
 ]
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+import pandas as pd
+
+# Load network train pool once if it exists
+TRAIN_PARQUET_PATH = Path("data/processed/network/train.parquet")
+BENIGN_POOL = None
+ATTACK_POOL = None
+
+if TRAIN_PARQUET_PATH.exists():
+    try:
+        _df = pd.read_parquet(TRAIN_PARQUET_PATH)
+        BENIGN_POOL = _df[_df["family"] == "Benign"]
+        ATTACK_POOL = _df[_df["family"] != "Benign"]
+    except Exception as e:
+        print(f"Warning: Failed to load network training parquet: {e}")
 
 def _sample_timestamp(base: datetime, jitter_hours: int = 0) -> str:
     offset = timedelta(hours=jitter_hours, minutes=random.randint(0, 59), seconds=random.randint(0, 59))
     return (base + offset).isoformat()
 
+ALL_NETWORK_FEATURE_COLUMNS = [
+  "protocol", "flow_duration", "total_fwd_packets", "total_backward_packets",
+  "fwd_packets_length_total", "bwd_packets_length_total", "fwd_packet_length_max",
+  "fwd_packet_length_min", "fwd_packet_length_mean", "fwd_packet_length_std",
+  "bwd_packet_length_max", "bwd_packet_length_min", "bwd_packet_length_mean",
+  "bwd_packet_length_std", "flow_bytess", "flow_packetss", "flow_iat_mean",
+  "flow_iat_std", "flow_iat_max", "flow_iat_min", "fwd_iat_total", "fwd_iat_mean",
+  "fwd_iat_std", "fwd_iat_max", "fwd_iat_min", "bwd_iat_total", "bwd_iat_mean",
+  "bwd_iat_std", "bwd_iat_max", "bwd_iat_min", "fwd_psh_flags", "bwd_psh_flags",
+  "fwd_urg_flags", "bwd_urg_flags", "fwd_header_length", "bwd_header_length",
+  "fwd_packetss", "bwd_packetss", "packet_length_min", "packet_length_max",
+  "packet_length_mean", "packet_length_std", "packet_length_variance",
+  "fin_flag_count", "syn_flag_count", "rst_flag_count", "psh_flag_count",
+  "ack_flag_count", "urg_flag_count", "cwe_flag_count", "ece_flag_count",
+  "downup_ratio", "avg_packet_size", "avg_fwd_segment_size", "avg_bwd_segment_size",
+  "fwd_avg_bytesbulk", "fwd_avg_packetsbulk", "fwd_avg_bulk_rate",
+  "bwd_avg_bytesbulk", "bwd_avg_packetsbulk", "bwd_avg_bulk_rate",
+  "subflow_fwd_packets", "subflow_fwd_bytes", "subflow_bwd_packets",
+  "subflow_bwd_bytes", "init_fwd_win_bytes", "init_bwd_win_bytes",
+  "fwd_act_data_packets", "fwd_seg_size_min", "active_mean", "active_std",
+  "active_max", "active_min", "idle_mean", "idle_std", "idle_max", "idle_min"
+]
+
 def _build_network_features(attack_prob: float) -> dict:
-    """Synthesizes CIC-IDS2018-style ML feature vector.
-    Benign flows have short durations, low packet rates.
-    Attack flows have high byte counts, more packets."""
+    """Synthesizes CIC-IDS2018-style ML feature vector by sampling from the real training dataset."""
     is_attack = attack_prob > 0.5
-    return {
-        "flow_duration": max(0, random.gauss(800 if is_attack else 3200, 200 if is_attack else 4000)),
-        "total_fwd_packets": max(1, int(random.gauss(60 if is_attack else 8, 20))),
-        "total_bwd_packets": max(0, int(random.gauss(40 if is_attack else 6, 15))),
-        "fwd_packet_length_mean": max(0, random.gauss(900 if is_attack else 250, 100)),
-        "bwd_packet_length_mean": max(0, random.gauss(600 if is_attack else 180, 80)),
-        "flow_bytes_per_s": max(0, random.gauss(120000 if is_attack else 8000, 20000)),
-        "flow_packets_per_s": max(0, random.gauss(1500 if is_attack else 80, 300)),
-        "packet_length_std": max(0, random.gauss(830 if is_attack else 140, 80)),
-        "syn_flag_count": max(0, int(random.gauss(4 if is_attack else 1, 2))),
-        "ack_flag_count": max(0, int(random.gauss(35 if is_attack else 5, 10))),
-    }
+    
+    # Try to sample from the real training data pool
+    if BENIGN_POOL is not None and len(BENIGN_POOL) > 0 and is_attack is False:
+        row = BENIGN_POOL.sample(1).iloc[0]
+        return {col: float(row[col]) for col in ALL_NETWORK_FEATURE_COLUMNS}
+    elif ATTACK_POOL is not None and len(ATTACK_POOL) > 0 and is_attack is True:
+        row = ATTACK_POOL.sample(1).iloc[0]
+        return {col: float(row[col]) for col in ALL_NETWORK_FEATURE_COLUMNS}
+
+    features = {col: 0.0 for col in ALL_NETWORK_FEATURE_COLUMNS}
+    
+    flow_duration = max(0.0, random.gauss(800 if is_attack else 3200, 200 if is_attack else 4000))
+    total_fwd_packets = max(1.0, random.gauss(60 if is_attack else 8, 20))
+    total_backward_packets = max(0.0, random.gauss(40 if is_attack else 6, 15))
+    fwd_packet_length_mean = max(0.0, random.gauss(900 if is_attack else 250, 100))
+    bwd_packet_length_mean = max(0.0, random.gauss(600 if is_attack else 180, 80))
+    flow_bytess = max(0.0, random.gauss(120000 if is_attack else 8000, 20000))
+    flow_packetss = max(0.0, random.gauss(1500 if is_attack else 80, 300))
+    packet_length_std = max(0.0, random.gauss(830 if is_attack else 140, 80))
+    syn_flag_count = max(0.0, random.gauss(4 if is_attack else 1, 2))
+    ack_flag_count = max(0.0, random.gauss(35 if is_attack else 5, 10))
+    
+    fwd_packets_length_total = total_fwd_packets * fwd_packet_length_mean
+    bwd_packets_length_total = total_backward_packets * bwd_packet_length_mean
+    total_pkts = total_fwd_packets + total_backward_packets
+    packet_length_mean = (fwd_packets_length_total + bwd_packets_length_total) / total_pkts if total_pkts > 0 else 0.0
+    packet_length_variance = packet_length_std ** 2
+    avg_packet_size = packet_length_mean
+    avg_fwd_segment_size = fwd_packet_length_mean
+    avg_bwd_segment_size = bwd_packet_length_mean
+    subflow_fwd_packets = total_fwd_packets
+    subflow_fwd_bytes = fwd_packets_length_total
+    subflow_bwd_packets = total_backward_packets
+    subflow_bwd_bytes = bwd_packets_length_total
+
+    features.update({
+        "protocol": 6.0, # TCP
+        "flow_duration": flow_duration,
+        "total_fwd_packets": float(int(total_fwd_packets)),
+        "total_backward_packets": float(int(total_backward_packets)),
+        "fwd_packets_length_total": fwd_packets_length_total,
+        "bwd_packets_length_total": bwd_packets_length_total,
+        "fwd_packet_length_mean": fwd_packet_length_mean,
+        "bwd_packet_length_mean": bwd_packet_length_mean,
+        "flow_bytess": flow_bytess,
+        "flow_packetss": flow_packetss,
+        "packet_length_std": packet_length_std,
+        "packet_length_mean": packet_length_mean,
+        "packet_length_variance": packet_length_variance,
+        "avg_packet_size": avg_packet_size,
+        "avg_fwd_segment_size": avg_fwd_segment_size,
+        "avg_bwd_segment_size": avg_bwd_segment_size,
+        "subflow_fwd_packets": subflow_fwd_packets,
+        "subflow_fwd_bytes": subflow_fwd_bytes,
+        "subflow_bwd_packets": subflow_bwd_packets,
+        "subflow_bwd_bytes": subflow_bwd_bytes,
+        "syn_flag_count": float(int(syn_flag_count)),
+        "ack_flag_count": float(int(ack_flag_count)),
+    })
+    return features
 
 def _build_incident(profile: dict, incident_idx: int, base_time: datetime) -> dict:
     """Builds one incident record from a threat profile."""

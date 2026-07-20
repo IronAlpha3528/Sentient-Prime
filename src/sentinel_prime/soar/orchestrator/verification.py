@@ -173,7 +173,8 @@ class VerificationEngine:
                 if not existing:
                     # Fallback: scan all nodes for suffix match (graph is small in this branch)
                     existing = [n for n in g.nodes() if n.split(":")[-1] == asset]
-                for u, v, k, attrs in g.edges(nbunch=existing, keys=True, data=True):
+                incident_edges = list(g.in_edges(nbunch=existing, keys=True, data=True)) + list(g.out_edges(nbunch=existing, keys=True, data=True))
+                for u, v, k, attrs in incident_edges:
                     ts_str = attrs.get("timestamp") or attrs.get("last_seen")
                     if ts_str:
                         try:

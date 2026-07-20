@@ -4,7 +4,7 @@ import json
 from unittest.mock import patch
 from sentinel_prime.core.config_manager import config
 
-config.GEMINI_API_KEY = "dummy_key"
+os.environ["GEMINI_API_KEY"] = "dummy_key"
 
 class MockModels:
     def generate_content(self, model, contents, config=None):

@@ -1,0 +1,11 @@
+title: Shadow Copy Deletion via VSSAdmin
+id: shadow_deletion
+description: Detects volume shadow copy deletion which is a common behavior of ransomware to prevent recovery.
+level: high
+tags:
+  - attack.t1490
+detection:
+  selection:
+    CommandLine|contains: delete
+    Image|endswith: vssadmin.exe
+  condition: selection

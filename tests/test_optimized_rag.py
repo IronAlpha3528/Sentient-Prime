@@ -120,26 +120,30 @@ def test_citation_generation():
         "trust_weights": {},
         "freshness_thresholds": {}
     }
+    # Insert the mock document before search
+    insert_cti_document("sigma", doc)
+    try:
+        # Temporarily set configuration
+        original_config = query._graph_config.copy()
+        query._graph_config.update(config)
     
-    # Temporarily set configuration
-    original_config = query._graph_config.copy()
-    query._graph_config.update(config)
+        results = query.search("SSH Rule", top_k=1, enabled_providers=["sigma"])
+        query._graph_config = original_config
     
-    results = query.search("SSH Rule", top_k=1, enabled_providers=["sigma"])
-    query._graph_config = original_config
-    
-    # Assert citation fields present on search hit
-    if results:
-        hit = results[0] if isinstance(results, list) else results["results"][0]
-        assert hit["provider"] == "sigma"
-        assert hit["rank"] == 1
-        assert "citation_identifier" in hit
-        assert "[sigma:SIG-001]" in hit["citation_identifier"]
-        
-        # Verify score conversion fields to resolve ContextBuilder float TypeError
-        assert isinstance(hit["similarity_score"], float)
-        assert isinstance(hit["distance"], float)
-        assert isinstance(hit["score"], float)
+        # Assert citation fields present on search hit
+        if results:
+            hit = results[0] if isinstance(results, list) else results["results"][0]
+            assert hit["provider"] == "sigma"
+            assert hit["rank"] == 1
+            assert "citation_identifier" in hit
+            assert "[sigma:SIG-001]" in hit["citation_identifier"]
+            
+            # Verify score conversion fields to resolve ContextBuilder float TypeError
+            assert isinstance(hit["similarity_score"], float)
+            assert isinstance(hit["distance"], float)
+            assert isinstance(hit["score"], float)
+    finally:
+        delete_cti_document("sigma", "SIG-001")
 
 def test_incremental_knowledge_management(tmp_path, monkeypatch):
     # Verify incremental CRUD inserts, deletes, updates, and upserts (Part B)
