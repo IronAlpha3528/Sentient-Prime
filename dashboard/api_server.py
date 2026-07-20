@@ -1,4 +1,4 @@
-"""Flask API bridge for the React Sentient-Prime dashboard.
+"""FastAPI bridge for the React Sentient-Prime dashboard.
 
 This module exposes the dashboard JSON contract from real repository state:
 - audit ledger entries from sentinel_prime.core.telemetry.ledger
@@ -14,10 +14,13 @@ import sys
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
-from flask import Flask, Response, jsonify, request, send_from_directory, stream_with_context
-from flask_cors import CORS
+from fastapi import FastAPI, Request
+from fastapi.concurrency import run_in_threadpool
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SRC_DIR = PROJECT_ROOT / "src"
@@ -36,8 +39,14 @@ try:
 except Exception:  # pragma: no cover - defensive import for partial environments
     AuditLedger = None  # type: ignore[assignment]
 
-app = Flask(__name__, static_folder=str(FRONTEND_DIST), static_url_path="")
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+app = FastAPI(title="Sentient-Prime Dashboard API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def _read_json(path: Path, default: Any) -> Any:
@@ -342,9 +351,14 @@ def _normalize_reasoning(
     }
 
 
+# ---------------------------------------------------------------------------
+# API Routes
+# ---------------------------------------------------------------------------
+
+
 @app.get("/api/health")
 def health() -> Any:
-    return jsonify(
+    return JSONResponse(
         {
             "status": "ok",
             "gemini_configured": bool(config.GEMINI_API_KEY),
@@ -356,23 +370,23 @@ def health() -> Any:
 
 @app.get("/api/incidents")
 def incidents() -> Any:
-    return jsonify(_all_incidents())
+    return JSONResponse(_all_incidents())
 
 
-@app.get("/api/incidents/<incident_id>/reasoning")
+@app.get("/api/incidents/{incident_id}/reasoning")
 def incident_reasoning(incident_id: str) -> Any:
     ledger_view = _ledger_reasoning(incident_id)
     if ledger_view:
-        return jsonify(ledger_view)
-    return jsonify(_normalize_reasoning(incident_id, {}, {}, {}, {}, {}, {}, source="artifacts"))
+        return JSONResponse(ledger_view)
+    return JSONResponse(_normalize_reasoning(incident_id, {}, {}, {}, {}, {}, {}, source="artifacts"))
 
 
-@app.get("/api/incidents/<incident_id>/timeline")
+@app.get("/api/incidents/{incident_id}/timeline")
 def incident_timeline(incident_id: str) -> Any:
     entries = [entry for entry in _read_jsonl(LEDGER_PATH) if entry.get("incident_id") == incident_id]
     if not entries:
-        return jsonify([])
-    return jsonify([
+        return JSONResponse([])
+    return JSONResponse([
         {
             "timestamp": entry.get("timestamp"),
             "event_type": str(entry.get("event_type", "EVENT")).upper(),
@@ -384,11 +398,11 @@ def incident_timeline(incident_id: str) -> Any:
     ])
 
 
-@app.post("/api/incidents/<incident_id>/run-ai")
-def run_ai(incident_id: str) -> Any:
+@app.post("/api/incidents/{incident_id}/run-ai")
+async def run_ai(incident_id: str, request: Request) -> Any:
     if not config.GEMINI_API_KEY:
-        return jsonify({"error": "GEMINI_API_KEY is not configured; live AI agent execution is unavailable."}), 503
-    payload = request.get_json(silent=True) or {}
+        return JSONResponse({"error": "GEMINI_API_KEY is not configured; live AI agent execution is unavailable."}, status_code=503)
+    payload = await request.json() if request.headers.get("content-type", "").startswith("application/json") else {}
     incident = next((item for item in _all_incidents() if item["incident_id"] == incident_id), None) or _incident_from_graph()
     evidence = {
         "incident_id": incident_id,
@@ -401,16 +415,23 @@ def run_ai(incident_id: str) -> Any:
     evidence.update(payload.get("evidence", {}))
     from sentinel_prime.ai.agents.pipeline import run_pipeline
 
-    result = run_pipeline(evidence)
-    return jsonify(result)
+    result = await run_in_threadpool(run_pipeline, evidence)
+    return JSONResponse(result)
 
 
-@app.post("/api/incidents/<incident_id>/run-ai-stream")
-def run_ai_stream(incident_id: str) -> Any:
+@app.post("/api/incidents/{incident_id}/run-ai-stream")
+async def run_ai_stream(incident_id: str, request: Request) -> StreamingResponse:
     """SSE endpoint that streams the 3-stage AI pipeline progress as each agent completes."""
     if not config.GEMINI_API_KEY:
-        return jsonify({"error": "GEMINI_API_KEY is not configured."}), 503
-    payload = request.get_json(silent=True) or {}
+        return JSONResponse({"error": "GEMINI_API_KEY is not configured."}, status_code=503)
+
+    payload: dict[str, Any] = {}
+    if request.headers.get("content-type", "").startswith("application/json"):
+        try:
+            payload = await request.json()
+        except Exception:
+            payload = {}
+
     incident = next((item for item in _all_incidents() if item["incident_id"] == incident_id), None) or _incident_from_graph()
     evidence = {
         "incident_id": incident_id,
@@ -422,8 +443,7 @@ def run_ai_stream(incident_id: str) -> Any:
     }
     evidence.update(payload.get("evidence", {}))
 
-    def _generate():
-        import time
+    def _generate() -> Iterator[str]:
         def _sse(event: str, data: Any) -> str:
             return f"event: {event}\ndata: {json.dumps(data, default=str)}\n\n"
 
@@ -523,9 +543,9 @@ def run_ai_stream(incident_id: str) -> Any:
         except Exception as exc:
             yield _sse("error", {"message": str(exc)})
 
-    return Response(
-        stream_with_context(_generate()),
-        mimetype="text/event-stream",
+    return StreamingResponse(
+        _generate(),
+        media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
 
@@ -536,29 +556,28 @@ def approval_queue() -> Any:
     all_incidents = _all_incidents()
     pending = [item for item in all_incidents if item.get("status") in {"ACTIVE", "ESCALATED"}]
     pending.sort(key=lambda x: x.get("unified_threat_score", 0), reverse=True)
-    return jsonify(pending)
+    return JSONResponse(pending)
 
 
 @app.get("/api/decoys")
 def list_decoys() -> Any:
     """Return active deployed honeypot decoys from the registry file."""
-    import sys
     try:
         from sentinel_prime.simulation.honeypots.decoy_deployer import DecoyDeployer
         active = DecoyDeployer().list_active()
-        return jsonify(active)
+        return JSONResponse(active)
     except Exception:
-        return jsonify([])
+        return JSONResponse([])
 
 
-@app.post("/api/incidents/<incident_id>/approve")
+@app.post("/api/incidents/{incident_id}/approve")
 def approve_incident(incident_id: str) -> Any:
     from sentinel_prime.core.telemetry.state_db import IncidentStateDB
     db = IncidentStateDB()
     incident_record = db.get_incident(incident_id)
-    
+
     if not incident_record:
-        return jsonify({"status": "error", "message": "Incident not found in state DB"}), 404
+        return JSONResponse({"status": "error", "message": "Incident not found in state DB"}, status_code=404)
 
     incident_data = incident_record.get("incident_data", {})
 
@@ -572,7 +591,7 @@ def approve_incident(incident_id: str) -> Any:
         name = dispatcher._canonical_action(rec_action.get("action_name", ""))
         if name:
             actions.append(name)
-            
+
     # Fallback to statically getting playbook
     if not actions:
         from sentinel_prime.soar.orchestrator.playbooks import get_playbook
@@ -588,44 +607,44 @@ def approve_incident(incident_id: str) -> Any:
 
     outcome = dispatcher.monitor.check_status(incident_data, action_results)
     dispatcher._record("monitor_outcome", outcome, incident_id)
-    
+
     db.upsert_incident(incident_id, "RESOLVED" if outcome.get("status") == "RESOLVED" else "FAILED", incident_data)
 
-    return jsonify({"status": "SUCCESS", "actions": action_results, "outcome": outcome})
+    return JSONResponse({"status": "SUCCESS", "actions": action_results, "outcome": outcome})
 
 
-@app.post("/api/incidents/<incident_id>/reject")
+@app.post("/api/incidents/{incident_id}/reject")
 def reject_incident(incident_id: str) -> Any:
     from sentinel_prime.core.telemetry.state_db import IncidentStateDB
     db = IncidentStateDB()
     incident_record = db.get_incident(incident_id)
-    
+
     if not incident_record:
-        return jsonify({"status": "error", "message": "Incident not found in state DB"}), 404
-        
+        return JSONResponse({"status": "error", "message": "Incident not found in state DB"}, status_code=404)
+
     incident_data = incident_record.get("incident_data", {})
 
     from sentinel_prime.soar.orchestrator.dispatcher import SOARDispatcher
     dispatcher = SOARDispatcher()
-    
+
     outcome = {"status": "REJECTED", "message": "Human operator rejected the containment action."}
     dispatcher._record("monitor_outcome", outcome, incident_id)
     db.upsert_incident(incident_id, "REJECTED", incident_data)
-    
-    return jsonify({"status": "SUCCESS", "outcome": outcome})
+
+    return JSONResponse({"status": "SUCCESS", "outcome": outcome})
 
 
 @app.get("/api/topology")
 def topology() -> Any:
-    return jsonify(_topology())
+    return JSONResponse(_topology())
 
 
 @app.get("/api/audit-log")
 def audit_log() -> Any:
     entries = _read_jsonl(LEDGER_PATH)[-20:]
     if not entries:
-        return jsonify([])
-    return jsonify(
+        return JSONResponse([])
+    return JSONResponse(
         [
             {
                 "timestamp": entry.get("timestamp"),
@@ -647,7 +666,7 @@ def metrics() -> Any:
     resolved = sum(1 for item in incidents_data if item["status"] == "RESOLVED")
     escalated = sum(1 for item in incidents_data if item["status"] == "ESCALATED")
     active = sum(1 for item in incidents_data if item["status"] == "ACTIVE")
-    return jsonify(
+    return JSONResponse(
         {
             "mttd_minutes": round(float(endpoint.get("inference_time_seconds") or 0) / 60, 2),
             "mttr_minutes": round(float(ot.get("inference_time_seconds") or 0) / 60, 2),
@@ -667,22 +686,44 @@ def metrics() -> Any:
     )
 
 
+# ---------------------------------------------------------------------------
+# Static file serving / SPA fallback
+# ---------------------------------------------------------------------------
+
+# Mount the frontend dist directory for static assets if it exists.
+# The SPA fallback routes below handle index.html for all unmatched paths.
+if FRONTEND_DIST.exists():
+    app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST / "assets")), name="assets")
+
+
 @app.get("/")
 def index() -> Any:
-    if (FRONTEND_DIST / "index.html").exists():
-        return send_from_directory(FRONTEND_DIST, "index.html")
-    return jsonify({"status": "frontend dist not built", "api": "/api/health"})
+    index_html = FRONTEND_DIST / "index.html"
+    if index_html.exists():
+        return FileResponse(str(index_html))
+    return JSONResponse({"status": "frontend dist not built", "api": "/api/health"})
 
 
-@app.get("/<path:path>")
+@app.get("/{path:path}")
 def static_or_spa(path: str) -> Any:
     target = FRONTEND_DIST / path
     if target.exists() and target.is_file():
-        return send_from_directory(FRONTEND_DIST, path)
-    if (FRONTEND_DIST / "index.html").exists():
-        return send_from_directory(FRONTEND_DIST, "index.html")
-    return jsonify({"status": "frontend dist not built", "api": "/api/health"}), 404
+        return FileResponse(str(target))
+    index_html = FRONTEND_DIST / "index.html"
+    if index_html.exists():
+        return FileResponse(str(index_html))
+    return JSONResponse({"status": "frontend dist not built", "api": "/api/health"}, status_code=404)
 
+
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    app.run(host=config.API_HOST, port=config.API_PORT, debug=True)
+    import uvicorn
+    uvicorn.run(
+        "api_server:app",
+        host=config.API_HOST,
+        port=config.API_PORT,
+        reload=True,
+    )

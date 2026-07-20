@@ -13,9 +13,9 @@ networkx>=3.0
 google-generativeai>=0.8
 
 # Web framework (webhook receiver + API backend)
-flask>=3.0
-flask-cors>=4.0
-flask-socketio>=5.3
+fastapi>=0.115
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9
 
 # ML models
 scikit-learn>=1.4

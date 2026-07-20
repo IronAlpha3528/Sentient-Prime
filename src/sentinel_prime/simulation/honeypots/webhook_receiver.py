@@ -1,7 +1,7 @@
 """
 Sentinel — Canarytoken Webhook Receiver
 
-A Flask application that accepts Canarytoken webhook POST requests,
+A FastAPI application that accepts Canarytoken webhook POST requests,
 normalizes them into the Sentinel unified event schema, and forwards
 them to Elasticsearch (or falls back to a local JSON log file).
 
@@ -15,13 +15,13 @@ Usage:
 import hashlib
 import json
 import logging
-import os
-import sys
+import time
 from datetime import datetime, timezone
-from pathlib import Path
 
-from flask import Flask, jsonify, request
-from functools import wraps
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.concurrency import run_in_threadpool
+from fastapi.responses import JSONResponse
+
 # Configuration (from environment or defaults)
 from sentinel_prime.core.config_manager import config
 
@@ -220,17 +220,52 @@ def _write_local(event: dict) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Flask application
+# FastAPI application
 # ---------------------------------------------------------------------------
 
-app = Flask(__name__)
+app = FastAPI(title="Sentinel Honeypot Webhook Receiver")
+
+# --- RATE LIMITING ---
+RATE_LIMIT = 20  # requests per minute
+RATE_LIMIT_WINDOW = 60  # seconds
+ip_tracker: dict[str, list[float]] = {}
 
 
-@app.route("/health", methods=["GET"])
-def health():
+async def rate_limit(request: Request) -> None:
+    """FastAPI dependency that enforces a per-IP rate limit."""
+    client_ip = request.client.host if request.client else "unknown"
+    now = time.time()
+    if client_ip in ip_tracker:
+        ip_tracker[client_ip] = [t for t in ip_tracker[client_ip] if now - t < RATE_LIMIT_WINDOW]
+    else:
+        ip_tracker[client_ip] = []
+
+    if len(ip_tracker[client_ip]) >= RATE_LIMIT:
+        raise HTTPException(status_code=429, detail="Too Many Requests (Rate Limited)")
+
+    ip_tracker[client_ip].append(now)
+
+
+async def require_api_key(request: Request) -> None:
+    """FastAPI dependency that validates the X-API-Key header when configured."""
+    honeypot_api_key = config.HONEYPOT_API_KEY
+    if honeypot_api_key:
+        api_key = request.headers.get("X-API-Key")
+        if not api_key or api_key != honeypot_api_key:
+            logger.warning("Unauthorized webhook attempt from %s", request.client.host if request.client else "unknown")
+            raise HTTPException(status_code=401, detail="Unauthorized")
+
+
+# ---------------------------------------------------------------------------
+# Routes
+# ---------------------------------------------------------------------------
+
+
+@app.get("/health")
+def health() -> JSONResponse:
     """Health check endpoint."""
     es = _get_es_client()
-    return jsonify(
+    return JSONResponse(
         {
             "status": "healthy",
             "service": "sentinel-honeypot-receiver",
@@ -240,47 +275,8 @@ def health():
     )
 
 
-import time
-
-# --- RATE LIMITING ---
-RATE_LIMIT = 20 # requests per minute
-RATE_LIMIT_WINDOW = 60 # seconds
-ip_tracker = {}
-
-def rate_limit(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        client_ip = request.remote_addr
-        now = time.time()
-        if client_ip in ip_tracker:
-            ip_tracker[client_ip] = [t for t in ip_tracker[client_ip] if now - t < RATE_LIMIT_WINDOW]
-        else:
-            ip_tracker[client_ip] = []
-            
-        if len(ip_tracker[client_ip]) >= RATE_LIMIT:
-            return jsonify({"error": "Too Many Requests (Rate Limited)"}), 429
-            
-        ip_tracker[client_ip].append(now)
-        return f(*args, **kwargs)
-    return decorated_function
-
-def require_api_key(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        HONEYPOT_API_KEY = config.HONEYPOT_API_KEY
-        if HONEYPOT_API_KEY:
-            api_key = request.headers.get("X-API-Key")
-            if not api_key or api_key != HONEYPOT_API_KEY:
-                logger.warning("Unauthorized webhook attempt from %s", request.remote_addr)
-                return jsonify({"error": "Unauthorized"}), 401
-        return f(*args, **kwargs)
-    return decorated_function
-
-
-@app.route("/webhook/canarytoken", methods=["POST"])
-@rate_limit
-@require_api_key
-def canarytoken_webhook():
+@app.post("/webhook/canarytoken", dependencies=[Depends(rate_limit), Depends(require_api_key)])
+async def canarytoken_webhook(request: Request) -> JSONResponse:
     """
     Receive a Canarytoken webhook POST.
 
@@ -288,38 +284,41 @@ def canarytoken_webhook():
     the token type and version — we handle both.
     """
     try:
-        if request.is_json:
-            payload = request.get_json(force=True)
+        content_type = request.headers.get("content-type", "")
+        if "application/json" in content_type:
+            payload = await request.json()
         else:
             # Form-encoded fallback
-            payload = request.form.to_dict()
+            form_data = await request.form()
+            payload = dict(form_data)
 
         if not payload:
             logger.warning("Empty payload received on /webhook/canarytoken")
-            return jsonify({"error": "empty payload"}), 400
+            return JSONResponse({"error": "empty payload"}, status_code=400)
 
         logger.info("Received Canarytoken webhook: %s", json.dumps(payload, default=str)[:200])
 
         event = normalize_canarytoken_event(payload)
-        success = forward_event(event)
+        success = await run_in_threadpool(forward_event, event)
 
-        return jsonify(
+        return JSONResponse(
             {
                 "status": "accepted" if success else "accepted_with_warning",
                 "event_id": event["event_id"],
                 "stored": success,
-            }
-        ), 200
+            },
+            status_code=200,
+        )
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.exception("Error processing Canarytoken webhook")
-        return jsonify({"error": str(exc)}), 500
+        return JSONResponse({"error": str(exc)}, status_code=500)
 
 
-@app.route("/webhook/conpot", methods=["POST"])
-@rate_limit
-@require_api_key
-def conpot_webhook():
+@app.post("/webhook/conpot", dependencies=[Depends(rate_limit), Depends(require_api_key)])
+async def conpot_webhook(request: Request) -> JSONResponse:
     """
     Receive a Conpot OT/ICS honeypot event POST.
 
@@ -327,35 +326,40 @@ def conpot_webhook():
     that watches Conpot's log output and POSTs events here.
     """
     try:
-        if request.is_json:
-            payload = request.get_json(force=True)
+        content_type = request.headers.get("content-type", "")
+        if "application/json" in content_type:
+            payload = await request.json()
         else:
-            payload = request.form.to_dict()
+            form_data = await request.form()
+            payload = dict(form_data)
 
         if not payload:
             logger.warning("Empty payload received on /webhook/conpot")
-            return jsonify({"error": "empty payload"}), 400
+            return JSONResponse({"error": "empty payload"}, status_code=400)
 
         logger.info("Received Conpot event: %s", json.dumps(payload, default=str)[:200])
 
         event = normalize_conpot_event(payload)
-        success = forward_event(event)
+        success = await run_in_threadpool(forward_event, event)
 
-        return jsonify(
+        return JSONResponse(
             {
                 "status": "accepted" if success else "accepted_with_warning",
                 "event_id": event["event_id"],
                 "stored": success,
-            }
-        ), 200
+            },
+            status_code=200,
+        )
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.exception("Error processing Conpot webhook")
-        return jsonify({"error": str(exc)}), 500
+        return JSONResponse({"error": str(exc)}, status_code=500)
 
 
-@app.route("/events", methods=["GET"])
-def list_events():
+@app.get("/events")
+def list_events() -> JSONResponse:
     """
     List recent honeypot events (for debugging / dashboard use).
     Reads from local log files. In production, query Elasticsearch directly.
@@ -374,11 +378,11 @@ def list_events():
 
         # Return last 50 events, newest first
         events.reverse()
-        return jsonify({"count": len(events[:50]), "events": events[:50]})
+        return JSONResponse({"count": len(events[:50]), "events": events[:50]})
 
     except Exception as exc:
         logger.exception("Error listing events")
-        return jsonify({"error": str(exc)}), 500
+        return JSONResponse({"error": str(exc)}, status_code=500)
 
 
 # ---------------------------------------------------------------------------
@@ -386,8 +390,15 @@ def list_events():
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    import uvicorn
+
     logger.info("Starting Sentinel Honeypot Webhook Receiver on %s:%s", RECEIVER_HOST, RECEIVER_PORT)
     logger.info("Elasticsearch: %s", ES_HOST or "(disabled — using local log)")
     logger.info("Local log directory: %s", LOG_DIR.resolve())
 
-    app.run(host=RECEIVER_HOST, port=RECEIVER_PORT, debug=True)
+    uvicorn.run(
+        "sentinel_prime.simulation.honeypots.webhook_receiver:app",
+        host=RECEIVER_HOST,
+        port=RECEIVER_PORT,
+        reload=False,
+    )

@@ -6,4 +6,4 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY . .
 ENV PYTHONPATH=/app/src
 EXPOSE 8000
-CMD ["python", "dashboard/api_server.py"]
+CMD ["uvicorn", "dashboard.api_server:app", "--host", "0.0.0.0", "--port", "8000"]
