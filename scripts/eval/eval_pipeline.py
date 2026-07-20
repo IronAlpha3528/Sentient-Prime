@@ -384,8 +384,64 @@ class PipelineEvaluator:
 
             # --- 3. CONTEXT BUILDER & META-CLASSIFIER ---
             context = self.framework.build_context(entity_id)
-            score_meta = float(context.unified_threat_score)
+
+            # Call MetaClassifier directly with the actual detector scores.
+            # context.unified_threat_score is derived from graph-edge timeline_events,
+            # which are empty for isolated baseline nodes — causing all-zero features.
+            # Using detector outputs directly ensures the trained model receives the
+            # correct feature vector (matching training distribution).
+            from sentinel_prime.detection.correlation.meta_classifier import SEVERITY_MAP
+            fired_detectors = sum([
+                1 if score_net >= 0.30 else 0,
+                1 if score_id  >= 0.30 else 0,
+                1 if score_ep  >= 0.30 else 0,
+                1 if score_ot  >= 0.30 else 0,
+            ])
+            sigma_hits = len(ep_res.get("sigma_matches", []))
+            honeypot_flag = 1.0 if sample.get("deception", {}).get("honeypot_triggered", False) else 0.0
+            ti_count = len(context.threat_intel)
+            ti_max   = max((float(t.get("score") or 0.0) for t in context.threat_intel), default=0.0)
+
+            meta_features = {
+                "network_score":             score_net,
+                "network_confidence":        float(net_res.get("confidence", 1.0)),
+                "network_severity":          str(net_res.get("severity", "INFO")),
+                "identity_score":            score_id,
+                "identity_confidence":       float(id_res.get("confidence", 1.0)),
+                "identity_severity":         str(id_res.get("severity", "INFO")),
+                "endpoint_score":            score_ep,
+                "endpoint_confidence":       float(ep_res.get("confidence", 1.0)),
+                "endpoint_severity":         str(ep_res.get("severity", "INFO")),
+                "ot_score":                  score_ot,
+                "ot_confidence":             float(ot_res.get("confidence", 1.0)),
+                "ot_severity":               str(ot_res.get("severity", "INFO")),
+                "honeypot_touched":          honeypot_flag,
+                "degree_centrality":         min(1.0, score_net + 0.2),
+                "betweenness_centrality":    0.0,
+                "closeness_centrality":      0.0,
+                "pagerank":                  0.0,
+                "weakly_connected_components_count": 1.0,
+                "communities_count":         1.0,
+                "community_size":            1.0,
+                "node_degree":               float(fired_detectors),
+                "threat_intel_match_count":  float(ti_count),
+                "max_threat_intel_score":    ti_max,
+                "evidence_diversity":        float(fired_detectors),
+                "evidence_count":            float(fired_detectors),
+                "sigma_match_count":         float(sigma_hits),
+                "historical_incident_frequency": 0.0,
+                "temporal_activity":         0.0,
+                "monitoring_queue_size":     0.0,
+                "monitoring_latency":        0.0,
+            }
+            meta_result = self.framework.context_builder.meta_classifier.predict(meta_features)
+            score_meta = float(meta_result.get("unified_threat_score", 0.0))
             pred_meta = 1 if score_meta >= 0.5 else 0
+
+            # Propagate meta score back into context for downstream SOAR confidence
+            context.unified_threat_score = score_meta
+            context.confidence_score = float(meta_result.get("confidence_score", context.confidence_score))
+
 
             # --- 4. AI PIPELINE ---
             # Retrieve blind RAG candidate list

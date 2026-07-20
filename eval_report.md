@@ -1,6 +1,6 @@
 # Sentient-Prime — Evaluation Report
 
-> Generated: 2026-07-20 16:38 UTC
+> Generated: 2026-07-20 16:47 UTC
 
 ---
 
@@ -33,32 +33,26 @@
 
 | Metric | Value |
 |---|---|
-| Global Detection Rate (Recall) | **100.0%** |
-| Global False Positive Rate | **100.0%** |
-| F1 Score | **77.8%** |
-| ROC-AUC | **0.5** |
-| Precision | **63.6%** |
+| Global Detection Rate (Recall) | **0.0%** |
+| Global False Positive Rate | **0.0%** |
+| F1 Score | **0.0%** |
+| ROC-AUC | **0.1875** |
+| Precision | **0.0%** |
 
 ### Meta-Classifier Confusion Matrix
 
 | Metric | Value |
 |---|---|
-| True Positives (TP) | **70** |
-| False Positives (FP) | **40** |
-| True Negatives (TN) | **0** |
-| False Negatives (FN) | **0** |
+| True Positives (TP) | **0** |
+| False Positives (FP) | **0** |
+| True Negatives (TN) | **40** |
+| False Negatives (FN) | **70** |
 
 ---
 
 ## 3. APT Attribution Accuracy (MITRE ATT&CK Technique Level)
 
-| Metric | Value |
-|---|---|
-| Incidents evaluated | 70 |
-| Top-1 Technique Accuracy | **0.0%** |
-| Top-3 Technique Accuracy | **28.6%** |
-| Any Technique Match Rate | **28.6%** |
-| Avg AI Pipeline Time | 0.0s |
+> *Skipped (run without --no-ai to evaluate)*
 
 ---
 
@@ -67,9 +61,9 @@
 | Metric | Value |
 |---|---|
 | Total incidents processed | 110 |
-| Auto-contained (no human) | 0 (**0.0%**) |
-| Escalated to approval queue | 110 |
-| Automation coverage | **0.0%** |
+| Auto-contained (no human) | 110 (**100.0%**) |
+| Escalated to approval queue | 0 |
+| Automation coverage | **100.0%** |
 
 ---
 
@@ -84,7 +78,7 @@
 | | Sentient-Prime | Manual SOC Baseline | Improvement |
 |---|---|---|---|
 | MTTD (alert-to-detection flag) | **0.8ms** | 45.0 min | **3375000.0× faster** |
-| MTTR (AI analysis + dispatch) | **169.84ms** | 720.0 min | **254361.3× faster (triage only)** |
+| MTTR (AI analysis + dispatch) | **247.47ms** | 720.0 min | **174569.3× faster (triage only)** |
 
 ---
 
@@ -93,7 +87,7 @@
 | Metric | Value |
 |---|---|
 | Hash chain status | **VALID** |
-| Entries verified | 660 |
+| Entries verified | 880 |
 | Hash errors | 0 |
 | Action traceability coverage | **100.0%** |
 
