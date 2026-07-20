@@ -1,0 +1,42 @@
+{
+  "model_version": "identity-relative-isolation-forest-v2.1",
+  "model_type": "IsolationForest",
+  "feature_columns": [
+    "auth_count_zscore",
+    "unique_computers_zscore",
+    "mean_auth_gap_zscore",
+    "has_auth_gap",
+    "fanout_rate_zscore",
+    "new_computer_ratio",
+    "off_hours_flag"
+  ],
+  "context_feature_columns": [
+    "auth_count",
+    "unique_computers",
+    "fanout_rate",
+    "mean_auth_gap",
+    "min_auth_gap",
+    "max_auth_gap",
+    "new_computer_count",
+    "hour_of_day",
+    "raw_auth_count_zscore",
+    "raw_unique_computers_zscore",
+    "raw_mean_auth_gap_zscore",
+    "raw_fanout_rate_zscore"
+  ],
+  "training_rows": 157061,
+  "training_window_range": {
+    "min_window": 0,
+    "max_window": 30
+  },
+  "contamination": "auto",
+  "random_state": 42,
+  "zscore_clip_min": -10.0,
+  "zscore_clip_max": 10.0,
+  "min_std_epsilon": 0.0001,
+  "score_normalization_strategy": "robust min-max scaling based on training scores",
+  "score_normalization_parameters": {
+    "min_raw_score": -0.2746736525269251,
+    "max_raw_score": 0.1547034180349861
+  }
+}
