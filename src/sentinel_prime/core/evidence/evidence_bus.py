@@ -52,6 +52,10 @@ class EvidenceBus:
         """Unregisters a subscriber from the bus."""
         self.stream_manager.unregister(subscriber)
 
+    def wait_until_idle(self, timeout: float = 5.0) -> bool:
+        """Waits until the bus is idle (no pending events or subscriber dispatches)."""
+        return self.stream_manager.wait_until_idle(timeout)
+
     def health(self) -> Dict[str, Any]:
         """Runs checks on the queue, cache, and subscriber list to diagnose system health."""
         return self.stream_manager.health()

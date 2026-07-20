@@ -43,6 +43,8 @@ class StreamManager:
         )
         self.subscribers: List[Subscriber] = []
         self.subscribers_lock = threading.Lock()
+        self._active_events = 0
+        self._active_lock = threading.Lock()
 
         # Metrics collection
         self._metrics = {
@@ -95,6 +97,9 @@ class StreamManager:
 
         Validates, normalizes, performs duplicate detection, wraps, and pushes to queue.
         """
+        with self._active_lock:
+            self._active_events += 1
+
         # 1. Validation
         val_res = validate_evidence(evidence)
         if not val_res.valid:
@@ -102,6 +107,8 @@ class StreamManager:
             with self.metrics_lock:
                 self._metrics["validation_failures"] += 1
                 self._metrics["events_dropped"] += 1
+            with self._active_lock:
+                self._active_events -= 1
             return False
 
         # 2. Normalization
@@ -115,6 +122,8 @@ class StreamManager:
             with self.metrics_lock:
                 self._metrics["duplicates_removed"] += 1
                 self._metrics["events_dropped"] += 1
+            with self._active_lock:
+                self._active_events -= 1
             return False
 
         # 4. Map severity to EventPriority
@@ -134,6 +143,8 @@ class StreamManager:
             logger.error(f"Event Queue Overflow! Dropped event {event.event_id}")
             with self.metrics_lock:
                 self._metrics["events_dropped"] += 1
+            with self._active_lock:
+                self._active_events -= 1
             return False
 
         # Update metrics
@@ -149,7 +160,7 @@ class StreamManager:
         """Manually pulls the highest priority event from the queue."""
         return self.queue.dequeue()
 
-    def broadcast(self, event: EvidenceEvent) -> None:
+    def broadcast(self, event: EvidenceEvent) -> List[Any]:
         """Broadcasts an event to matching subscribers (non-blocking)."""
         event.status = EventStatus.PROCESSING
 
@@ -162,8 +173,9 @@ class StreamManager:
             except Exception as e:
                 logger.error(f"Subscriber {sub.name} failed to process event {event.event_id}: {e}")
 
+        futures = []
         for sub in targets:
-            self._subscriber_executor.submit(_call_subscriber, sub)
+            futures.append(self._subscriber_executor.submit(_call_subscriber, sub))
 
         event.status = EventStatus.PROCESSED
 
@@ -239,15 +251,32 @@ class StreamManager:
 
     def _dispatcher_loop(self) -> None:
         """Active background thread retrieving and broadcasting events."""
+        import concurrent.futures
         while not self._stop_event.is_set():
             try:
                 event = self.queue.dequeue()
                 if event is None:
                     self._stop_event.wait(0.01)
                     continue
-                self.broadcast(event)
+                futures = self.broadcast(event)
+                if futures:
+                    concurrent.futures.wait(futures)
+                with self._active_lock:
+                    self._active_events -= 1
             except Exception as e:
                 logger.error(f"Error in dispatcher loop: {e}")
+                with self._active_lock:
+                    if self._active_events > 0:
+                        self._active_events -= 1
+
+    def wait_until_idle(self, timeout: float = 5.0) -> bool:
+        """Waits until the event queue is empty and all dispatches are processed."""
+        start = time.time()
+        while time.time() - start < timeout:
+            if self.queue.size() == 0 and self._active_events == 0:
+                return True
+            time.sleep(0.001)
+        return False
 
     def shutdown(self) -> None:
         """Triggers clean shutdown of dispatcher and exports final metrics."""

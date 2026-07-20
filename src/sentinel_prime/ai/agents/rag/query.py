@@ -23,6 +23,7 @@ _graph_config = {}
 _ext_to_stix_cache = None
 _providers = {}
 _search_cache = {}
+_traversal_cache = {}
 _cross_encoder = None
 
 # Performance statistics tracker (Step 8)
@@ -90,28 +91,22 @@ def load_resources():
     if not _graph_config:
         load_config()
         
+    from sentinel_prime.ai.agents.rag.resource_manager import ResourceManager
+    mgr = ResourceManager()
+    
     if _index is None:
-        if not os.path.exists(INDEX_PATH):
-            raise FileNotFoundError(f"FAISS index not found at {INDEX_PATH}. Please run build_index.py first.")
-        print("Loading FAISS index...")
-        _index = faiss.read_index(INDEX_PATH)
+        _index = mgr.get_faiss_index(INDEX_PATH)
         
     if _metadata is None:
-        if not os.path.exists(CHUNKS_PATH):
-            raise FileNotFoundError(f"Metadata not found at {CHUNKS_PATH}. Please run build_index.py first.")
-        print("Loading metadata...")
-        with open(CHUNKS_PATH, "rb") as f:
-            _metadata = pickle.load(f)
+        _metadata = mgr.get_metadata(CHUNKS_PATH)
             
     if _model is None:
-        print("Loading SentenceTransformer model...")
-        _model = SentenceTransformer('all-MiniLM-L6-v2')
+        _model = mgr.get_sentence_transformer('all-MiniLM-L6-v2')
         
     if _cross_encoder is None and _graph_config.get("enable_reranking", True):
         model_name = _graph_config.get("reranking_model", "cross-encoder/ms-marco-MiniLM-L-6-v2")
-        print(f"Loading CrossEncoder re-ranking model '{model_name}'...")
         try:
-            _cross_encoder = CrossEncoder(model_name)
+            _cross_encoder = mgr.get_cross_encoder(model_name)
         except Exception as e:
             print(f"Warning: Failed to load CrossEncoder model '{model_name}': {e}. Re-ranking will fall back to hybrid search scores.")
             _cross_encoder = None
@@ -120,13 +115,7 @@ def load_resources():
         graph_path = _graph_config.get("graph_file_path")
         if not graph_path or not os.path.exists(graph_path):
             graph_path = os.path.join(INDEX_DIR, "attack_graph.pkl")
-            
-        if graph_path and os.path.exists(graph_path):
-            print(f"Loading ATT&CK graph from {graph_path}...")
-            with open(graph_path, "rb") as f:
-                _graph = pickle.load(f)
-        else:
-            print(f"Warning: ATT&CK threat graph not found at {graph_path}. ATT&CK expansion will be bypassed.")
+        _graph = mgr.get_graph(graph_path)
 
     # Lazy-load secondary CTI providers (Step 1)
     from sentinel_prime.ai.agents.rag.providers.generic import GenericProvider
@@ -171,7 +160,11 @@ def traverse_and_expand_technique(start_stix_id: str, max_depth: int = 2) -> Dic
     Traverses the ATT&CK graph starting from a technique node.
     Collects related entities within max_depth hops and returns categorized entities.
     """
-    global _graph
+    global _graph, _traversal_cache
+    cache_key = (start_stix_id, max_depth)
+    if cache_key in _traversal_cache:
+        return _traversal_cache[cache_key]
+        
     if _graph is None or start_stix_id not in _graph:
         return {}
         
@@ -244,6 +237,7 @@ def traverse_and_expand_technique(start_stix_id: str, max_depth: int = 2) -> Dic
                 queue.append((predecessor, depth + 1, new_path))
                 expanded["traversal_paths"].append(new_path)
                 
+    _traversal_cache[cache_key] = expanded
     return expanded
 
 def _search_attack_internal(query_str: str, limit: int) -> List[Dict[str, Any]]:

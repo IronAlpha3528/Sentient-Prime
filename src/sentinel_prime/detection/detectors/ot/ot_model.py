@@ -23,39 +23,53 @@ class OTModel:
         self.features: List[str] = []
         self.metadata: Dict[str, Any] = {}
 
+    _shared_iforest = None
+    _shared_lightgbm = None
+    _shared_features = None
+    _shared_metadata = None
+
     def load_model(self) -> None:
         """
         Loads the Isolation Forest, optional LightGBM, and feature contract schema.
         """
-        # Load feature contract
-        if not self.contract_path.exists():
-            raise FileNotFoundError(f"Feature contract not found at {self.contract_path}")
-            
-        with open(self.contract_path, "r", encoding="utf-8") as f:
-            contract = json.load(f)
-        self.features = list(contract.keys())
-        logger.info(f"Loaded feature contract containing {len(self.features)} features.")
+        cls = self.__class__
+        if cls._shared_iforest is None:
+            # Load feature contract
+            if not self.contract_path.exists():
+                raise FileNotFoundError(f"Feature contract not found at {self.contract_path}")
+                
+            with open(self.contract_path, "r", encoding="utf-8") as f:
+                contract = json.load(f)
+            cls._shared_features = list(contract.keys())
+            logger.info(f"Loaded feature contract containing {len(cls._shared_features)} features.")
 
-        # Load Isolation Forest
-        iforest_path = self.model_dir / "isolation_forest.pkl"
-        if not iforest_path.exists():
-            raise FileNotFoundError(f"Isolation Forest model not found at {iforest_path}")
-        self.iforest = joblib.load(iforest_path)
-        logger.info("Loaded Isolation Forest model successfully.")
+            # Load Isolation Forest
+            iforest_path = self.model_dir / "isolation_forest.pkl"
+            if not iforest_path.exists():
+                raise FileNotFoundError(f"Isolation Forest model not found at {iforest_path}")
+            cls._shared_iforest = joblib.load(iforest_path)
+            logger.info("Loaded Isolation Forest model successfully.")
 
-        # Load LightGBM (Optional)
-        lgb_path = self.model_dir / "lightgbm.pkl"
-        if lgb_path.exists():
-            self.lightgbm = joblib.load(lgb_path)
-            logger.info("Loaded LightGBM model successfully.")
-        else:
-            logger.warning("LightGBM model not found, running in anomaly-only mode.")
+            # Load LightGBM (Optional)
+            lgb_path = self.model_dir / "lightgbm.pkl"
+            if lgb_path.exists():
+                cls._shared_lightgbm = joblib.load(lgb_path)
+                logger.info("Loaded LightGBM model successfully.")
+            else:
+                logger.info("LightGBM model not found at %s — running in anomaly-only mode (Isolation Forest).", lgb_path)
 
-        # Load Metadata
-        meta_path = self.model_dir / "training_metadata.json"
-        if meta_path.exists():
-            with open(meta_path, "r", encoding="utf-8") as f:
-                self.metadata = json.load(f)
+            # Load Metadata
+            meta_path = self.model_dir / "training_metadata.json"
+            if meta_path.exists():
+                with open(meta_path, "r", encoding="utf-8") as f:
+                    cls._shared_metadata = json.load(f)
+            else:
+                cls._shared_metadata = {}
+                
+        self.iforest = cls._shared_iforest
+        self.lightgbm = cls._shared_lightgbm
+        self.features = cls._shared_features
+        self.metadata = cls._shared_metadata
 
     def _align_features(self, features_dict: Dict[str, Any]) -> pd.DataFrame:
         """

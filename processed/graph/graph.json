@@ -4,6 +4,20 @@
   "graph": {},
   "nodes": [
     {
+      "node_id": "HOST-042",
+      "entity_type": "HOST",
+      "display_name": "HOST-042",
+      "risk_score": 0.9095179560458887,
+      "confidence": 1.0,
+      "severity": "INFO",
+      "first_seen": "2026-06-02T18:24:43+00:00",
+      "last_seen": "2026-06-02T18:24:43+00:00",
+      "metadata": {
+        "source": "eval_pipeline_baseline"
+      },
+      "id": "HOST-042"
+    },
+    {
       "node_id": "HOST:HOST-042",
       "entity_type": "HOST",
       "display_name": "HOST-042",

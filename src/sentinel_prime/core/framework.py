@@ -90,6 +90,10 @@ class Framework:
         
         return context
 
+    def wait_until_idle(self, timeout: float = 5.0) -> bool:
+        """Blocks until all pushed events are processed by CKG and other subscribers."""
+        return self.bus.wait_until_idle(timeout)
+
     def health(self) -> Dict[str, Any]:
         """Runs diagnostics across framework layers and config schemas."""
         bus_health = self.bus.health()

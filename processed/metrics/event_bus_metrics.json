@@ -4,7 +4,7 @@
   "events_dropped": 0,
   "validation_failures": 0,
   "duplicates_removed": 0,
-  "average_latency": 2.909489361702127,
+  "average_latency": 4.728609929078015,
   "peak_queue_size": 3,
   "current_queue_size": 0,
   "subscriber_count": 0

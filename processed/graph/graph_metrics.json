@@ -1,33 +1,40 @@
 {
-  "nodes_count": 2,
+  "nodes_count": 3,
   "edges_count": 1,
   "degree_centrality": {
-    "HOST:HOST-042": 1.0,
-    "PROCESS:HOST-042:procdump.exe -ma lsass.exe lsass.dmp": 1.0
+    "HOST-042": 0.0,
+    "HOST:HOST-042": 0.5,
+    "PROCESS:HOST-042:procdump.exe -ma lsass.exe lsass.dmp": 0.5
   },
   "betweenness_centrality": {
+    "HOST-042": 0.0,
     "HOST:HOST-042": 0.0,
     "PROCESS:HOST-042:procdump.exe -ma lsass.exe lsass.dmp": 0.0
   },
   "closeness_centrality": {
+    "HOST-042": 0.0,
     "HOST:HOST-042": 0.0,
-    "PROCESS:HOST-042:procdump.exe -ma lsass.exe lsass.dmp": 1.0
+    "PROCESS:HOST-042:procdump.exe -ma lsass.exe lsass.dmp": 0.5
   },
   "pagerank": {
-    "HOST:HOST-042": 0.3508773619358619,
-    "PROCESS:HOST-042:procdump.exe -ma lsass.exe lsass.dmp": 0.649122638064138
+    "HOST-042": 0.2597401902200101,
+    "HOST:HOST-042": 0.2597401902200101,
+    "PROCESS:HOST-042:procdump.exe -ma lsass.exe lsass.dmp": 0.48051961955997946
   },
-  "weakly_connected_components_count": 1,
+  "weakly_connected_components_count": 2,
   "communities": [
     [
       "HOST:HOST-042",
       "PROCESS:HOST-042:procdump.exe -ma lsass.exe lsass.dmp"
+    ],
+    [
+      "HOST-042"
     ]
   ],
   "risk_distribution": {
     "benign": 0,
     "moderate": 0,
     "high": 0,
-    "critical": 2
+    "critical": 3
   }
 }
