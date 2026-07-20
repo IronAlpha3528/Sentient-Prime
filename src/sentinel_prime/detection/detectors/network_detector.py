@@ -23,24 +23,34 @@ class NetworkDetector(BaseDetector):
         self.model_dir = Path(model_dir)
         self.load_model()
 
+    _shared_models = {}
+
     def load_model(self) -> None:
-        stage1_path = self.model_dir / "stage1_binary_model.txt"
-        stage2_path = self.model_dir / "stage2_family_model.txt"
-        
-        if not stage1_path.exists() or not stage2_path.exists():
-            raise FileNotFoundError(f"Network models not found in {self.model_dir}. Run training scripts first.")
+        cls = self.__class__
+        if not cls._shared_models:
+            stage1_path = self.model_dir / "stage1_binary_model.txt"
+            stage2_path = self.model_dir / "stage2_family_model.txt"
             
-        self.model_s1 = lgb.Booster(model_file=str(stage1_path))
-        self.model_s2 = lgb.Booster(model_file=str(stage2_path))
-        self.family_encoder = joblib.load(
-            self.model_dir / "family_label_encoder.pkl"
-        )
-        self.feature_columns = json.loads(
-            (self.model_dir / "feature_columns.json").read_text(encoding="utf-8")
-        )
-        self.metadata = json.loads(
-            (self.model_dir / "model_metadata.json").read_text(encoding="utf-8")
-        )
+            if not stage1_path.exists() or not stage2_path.exists():
+                raise FileNotFoundError(f"Network models not found in {self.model_dir}. Run training scripts first.")
+                
+            cls._shared_models["model_s1"] = lgb.Booster(model_file=str(stage1_path))
+            cls._shared_models["model_s2"] = lgb.Booster(model_file=str(stage2_path))
+            cls._shared_models["family_encoder"] = joblib.load(
+                self.model_dir / "family_label_encoder.pkl"
+            )
+            cls._shared_models["feature_columns"] = json.loads(
+                (self.model_dir / "feature_columns.json").read_text(encoding="utf-8")
+            )
+            cls._shared_models["metadata"] = json.loads(
+                (self.model_dir / "model_metadata.json").read_text(encoding="utf-8")
+            )
+            
+        self.model_s1 = cls._shared_models["model_s1"]
+        self.model_s2 = cls._shared_models["model_s2"]
+        self.family_encoder = cls._shared_models["family_encoder"]
+        self.feature_columns = cls._shared_models["feature_columns"]
+        self.metadata = cls._shared_models["metadata"]
 
     def predict(self, data: dict) -> dict:
         raw_features = data["features"]

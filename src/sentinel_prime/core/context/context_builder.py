@@ -62,9 +62,10 @@ class ContextBuilder:
             supporting_evidence = []
 
             start_graph_time = time.time()
+            
+            # --- Node lookup (fast, under lock) ---
+            matched_node = None
             with store.lock:
-                # Match node identifier or fall back to display name matching
-                matched_node = None
                 if graph.has_node(entity_id):
                     matched_node = entity_id
                 else:
@@ -72,22 +73,50 @@ class ContextBuilder:
                         if attrs.get("display_name") == entity_id:
                             matched_node = n
                             break
+            # Lock released before any slow I/O
                             
-                if not matched_node:
-                    # Return empty context if entity has no graph presence
-                    now_str = datetime.datetime.now(datetime.timezone.utc).isoformat()
-                    err_ctx = CorrelationContext(
-                        context_id=str(uuid.uuid4()),
-                        entity=entity_id,
-                        time_window=(now_str, now_str),
-                        risk_summary="Entity not found in Cyber Knowledge Graph.",
-                        incident_id=incident_id or ""
-                    )
-                    duration_ms = (time.time() - start_gen_time) * 1000.0
-                    logger.warning(f"Context building failed: Entity {entity_id} not found in graph. Took {duration_ms:.2f}ms.")
-                    return err_ctx
+            if not matched_node:
+                # Enrich fallback context with RAG lookup (outside lock — no contention)
+                threat_intel_results = []
+                try:
+                    from sentinel_prime.ai.agents.rag.query import search as rag_search
+                    rag_results = rag_search(entity_id, top_k=3)
+                    for r in rag_results:
+                        threat_intel_results.append({
+                            "technique_id": r.get("technique_id"),
+                            "name": r.get("name"),
+                            "description": r.get("description"),
+                            "score": r.get("distance")
+                        })
+                except Exception as e:
+                    logger.warning(f"Failed to query Threat Intelligence for missing entity: {e}")
 
-                # Retrieve local subgraph (within configured hops radius)
+                monitoring_snapshot = {}
+                if self.bus:
+                    try:
+                        monitoring_snapshot = self.bus.metrics()
+                    except Exception:
+                        pass
+
+                now_str = datetime.datetime.now(datetime.timezone.utc).isoformat()
+                err_ctx = CorrelationContext(
+                    context_id=str(uuid.uuid4()),
+                    entity=entity_id,
+                    time_window=(now_str, now_str),
+                    risk_summary=f"Entity {entity_id} not found in Cyber Knowledge Graph. Diagnostic fallback applied.",
+                    incident_id=incident_id or "",
+                    threat_intel=threat_intel_results,
+                    monitoring_snapshot=monitoring_snapshot,
+                    unified_threat_score=0.0,
+                    confidence_score=0.1,
+                    risk_level="LOW"
+                )
+                duration_ms = (time.time() - start_gen_time) * 1000.0
+                logger.warning(f"Context building failed: Entity {entity_id} not found in graph. Generated baseline fallback. Took {duration_ms:.2f}ms.")
+                return err_ctx
+
+            # --- Subgraph extraction (under lock) ---
+            with store.lock:
                 undirected_copy = graph.to_undirected()
                 lengths = nx.single_source_shortest_path_length(undirected_copy, matched_node, cutoff=self.radius)
                 

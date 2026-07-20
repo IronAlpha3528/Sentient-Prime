@@ -62,7 +62,8 @@ class HistoricalIncidentProvider(BaseProvider):
     def _load_model(self):
         """Lazily loads SentenceTransformer model."""
         if self._model is None:
-            self._model = SentenceTransformer('all-MiniLM-L6-v2')
+            from sentinel_prime.ai.agents.rag.resource_manager import ResourceManager
+            self._model = ResourceManager().get_sentence_transformer('all-MiniLM-L6-v2')
 
     def _get_embedding_text(self, incident: Dict[str, Any]) -> str:
         """Helper to build text description for embedding generation."""

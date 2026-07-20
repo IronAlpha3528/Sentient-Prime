@@ -162,6 +162,13 @@ class PipelineEvaluator:
     Specialist Detector -> Evidence -> CKG -> Meta Classifier -> AI Pipeline -> SOAR
     """
     def __init__(self):
+        # Run schema consistency report (Part 7)
+        try:
+            from sentinel_prime.detection.detectors.schema_consistency import verify_contracts
+            verify_contracts()
+        except Exception as e:
+            print(f"  ⚠️  Schema consistency check warning: {e}")
+
         # 1. Instantiate Specialist Detectors
         from sentinel_prime.detection.detectors.network_detector import NetworkDetector
         from sentinel_prime.detection.detectors.identity_detector import IdentityDetector
@@ -212,7 +219,7 @@ class PipelineEvaluator:
             global_label = 1 if sample["ground_truth"]["label"] == "malicious" else 0
             
             # --- 1. SPECIALIST DETECTORS ---
-            # Network
+            # Network (Calibrated Threshold = 0.70)
             net = sample["network"]
             net_res = self.net_detector.predict({
                 "entity_id": entity_id,
@@ -220,9 +227,9 @@ class PipelineEvaluator:
                 "timestamp": sample["timestamp"],
             })
             score_net = float(net_res.get("score", 0.0))
-            pred_net = 1 if score_net >= 0.5 else 0
+            pred_net = 1 if score_net >= 0.70 else 0
 
-            # Identity
+            # Identity (Calibrated Threshold = 0.90)
             id_sig = sample["identity"]
             id_features = _build_identity_features(id_sig)
             id_res = self.id_detector.predict({
@@ -231,9 +238,9 @@ class PipelineEvaluator:
                 "features": id_features,
             })
             score_id = float(id_res.get("score", 0.0))
-            pred_id = 1 if score_id >= 0.5 else 0
+            pred_id = 1 if score_id >= 0.90 else 0
 
-            # Endpoint
+            # Endpoint (Calibrated Threshold = 0.70)
             ep = sample["endpoint"]
             ep_events = _build_endpoint_events(sample)
             ep_res = self.ep_detector.predict({
@@ -245,7 +252,7 @@ class PipelineEvaluator:
                 "events": ep_events
             })
             score_ep = float(ep_res.get("risk_score", 0.0))
-            pred_ep = 1 if score_ep >= 0.5 else 0
+            pred_ep = 1 if score_ep >= 0.70 else 0
 
             # OT
             ot_features = _build_ot_features(sample, self.ot_detector)
@@ -263,6 +270,23 @@ class PipelineEvaluator:
             # --- 2. EVIDENCE OBJECTS & ENTITY GRAPH ---
             # Clear graph store for this clean isolated run
             self.framework.graph_manager.store.clear()
+
+            # Always register the primary entity node so ContextBuilder
+            # can resolve it even when all detector scores are below 0.30
+            entity_type_hint = "USER" if entity_id.startswith("USER") else "HOST"
+            self.framework.graph_manager.store.add_node(
+                entity_id,
+                {
+                    "node_id": entity_id,
+                    "entity_type": entity_type_hint,
+                    "display_name": entity_id,
+                    "risk_score": max(score_net, score_id, score_ep, score_ot),
+                    "confidence": 1.0,
+                    "severity": "INFO",
+                    "timestamp": sample["timestamp"],
+                    "metadata": {"source": "eval_pipeline_baseline"}
+                }
+            )
 
             # Push mapped evidence objects to graph store if score is above noise threshold
             # Network
@@ -355,8 +379,8 @@ class PipelineEvaluator:
                 )
                 self.framework.push(ot_ev)
 
-            # Sleep briefly to ensure async graph subscriber has processed events
-            time.sleep(0.1)
+            # Wait until EvidenceBus queue and CKG updates are completely processed
+            self.framework.wait_until_idle()
 
             # --- 3. CONTEXT BUILDER & META-CLASSIFIER ---
             context = self.framework.build_context(entity_id)

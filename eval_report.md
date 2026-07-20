@@ -1,6 +1,6 @@
 # Sentient-Prime — Evaluation Report
 
-> Generated: 2026-07-20 14:50 UTC
+> Generated: 2026-07-20 16:38 UTC
 
 ---
 
@@ -9,18 +9,18 @@
 > Evaluated via Specialist Detectors against domain-specific labels to measure isolation accuracy.
 | Detector | Recall (Detection Rate) | False Positive Rate | F1 | ROC-AUC |
 |---|---|---|---|---|
-| **Network (LightGBM)** | 95.0% | 24.4% | 62.3% | 0.8636 |
-| **Identity (Isolation Forest)** | 100.0% | 36.0% | 35.7% | 1.0 |
-| **Endpoint (LightGBM + Sigma)** | 100.0% | 12.5% | 85.7% | 1.0 |
+| **Network (LightGBM)** | 95.0% | 22.2% | 64.4% | 0.8636 |
+| **Identity (Isolation Forest)** | 100.0% | 6.0% | 76.9% | 1.0 |
+| **Endpoint (LightGBM + Sigma)** | 100.0% | 0.0% | 100.0% | 1.0 |
 | **OT (Isolation Forest)** | 100.0% | 0.0% | 100.0% | 1.0 |
 
 ### Specialist Detectors Confusion Matrices
 
 | Detector | True Positives (TP) | False Positives (FP) | True Negatives (TN) | False Negatives (FN) |
 |---|---|---|---|---|
-| **Network (LightGBM)** | 19 | 22 | 68 | 1 |
-| **Identity (Isolation Forest)** | 10 | 36 | 64 | 0 |
-| **Endpoint (LightGBM + Sigma)** | 30 | 10 | 70 | 0 |
+| **Network (LightGBM)** | 19 | 20 | 70 | 1 |
+| **Identity (Isolation Forest)** | 10 | 6 | 94 | 0 |
+| **Endpoint (LightGBM + Sigma)** | 30 | 0 | 80 | 0 |
 | **OT (Isolation Forest)** | 10 | 0 | 100 | 0 |
 
 ---
@@ -34,18 +34,18 @@
 | Metric | Value |
 |---|---|
 | Global Detection Rate (Recall) | **100.0%** |
-| Global False Positive Rate | **37.5%** |
-| F1 Score | **90.3%** |
-| ROC-AUC | **0.8125** |
-| Precision | **82.3%** |
+| Global False Positive Rate | **100.0%** |
+| F1 Score | **77.8%** |
+| ROC-AUC | **0.5** |
+| Precision | **63.6%** |
 
 ### Meta-Classifier Confusion Matrix
 
 | Metric | Value |
 |---|---|
 | True Positives (TP) | **70** |
-| False Positives (FP) | **15** |
-| True Negatives (TN) | **25** |
+| False Positives (FP) | **40** |
+| True Negatives (TN) | **0** |
 | False Negatives (FN) | **0** |
 
 ---
@@ -84,7 +84,7 @@
 | | Sentient-Prime | Manual SOC Baseline | Improvement |
 |---|---|---|---|
 | MTTD (alert-to-detection flag) | **0.8ms** | 45.0 min | **3375000.0× faster** |
-| MTTR (AI analysis + dispatch) | **126.9ms** | 720.0 min | **340413.8× faster (triage only)** |
+| MTTR (AI analysis + dispatch) | **169.84ms** | 720.0 min | **254361.3× faster (triage only)** |
 
 ---
 

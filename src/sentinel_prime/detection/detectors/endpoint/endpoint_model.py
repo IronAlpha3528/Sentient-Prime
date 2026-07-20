@@ -17,39 +17,48 @@ class EndpointModel:
         self.features: List[str] = []
         self.metadata: Dict[str, Any] = {}
 
+    _shared_model = None
+    _shared_features = None
+    _shared_metadata = None
+
     def load_model(self) -> None:
         """
         Loads the trained LightGBM model and its associated metadata/contracts.
         """
-        model_file = self.model_dir / "lightgbm_model.pkl"
-        if not model_file.exists():
-            raise FileNotFoundError(
-                f"Trained LightGBM model not found at: {model_file}. Please run train_endpoint first."
-            )
-        
-        # Load pickle
-        self.model = joblib.load(model_file)
-        logger.info(f"Loaded LightGBM model from {model_file}")
+        cls = self.__class__
+        if cls._shared_model is None:
+            model_file = self.model_dir / "lightgbm_model.pkl"
+            if not model_file.exists():
+                raise FileNotFoundError(
+                    f"Trained LightGBM model not found at: {model_file}. Please run train_endpoint first."
+                )
+            
+            cls._shared_model = joblib.load(model_file)
+            logger.info(f"Loaded LightGBM model from {model_file}")
 
-        # Load feature contract
-        if self.contract_path.exists():
-            with open(self.contract_path, "r", encoding="utf-8") as f:
-                contract = json.load(f)
-                self.features = list(contract.keys())
-        else:
-            # Fallback to model's feature names if contract file is not present
-            if hasattr(self.model, "feature_name_"):
-                self.features = list(self.model.feature_name_)
+            # Load feature contract
+            if self.contract_path.exists():
+                with open(self.contract_path, "r", encoding="utf-8") as f:
+                    contract = json.load(f)
+                    cls._shared_features = list(contract.keys())
             else:
-                raise FileNotFoundError(f"Feature contract not found at: {self.contract_path}")
+                # Fallback to model's feature names if contract file is not present
+                if hasattr(cls._shared_model, "feature_name_"):
+                    cls._shared_features = list(cls._shared_model.feature_name_)
+                else:
+                    raise FileNotFoundError(f"Feature contract not found at: {self.contract_path}")
 
-        # Load metadata
-        meta_file = self.model_dir / "training_metadata.json"
-        if meta_file.exists():
-            with open(meta_file, "r", encoding="utf-8") as f:
-                self.metadata = json.load(f)
-        else:
-            self.metadata = {}
+            # Load metadata
+            meta_file = self.model_dir / "training_metadata.json"
+            if meta_file.exists():
+                with open(meta_file, "r", encoding="utf-8") as f:
+                    cls._shared_metadata = json.load(f)
+            else:
+                cls._shared_metadata = {}
+                
+        self.model = cls._shared_model
+        self.features = cls._shared_features
+        self.metadata = cls._shared_metadata
 
     def predict(self, feature_row: Dict[str, Any]) -> float:
         """

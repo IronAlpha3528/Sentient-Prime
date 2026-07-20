@@ -317,6 +317,7 @@ class MetaClassifier:
         
         active_scores = [val for val, _ in scores if val > 0.0]
         max_active = max(active_scores) if active_scores else 0.0
+        n_active = len(active_scores)
         
         weighted_sum = sum(val * weight for val, weight in scores)
         weight_normalizer = sum(weight for val, weight in scores if val > 0.0)
@@ -339,7 +340,12 @@ class MetaClassifier:
         if ti_score > 0.5:
             base_score += 0.05
 
-        unified_score = float(np.clip(max(base_score, max_active * 0.9), 0.0, 1.0))
+        # max_active override: only applied when 2+ detectors are firing to reduce
+        # single-detector false-positive propagation. Multiplier reduced to 0.75.
+        if n_active >= 2:
+            unified_score = float(np.clip(max(base_score, max_active * 0.75), 0.0, 1.0))
+        else:
+            unified_score = float(np.clip(base_score, 0.0, 1.0))
 
         # Fallback confidence calculation based on mean detector confidence
         detector_confs = [
@@ -351,3 +357,4 @@ class MetaClassifier:
         mean_conf = sum(detector_confs) / len(detector_confs) if detector_confs else 1.0
 
         return unified_score, float(np.clip(mean_conf, 0.0, 1.0))
+

@@ -58,14 +58,24 @@ class IdentityDetector(BaseDetector):
         self.model_dir = Path(model_dir)
         self.load_model()
 
+    _shared_model = None
+    _shared_feature_columns = None
+    _shared_metadata = None
+
     def load_model(self) -> None:
-        self.model = joblib.load(self.model_dir / "identity_model.pkl")
-        self.feature_columns = json.loads(
-            (self.model_dir / "feature_columns.json").read_text(encoding="utf-8")
-        )
-        self.metadata = json.loads(
-            (self.model_dir / "model_metadata.json").read_text(encoding="utf-8")
-        )
+        cls = self.__class__
+        if cls._shared_model is None:
+            cls._shared_model = joblib.load(self.model_dir / "identity_model.pkl")
+            cls._shared_feature_columns = json.loads(
+                (self.model_dir / "feature_columns.json").read_text(encoding="utf-8")
+            )
+            cls._shared_metadata = json.loads(
+                (self.model_dir / "model_metadata.json").read_text(encoding="utf-8")
+            )
+            
+        self.model = cls._shared_model
+        self.feature_columns = cls._shared_feature_columns
+        self.metadata = cls._shared_metadata
 
     def predict(self, data: dict) -> dict:
         raw_features = data["features"].copy()

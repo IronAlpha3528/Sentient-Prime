@@ -28,30 +28,23 @@ class AttackProvider(BaseProvider):
 
     def _load_resources(self):
         """Lazily loads models, FAISS, Graph, and BM25 index."""
+        from sentinel_prime.ai.agents.rag.resource_manager import ResourceManager
+        mgr = ResourceManager()
+        
         if self._index is None:
-            if not os.path.exists(self.index_path):
-                raise FileNotFoundError(f"FAISS index not found at {self.index_path}")
-            self._index = faiss.read_index(self.index_path)
+            self._index = mgr.get_faiss_index(self.index_path)
             
         if self._metadata is None:
-            if not os.path.exists(self.chunks_path):
-                raise FileNotFoundError(f"Metadata chunks not found at {self.chunks_path}")
-            with open(self.chunks_path, "rb") as f:
-                self._metadata = pickle.load(f)
+            self._metadata = mgr.get_metadata(self.chunks_path)
                 
         if self._model is None:
-            self._model = SentenceTransformer('all-MiniLM-L6-v2')
+            self._model = mgr.get_sentence_transformer('all-MiniLM-L6-v2')
             
         if self._bm25 is None:
-            if os.path.exists(self.bm25_path):
-                self._bm25 = BM25Index.load(self.bm25_path)
-            else:
-                self._bm25 = BM25Index()
+            self._bm25 = mgr.get_bm25_index(self.bm25_path)
                 
         if self._graph is None:
-            if os.path.exists(self.graph_path):
-                with open(self.graph_path, "rb") as f:
-                    self._graph = pickle.load(f)
+            self._graph = mgr.get_graph(self.graph_path)
 
     def ingest(self, raw_data_path: str) -> None:
         """Indexes parsed MITRE techniques lexically using BM25Index (Step 2)."""
