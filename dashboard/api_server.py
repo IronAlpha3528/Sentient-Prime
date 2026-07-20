@@ -10,8 +10,10 @@ This module exposes the dashboard JSON contract from real repository state:
 from __future__ import annotations
 
 import json
+import logging
 import sys
 from collections import defaultdict
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterator
@@ -21,6 +23,8 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
+
+_startup_logger = logging.getLogger("sentinel_prime.api_startup")
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SRC_DIR = PROJECT_ROOT / "src"
@@ -39,7 +43,24 @@ try:
 except Exception:  # pragma: no cover - defensive import for partial environments
     AuditLedger = None  # type: ignore[assignment]
 
-app = FastAPI(title="Sentient-Prime Dashboard API")
+@asynccontextmanager
+async def _lifespan(application: FastAPI):  # noqa: ARG001
+    """Pre-warm the RAG model resources so the first AI request is instant."""
+    try:
+        from sentinel_prime.ai.agents.rag.query import load_resources
+        await run_in_threadpool(load_resources)
+        _startup_logger.info("RAG resources pre-warmed successfully (FAISS + SentenceTransformer + CrossEncoder).")
+    except FileNotFoundError as exc:
+        _startup_logger.warning(
+            "RAG index not found during startup warm-up — run build_index.py first. "
+            "AI pipeline will still work but first call will be slow. Detail: %s", exc
+        )
+    except Exception as exc:  # pragma: no cover
+        _startup_logger.warning("RAG warm-up failed (non-fatal): %s", exc)
+    yield  # application runs here
+
+
+app = FastAPI(title="Sentient-Prime Dashboard API", lifespan=_lifespan)
 
 app.add_middleware(
     CORSMiddleware,

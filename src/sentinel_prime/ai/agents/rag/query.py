@@ -4,7 +4,7 @@ import faiss
 import yaml
 import time
 import datetime
-import concurrent.futures
+import concurrent.futures  # retained for any future use; not used in search() dispatch
 import networkx as nx
 from typing import Union, Dict, Any, List, Optional
 from sentence_transformers import SentenceTransformer, CrossEncoder
@@ -666,44 +666,21 @@ def search(
     
     all_dense = []
     all_lexical = []
-    
-    # Parallel dispatch
-    with concurrent.futures.ThreadPoolExecutor(max_workers=len(enabled_providers) * 2) as executor:
-        dense_futures = {}
-        lexical_futures = {}
-        
+
+    # Sequential dispatch — SentenceTransformer.encode() is CPU-bound and the GIL
+    # serialises threads anyway, so ThreadPoolExecutor adds overhead with no benefit.
+    # Running synchronously is simpler, equally fast, and avoids GIL contention.
+    for p_name in enabled_providers:
         if enable_dense:
-            dense_futures = {
-                executor.submit(_query_dense_provider, p_name, query, per_provider_limit): p_name
-                for p_name in enabled_providers
-            }
+            try:
+                all_dense.extend(_query_dense_provider(p_name, query, per_provider_limit))
+            except Exception as e:
+                print(f"Error querying dense provider '{p_name}': {e}")
         if enable_bm25:
-            lexical_futures = {
-                executor.submit(_query_bm25_provider, p_name, query, per_provider_limit): p_name
-                for p_name in enabled_providers
-            }
-            
-        if dense_futures:
             try:
-                for future in concurrent.futures.as_completed(dense_futures, timeout=timeout):
-                    p_name = dense_futures[future]
-                    try:
-                        all_dense.extend(future.result())
-                    except Exception as e:
-                        print(f"Error querying dense provider '{p_name}': {e}")
-            except concurrent.futures.TimeoutError:
-                print("Warning: Dense search timed out.")
-                
-        if lexical_futures:
-            try:
-                for future in concurrent.futures.as_completed(lexical_futures, timeout=timeout):
-                    p_name = lexical_futures[future]
-                    try:
-                        all_lexical.extend(future.result())
-                    except Exception as e:
-                        print(f"Error querying lexical provider '{p_name}': {e}")
-            except concurrent.futures.TimeoutError:
-                print("Warning: Lexical search timed out.")
+                all_lexical.extend(_query_bm25_provider(p_name, query, per_provider_limit))
+            except Exception as e:
+                print(f"Error querying bm25 provider '{p_name}': {e}")
                 
     # Hybrid fusion
     start_fusion_time = time.time()

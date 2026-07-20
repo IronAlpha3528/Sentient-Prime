@@ -52,8 +52,30 @@ def run_pipeline(evidence: Dict[str, Any]) -> Dict[str, Any]:
         context = framework.build_context(entity_id)
         context.incident_id = incident_id
     except Exception as e:
-        logger.error(f"Failed to build context: {e}")
-        context = evidence
+        # Log the full traceback so it appears in the API logs — this is the key
+        # GraphRAG step and a silent fallback would completely hide the failure.
+        logger.error(
+            "Failed to build graph context for incident %s (entity=%s). "
+            "GraphRAG will be BYPASSED for this run. Full error: %s",
+            incident_id,
+            evidence.get("entity_id") or evidence.get("target_asset", "unknown"),
+            e,
+            exc_info=True,
+        )
+        # Build a structured fallback dict so agents still receive meaningful input
+        # rather than raw evidence with no schema guarantees.
+        context = {
+            "incident_id": incident_id,
+            "entity_id": evidence.get("entity_id") or evidence.get("target_asset", "unknown"),
+            "entities": evidence.get("entities", {}),
+            "network": evidence.get("network", {}),
+            "endpoint": evidence.get("endpoint", {}),
+            "identity": evidence.get("identity", {}),
+            "ot": evidence.get("ot", {}),
+            "rag_context": [],
+            "graph_summary": "Graph context unavailable — using raw telemetry evidence as fallback.",
+            "_fallback_reason": str(e),
+        }
 
     # --- INCIDENT MEMORY INJECTION ---
     from sentinel_prime.core.telemetry.state_db import IncidentStateDB
