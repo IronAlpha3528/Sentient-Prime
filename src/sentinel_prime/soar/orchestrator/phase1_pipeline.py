@@ -71,8 +71,8 @@ class Phase1Pipeline:
                     metadata=evidence.get("features", {}),
                     attack_family=attack_family,
                     protocol=evidence.get("features", {}).get("protocol", "unknown"),
-                    source_ip="unknown",
-                    destination_ip="unknown",
+                    source_ip=evidence.get("features", {}).get("source_ip", evidence.get("features", {}).get("src_ip", "unknown")),
+                    destination_ip=evidence.get("features", {}).get("destination_ip", evidence.get("features", {}).get("dst_ip", "unknown")),
                     flow_duration=float(evidence.get("features", {}).get("flow_duration", 0.0) or 0.0),
                     top_network_features=evidence.get("features", {})
                 )

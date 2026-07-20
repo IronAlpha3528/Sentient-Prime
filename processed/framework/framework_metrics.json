@@ -1,15 +1,15 @@
 {
-  "timestamp": "2026-07-20T16:47:35.099951+00:00",
-  "evidence_processed": 141,
-  "nodes_created": 3,
-  "edges_created": 1,
+  "timestamp": "2026-07-20T20:17:44.506100+00:00",
+  "evidence_processed": 197,
+  "nodes_created": 5,
+  "edges_created": 2,
   "graph_size": {
-    "nodes": 3,
-    "edges": 1
+    "nodes": 5,
+    "edges": 2
   },
   "contexts_generated": 110,
-  "average_context_generation_time_ms": 3747.111936049028,
-  "average_graph_query_time_ms": 374.7111936049028,
+  "average_context_generation_time_ms": 1539.544177055359,
+  "average_graph_query_time_ms": 153.9544177055359,
   "duplicates_removed": 0,
   "validation_failures": 0
 }

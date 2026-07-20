@@ -598,9 +598,19 @@ def approve_incident(incident_id: str) -> Any:
     incident_record = db.get_incident(incident_id)
 
     if not incident_record:
-        return JSONResponse({"status": "error", "message": "Incident not found in state DB"}, status_code=404)
-
-    incident_data = incident_record.get("incident_data", {})
+        all_inc = _all_incidents()
+        incident = next((item for item in all_inc if item["incident_id"] == incident_id), None)
+        if not incident:
+            return JSONResponse({"status": "error", "message": "Incident not found in state DB"}, status_code=404)
+        incident_data = {
+            "incident_id": incident_id,
+            "attack_type": incident.get("attack_class", "Unknown"),
+            "entities": incident.get("entities", {})
+        }
+        reasoning = _ledger_reasoning(incident_id) or _normalize_reasoning(incident_id, {}, {}, {}, {}, {}, {}, source="artifacts")
+        incident_data["response_agent_plan"] = reasoning.get("response_plan", {})
+    else:
+        incident_data = incident_record.get("incident_data", {})
 
     from sentinel_prime.soar.orchestrator.dispatcher import SOARDispatcher
     dispatcher = SOARDispatcher()
@@ -641,9 +651,17 @@ def reject_incident(incident_id: str) -> Any:
     incident_record = db.get_incident(incident_id)
 
     if not incident_record:
-        return JSONResponse({"status": "error", "message": "Incident not found in state DB"}, status_code=404)
-
-    incident_data = incident_record.get("incident_data", {})
+        all_inc = _all_incidents()
+        incident = next((item for item in all_inc if item["incident_id"] == incident_id), None)
+        if not incident:
+            return JSONResponse({"status": "error", "message": "Incident not found in state DB"}, status_code=404)
+        incident_data = {
+            "incident_id": incident_id,
+            "attack_type": incident.get("attack_class", "Unknown"),
+            "entities": incident.get("entities", {})
+        }
+    else:
+        incident_data = incident_record.get("incident_data", {})
 
     from sentinel_prime.soar.orchestrator.dispatcher import SOARDispatcher
     dispatcher = SOARDispatcher()

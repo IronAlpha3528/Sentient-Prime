@@ -1,6 +1,6 @@
 # Sentient-Prime — Evaluation Report
 
-> Generated: 2026-07-20 16:47 UTC
+> Generated: 2026-07-20 20:17 UTC
 
 ---
 
@@ -33,20 +33,20 @@
 
 | Metric | Value |
 |---|---|
-| Global Detection Rate (Recall) | **0.0%** |
+| Global Detection Rate (Recall) | **100.0%** |
 | Global False Positive Rate | **0.0%** |
-| F1 Score | **0.0%** |
-| ROC-AUC | **0.1875** |
-| Precision | **0.0%** |
+| F1 Score | **100.0%** |
+| ROC-AUC | **1.0** |
+| Precision | **100.0%** |
 
 ### Meta-Classifier Confusion Matrix
 
 | Metric | Value |
 |---|---|
-| True Positives (TP) | **0** |
+| True Positives (TP) | **70** |
 | False Positives (FP) | **0** |
 | True Negatives (TN) | **40** |
-| False Negatives (FN) | **70** |
+| False Negatives (FN) | **0** |
 
 ---
 
@@ -61,9 +61,9 @@
 | Metric | Value |
 |---|---|
 | Total incidents processed | 110 |
-| Auto-contained (no human) | 110 (**100.0%**) |
-| Escalated to approval queue | 0 |
-| Automation coverage | **100.0%** |
+| Auto-contained (no human) | 58 (**52.7%**) |
+| Escalated to approval queue | 52 |
+| Automation coverage | **52.7%** |
 
 ---
 
@@ -78,7 +78,7 @@
 | | Sentient-Prime | Manual SOC Baseline | Improvement |
 |---|---|---|---|
 | MTTD (alert-to-detection flag) | **0.8ms** | 45.0 min | **3375000.0× faster** |
-| MTTR (AI analysis + dispatch) | **247.47ms** | 720.0 min | **174569.3× faster (triage only)** |
+| MTTR (AI analysis + dispatch) | **69.54ms** | 720.0 min | **621193.2× faster (triage only)** |
 
 ---
 
@@ -87,7 +87,7 @@
 | Metric | Value |
 |---|---|
 | Hash chain status | **VALID** |
-| Entries verified | 880 |
+| Entries verified | 944 |
 | Hash errors | 0 |
 | Action traceability coverage | **100.0%** |
 

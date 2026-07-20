@@ -2,7 +2,7 @@
 
 # Preprocessing & Windowing
 window_seconds: 60
-feature_contract: "data/processed/endpoint/features/feature_contract.json"
+feature_contract: "models/endpoint/feature_contract.json"
 
 # Anomaly Scoring & Evidence Generation
 risk_threshold: 0.75

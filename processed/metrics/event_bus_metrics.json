@@ -1,10 +1,10 @@
 {
-  "events_received": 141,
-  "events_published": 141,
+  "events_received": 197,
+  "events_published": 197,
   "events_dropped": 0,
   "validation_failures": 0,
   "duplicates_removed": 0,
-  "average_latency": 6.320468085106382,
+  "average_latency": 7.1111065989847715,
   "peak_queue_size": 3,
   "current_queue_size": 0,
   "subscriber_count": 0

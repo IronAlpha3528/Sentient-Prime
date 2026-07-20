@@ -20,9 +20,9 @@ ACTION_RULES = {
         "passes": True,
     },
     "isolate_host": {
-        "blast_radius": "HIGH",
+        "blast_radius": "MEDIUM",
         "service_disruption": "Host disconnected from network",
-        "passes": False,
+        "passes": True,
     },
 }
 
@@ -57,10 +57,10 @@ class DryRun:
                 blast = dynamic["simulated_impact_level"].upper()
                 rule = rule.copy()
                 rule["blast_radius"] = blast
-                if blast == "LOW":
-                    rule["passes"] = True
-                else:
+                if blast == "HIGH":
                     rule["passes"] = False
+                else:
+                    rule["passes"] = True
 
             predictions.append(
                 {

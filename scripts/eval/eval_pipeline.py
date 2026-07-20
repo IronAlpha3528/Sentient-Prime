@@ -258,7 +258,7 @@ class PipelineEvaluator:
             ot_features = _build_ot_features(sample, self.ot_detector)
             ot_res = self.ot_detector.predict({
                 "window_id": incident_id,
-                "attack_label": 1 if attack_class == "ics_manipulation" else 0,
+                "attack_label": 0,
                 "start_time": sample["timestamp"],
                 "end_time": sample["timestamp"],
                 "host": entity_id,
@@ -746,13 +746,7 @@ def compute_detailed_metrics(results: list[dict]) -> dict:
         }
     }
 
-# Cache for singleton evaluator instance during test runner lifecycle
-_cached_eval_results = None
-
 def get_or_run_eval() -> dict:
-    global _cached_eval_results
-    if _cached_eval_results is None:
-        evaluator = PipelineEvaluator()
-        raw_results = evaluator.evaluate_all()
-        _cached_eval_results = compute_detailed_metrics(raw_results)
-    return _cached_eval_results
+    evaluator = PipelineEvaluator()
+    raw_results = evaluator.evaluate_all()
+    return compute_detailed_metrics(raw_results)

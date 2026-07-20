@@ -14,9 +14,20 @@ from sentinel_prime.soar.orchestrator.phase1_pipeline import Phase1Pipeline  # n
 
 def run_network(pipeline: Phase1Pipeline) -> None:
     print("--- Simulating Network Telemetry ---")
-    test_net = pd.read_parquet("data/processed/network/test.parquet")
+    network_data_path = PROJECT_ROOT / "data/processed/network/test.parquet"
+    network_metadata_path = PROJECT_ROOT / "data/processed/network/metadata.json"
+    
+    if not network_data_path.exists() or not network_metadata_path.exists():
+        print(f"Error: Network data or metadata does not exist at {network_data_path.parent}. Run aggregation and splits first.")
+        return
+
+    test_net = pd.read_parquet(network_data_path)
+    if test_net.empty:
+        print("Error: Network test data is empty.")
+        return
+
     with open(
-        "data/processed/network/metadata.json",
+        network_metadata_path,
         encoding="utf-8",
     ) as file:
         metadata_net = json.load(file)
@@ -38,12 +49,16 @@ def run_network(pipeline: Phase1Pipeline) -> None:
 
 def run_identity(pipeline: Phase1Pipeline) -> None:
     print("--- Simulating Identity Telemetry ---")
-    identity_data_path = Path("data/processed/identity/test.parquet")
+    identity_data_path = PROJECT_ROOT / "data/processed/identity/test.parquet"
     if not identity_data_path.exists():
         print(f"Error: {identity_data_path} does not exist. Run aggregation and splits first.")
         return
 
     test_id = pd.read_parquet(identity_data_path)
+    if test_id.empty:
+        print("Error: Identity test data is empty.")
+        return
+
     row_id = test_id.iloc[0]
 
     # Send all aggregated features (excluding metadata index keys)

@@ -14,17 +14,21 @@ def execute(incident: dict[str, Any]) -> dict[str, str]:
     attacker_ip = incident.get("attacker_ip")
 
     logger.info("Starting block_ip simulation for incident %s", incident_id)
+    
+    # Try alternate fields just in case
+    if not attacker_ip:
+        attacker_ip = incident.get("src_ip") or incident.get("source_ip") or incident.get("remote_ip")
 
     if not attacker_ip:
         logger.warning(
-            "block_ip failed for incident %s: attacker IP not found",
+            "block_ip prerequisites failed for incident %s: attacker IP not found. Falling back to isolate_host.",
             incident_id,
         )
-        return {
-            "action": "block_ip",
-            "status": "FAILED",
-            "message": "Attacker IP not found",
-        }
+        # Attempt fallback to isolate_host
+        from sentinel_prime.soar.orchestrator.actions.isolate_host import execute as execute_isolate_host
+        fallback_result = execute_isolate_host(incident)
+        fallback_result["message"] = f"block_ip failed (missing IP). Fallback result: {fallback_result.get('message', '')}"
+        return fallback_result
 
     logger.info(
         "Simulated block for attacker IP %s in incident %s",

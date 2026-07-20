@@ -1,47 +1,75 @@
 {
-  "generated_at": "2026-07-20T12:05:12.858387+00:00",
+  "generated_at": "2026-07-20T20:17:44.645635+00:00",
   "ml_detectors": {
     "Network (LightGBM)": {
       "status": "OK",
-      "n_samples": 110,
-      "precision": 1.0,
-      "recall_detection_rate": 0.6429,
-      "f1": 0.7826,
-      "false_positive_rate": 0.0,
-      "roc_auc": 0.9954,
-      "tp": 45,
-      "fp": 0,
-      "tn": 40,
-      "fn": 25
+      "recall_detection_rate": 0.95,
+      "false_positive_rate": 0.2222,
+      "f1": 0.6441,
+      "roc_auc": 0.8636,
+      "precision": 0.4872,
+      "confusion_matrix": {
+        "tp": 19,
+        "fp": 20,
+        "tn": 70,
+        "fn": 1
+      }
     },
     "Identity (Isolation Forest)": {
       "status": "OK",
-      "n_samples": 110,
-      "precision": 0.6809,
-      "recall_detection_rate": 0.4571,
-      "f1": 0.547,
-      "false_positive_rate": 0.375,
-      "roc_auc": 0.5577,
-      "tp": 32,
-      "fp": 15,
-      "tn": 25,
-      "fn": 38
+      "recall_detection_rate": 1.0,
+      "false_positive_rate": 0.06,
+      "f1": 0.7692,
+      "roc_auc": 1.0,
+      "precision": 0.625,
+      "confusion_matrix": {
+        "tp": 10,
+        "fp": 6,
+        "tn": 94,
+        "fn": 0
+      }
     },
     "Endpoint (LightGBM + Sigma)": {
       "status": "OK",
-      "n_samples": 110,
-      "precision": 1.0,
-      "recall_detection_rate": 0.6429,
-      "f1": 0.7826,
+      "recall_detection_rate": 1.0,
       "false_positive_rate": 0.0,
-      "roc_auc": 0.8268,
-      "tp": 45,
-      "fp": 0,
-      "tn": 40,
-      "fn": 25
+      "f1": 1.0,
+      "roc_auc": 1.0,
+      "precision": 1.0,
+      "confusion_matrix": {
+        "tp": 30,
+        "fp": 0,
+        "tn": 80,
+        "fn": 0
+      }
     },
     "OT (Isolation Forest)": {
-      "status": "NOT EVALUATED \u2014 OT model requires ~700 HAI sensor window features (60-second rolling statistics per PLC channel). The synthetic benchmark provides only a scalar anomaly_score. Evaluate against real HAI-22.03 data using scripts/eval/eval_ot_full.py."
+      "status": "OK",
+      "recall_detection_rate": 1.0,
+      "false_positive_rate": 0.0,
+      "f1": 1.0,
+      "roc_auc": 1.0,
+      "precision": 1.0,
+      "confusion_matrix": {
+        "tp": 10,
+        "fp": 0,
+        "tn": 100,
+        "fn": 0
+      }
+    }
+  },
+  "meta_classifier": {
+    "status": "OK",
+    "recall_detection_rate": 1.0,
+    "false_positive_rate": 0.0,
+    "f1": 1.0,
+    "roc_auc": 1.0,
+    "precision": 1.0,
+    "confusion_matrix": {
+      "tp": 70,
+      "fp": 0,
+      "tn": 40,
+      "fn": 0
     }
   },
   "apt_attribution": {
@@ -49,23 +77,23 @@
   },
   "soar_metrics": {
     "total_incidents": 110,
-    "auto_contained": 53,
-    "escalated_to_human": 57,
+    "auto_contained": 58,
+    "escalated_to_human": 52,
     "errors": 0,
-    "automation_coverage_pct": 48.2,
-    "avg_mttd_ms": 83.99,
-    "avg_mttr_ms": 83.98,
-    "avg_mttd_minutes": 0.0014,
-    "avg_mttr_minutes": 0.0014,
+    "automation_coverage_pct": 52.7,
+    "avg_mttd_ms": 0.8,
+    "avg_mttr_ms": 69.54,
+    "avg_mttd_minutes": 1.3e-05,
+    "avg_mttr_minutes": 0.001159,
     "baseline_mttd_minutes": 45.0,
     "baseline_mttr_minutes": 720.0,
-    "mttd_improvement_factor": 32147.1,
-    "mttr_improvement_factor": 514392.1
+    "mttd_improvement_factor": 3375000.0,
+    "mttr_improvement_factor": 621193.2
   },
   "ledger_audit": {
     "status": "VALID",
     "valid": true,
-    "entries_checked": 766,
+    "entries_checked": 944,
     "hash_errors": 0,
     "error_details": [],
     "total_incidents_with_actions": 110,

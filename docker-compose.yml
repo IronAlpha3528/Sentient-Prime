@@ -25,6 +25,7 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile.api
+    image: sentinel-core-api:latest
     container_name: sentinel-api
     ports:
       - "8000:8000"
@@ -94,8 +95,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.api
+    image: sentinel-core-api:latest
     container_name: sentinel-ml-worker
     command: ["python", "run_phase1.py"]
+    profiles:
+      - demo
     environment:
       - ES_HOST=http://elasticsearch:9200
       - GEMINI_API_KEY=${GEMINI_API_KEY}

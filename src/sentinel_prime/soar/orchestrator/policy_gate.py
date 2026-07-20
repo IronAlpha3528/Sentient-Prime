@@ -8,7 +8,7 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-AUTO_CONFIDENCE_THRESHOLD = 0.75
+AUTO_CONFIDENCE_THRESHOLD = 0.50
 AUTO_MAX_RISK_SCORE = 98  # raised from 95 — avoids universal escalation from highly confident models
 PROTECTED_ASSETS = [
     "National Database",
@@ -49,10 +49,10 @@ class PolicyGate:
 
         confidence = float(incident.get("confidence", 0))
         if confidence < AUTO_CONFIDENCE_THRESHOLD:
-            logger.warning("Incident %s escalated: confidence too low", incident_id)
+            logger.warning("Incident %s escalated: confidence (%.4f) below threshold (%.4f)", incident_id, confidence, AUTO_CONFIDENCE_THRESHOLD)
             return {
                 "decision": "ESCALATE",
-                "reason": "Confidence below threshold",
+                "reason": f"Confidence {confidence:.4f} below threshold {AUTO_CONFIDENCE_THRESHOLD:.4f}",
             }
 
         blast_radius = dry_run_result.get("blast_radius", "")

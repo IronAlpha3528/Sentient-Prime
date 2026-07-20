@@ -107,6 +107,14 @@ class SOARDispatcher:
             "decision": "AUTO",
             "actions": action_results,
         }
+        
+        # Add structured diagnostic log line
+        logger.info(
+            "Incident %s diagnostics | Confidence: %.4f | Risk: %.2f | Policy: AUTO | Actions: %s",
+            incident_id, incident_data.get("confidence", 0), incident_data.get("risk_score", 0), 
+            [a.get("action") for a in action_results]
+        )
+        
         outcome = self.monitor.check_status(incident_data, action_results)
         result["outcome"] = outcome
         self._record("monitor_outcome", result["outcome"], incident_id)
@@ -114,9 +122,14 @@ class SOARDispatcher:
         if outcome.get("status") == "RESOLVED":
             self.verification_engine.verify_incident(incident_data, action_results)
             self.state_db.upsert_incident(incident_id, "RESOLVED", incident_data)
-        else:
-            self.verification_engine.transition_state(incident_id, IncidentState.FAILED, "Containment action execution failed")
-            self.verification_engine.transition_state(incident_id, IncidentState.ESCALATED, "Containment action execution failed")
+        elif outcome.get("status") == "PERSISTING":
+            logger.warning("Incident %s is PERSISTING. Escalating to human analyst.", incident_id)
+            self.verification_engine.transition_state(incident_id, IncidentState.PARTIALLY_CONTAINED, outcome.get("message", "Some actions failed"))
+            self.verification_engine.transition_state(incident_id, IncidentState.ESCALATED, "Escalating due to persistence failure")
+            self.state_db.upsert_incident(incident_id, "ESCALATED", incident_data)
+        else: # ESCALATED
+            self.verification_engine.transition_state(incident_id, IncidentState.FAILED, outcome.get("message", "Containment action execution failed"))
+            self.verification_engine.transition_state(incident_id, IncidentState.ESCALATED, outcome.get("message", "Containment action execution failed"))
             self.state_db.upsert_incident(incident_id, "ESCALATED", incident_data)
             
         # --- FEEDBACK LOOP ---
@@ -143,10 +156,20 @@ class SOARDispatcher:
         score = float(incident_data.get("score", 0))
         top_hypothesis = incident_data.get("top_hypothesis_selected", {})
         response_plan = incident_data.get("response_plan", {})
+        entities = incident_data.get("entities", {})
 
         incident_data.setdefault("incident_id", f"INC-{entity_id}")
         incident_data.setdefault("attack_type", incident_data.get("classification", "Unknown"))
-        incident_data.setdefault("confidence", top_hypothesis.get("confidence", score))
+        
+        # Confidence resolution priority: AI hypothesis -> Context Meta Confidence -> Raw Meta Score -> Fallback
+        conf = top_hypothesis.get("confidence")
+        if conf is None and "confidence" in incident_data:
+            conf = incident_data.get("confidence")
+        if conf is None:
+            conf = score if score > 0 else 0.0
+        incident_data["confidence"] = float(conf)
+        logger.info("Confidence resolved to %.4f from incident context for %s", incident_data["confidence"], incident_data["incident_id"])
+
         ranked_actions = response_plan.get("ranked_actions", [])
         incident_data.setdefault(
             "risk_score",
@@ -154,8 +177,23 @@ class SOARDispatcher:
         )
         incident_data.setdefault("asset", entity_id)
 
-        if incident_data.get("entity_type") == "user":
-            incident_data.setdefault("username", entity_id)
+        # Derive attacker_ip from entities or network features
+        if "attacker_ip" not in incident_data:
+            ip = entities.get("source_ip", entities.get("src_ip", entities.get("attacker_ip")))
+            if not ip and "network" in incident_data and "features" in incident_data["network"]:
+                feats = incident_data["network"]["features"]
+                ip = feats.get("source_ip", feats.get("src_ip"))
+            if ip:
+                incident_data["attacker_ip"] = ip
+                
+        # Populate username consistently
+        if "username" not in incident_data:
+            if incident_data.get("entity_type") == "user":
+                incident_data["username"] = entity_id
+            elif "user" in entities:
+                incident_data["username"] = entities["user"]
+            elif "username" in entities:
+                incident_data["username"] = entities["username"]
 
         return incident_data
 
