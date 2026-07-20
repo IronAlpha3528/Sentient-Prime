@@ -1,0 +1,11 @@
+title: System State Backup Deletion
+id: system_state_backup_deletion
+description: Detects deletion of the system state backup to prevent operating system restoration during a ransomware attack.
+level: high
+tags:
+  - attack.t1490
+detection:
+  selection:
+    CommandLine|contains: systemstatebackup
+    Image|endswith: wbadmin.exe
+  condition: selection

@@ -1,0 +1,10 @@
+title: Privilege Escalation via Token Manipulation
+id: token_manipulation
+description: Detects command line privilege check execution.
+level: high
+tags:
+  - attack.t1134.001
+detection:
+  selection:
+    CommandLine|contains: whoami
+  condition: selection

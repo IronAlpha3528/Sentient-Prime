@@ -1,59 +1,33 @@
 {
-  "nodes_count": 6,
-  "edges_count": 4,
+  "nodes_count": 2,
+  "edges_count": 1,
   "degree_centrality": {
-    "USER:adm_aanoush": 0.2,
-    "HOST:ENG-WS-01": 0.2,
-    "USER:USER:adm_aanoush": 0.0,
-    "HOST:HOST:ENG-WS-01": 0.4,
-    "PROCESS:HOST:ENG-WS-01:unknown": 0.2,
-    "HOST:0.0.0.0": 0.6000000000000001
+    "HOST:HOST-042": 1.0,
+    "PROCESS:HOST-042:procdump.exe -ma lsass.exe lsass.dmp": 1.0
   },
   "betweenness_centrality": {
-    "USER:adm_aanoush": 0.0,
-    "HOST:ENG-WS-01": 0.0,
-    "USER:USER:adm_aanoush": 0.0,
-    "HOST:HOST:ENG-WS-01": 0.05,
-    "PROCESS:HOST:ENG-WS-01:unknown": 0.0,
-    "HOST:0.0.0.0": 0.0
+    "HOST:HOST-042": 0.0,
+    "PROCESS:HOST-042:procdump.exe -ma lsass.exe lsass.dmp": 0.0
   },
   "closeness_centrality": {
-    "USER:adm_aanoush": 0.0,
-    "HOST:ENG-WS-01": 0.2,
-    "USER:USER:adm_aanoush": 0.0,
-    "HOST:HOST:ENG-WS-01": 0.2,
-    "PROCESS:HOST:ENG-WS-01:unknown": 0.26666666666666666,
-    "HOST:0.0.0.0": 0.0
+    "HOST:HOST-042": 0.0,
+    "PROCESS:HOST-042:procdump.exe -ma lsass.exe lsass.dmp": 1.0
   },
   "pagerank": {
-    "USER:adm_aanoush": 0.10197287431849367,
-    "HOST:ENG-WS-01": 0.18865060868328937,
-    "USER:USER:adm_aanoush": 0.10197287431849367,
-    "HOST:HOST:ENG-WS-01": 0.17734412924955417,
-    "PROCESS:HOST:ENG-WS-01:unknown": 0.25271538418061473,
-    "HOST:0.0.0.0": 0.17734412924955417
+    "HOST:HOST-042": 0.3508773619358619,
+    "PROCESS:HOST-042:procdump.exe -ma lsass.exe lsass.dmp": 0.649122638064138
   },
-  "weakly_connected_components_count": 3,
+  "weakly_connected_components_count": 1,
   "communities": [
     [
-      "USER:adm_aanoush",
-      "HOST:ENG-WS-01"
-    ],
-    [
-      "HOST:HOST:ENG-WS-01",
-      "PROCESS:HOST:ENG-WS-01:unknown"
-    ],
-    [
-      "USER:USER:adm_aanoush"
-    ],
-    [
-      "HOST:0.0.0.0"
+      "HOST:HOST-042",
+      "PROCESS:HOST-042:procdump.exe -ma lsass.exe lsass.dmp"
     ]
   ],
   "risk_distribution": {
-    "benign": 2,
+    "benign": 0,
     "moderate": 0,
     "high": 0,
-    "critical": 4
+    "critical": 2
   }
 }

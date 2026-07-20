@@ -1,69 +1,99 @@
 # Sentient-Prime — Evaluation Report
 
-> Generated: 2026-07-20 12:15 UTC
+> Generated: 2026-07-20 14:50 UTC
 
 ---
 
-## 1. Anomaly Detection Rate & False Positive Rate
+## 1. Specialist Detectors Classification Performance (Domain-Specific)
 
-> Evaluated via Deterministic Threat Injection benchmark.
-> Categorical IoCs (process chains, Sigma rules) sourced from MITRE ATT&CK + Atomic Red Team.
-> Numerical features sampled from published CIC-IDS2018, LANL, and HAI dataset statistics.
-
-| Detector | Detection Rate (Recall) | False Positive Rate | F1 | ROC-AUC |
+> Evaluated via Specialist Detectors against domain-specific labels to measure isolation accuracy.
+| Detector | Recall (Detection Rate) | False Positive Rate | F1 | ROC-AUC |
 |---|---|---|---|---|
-| **Network (LightGBM)** | 64.3% | 0.0% | 78.3% | 0.9954 |
-| **Identity (Isolation Forest)** | 45.7% | 37.5% | 54.7% | 0.5577 |
-| **Endpoint (LightGBM + Sigma)** | 64.3% | 0.0% | 78.3% | 0.8268 |
-| **OT (Isolation Forest)** | NOT EVALUATED — OT model requires ~700 HAI sensor window features (60-second rolling statistics per PLC channel). The synthetic benchmark provides only a scalar anomaly_score. Evaluate against real HAI-22.03 data using scripts/eval/eval_ot_full.py. | — | — | — |
+| **Network (LightGBM)** | 95.0% | 24.4% | 62.3% | 0.8636 |
+| **Identity (Isolation Forest)** | 100.0% | 36.0% | 35.7% | 1.0 |
+| **Endpoint (LightGBM + Sigma)** | 100.0% | 12.5% | 85.7% | 1.0 |
+| **OT (Isolation Forest)** | 100.0% | 0.0% | 100.0% | 1.0 |
+
+### Specialist Detectors Confusion Matrices
+
+| Detector | True Positives (TP) | False Positives (FP) | True Negatives (TN) | False Negatives (FN) |
+|---|---|---|---|---|
+| **Network (LightGBM)** | 19 | 22 | 68 | 1 |
+| **Identity (Isolation Forest)** | 10 | 36 | 64 | 0 |
+| **Endpoint (LightGBM + Sigma)** | 30 | 10 | 70 | 0 |
+| **OT (Isolation Forest)** | 10 | 0 | 100 | 0 |
 
 ---
 
-## 2. APT Attribution Accuracy (MITRE ATT&CK Technique Level)
+## 2. Meta-Classifier & End-to-End Pipeline Performance (Global Label)
+
+> Evaluated against the global benign vs malicious label to measure the complete framework's accuracy.
+
+### Meta-Classifier Metrics
 
 | Metric | Value |
 |---|---|
-| Incidents evaluated | 20 |
-| Top-1 Technique Accuracy | **55.0%** |
-| Top-3 Technique Accuracy | **60.0%** |
-| Any Technique Match Rate | **60.0%** |
-| Avg AI Pipeline Time | 13.31s |
+| Global Detection Rate (Recall) | **100.0%** |
+| Global False Positive Rate | **37.5%** |
+| F1 Score | **90.3%** |
+| ROC-AUC | **0.8125** |
+| Precision | **82.3%** |
+
+### Meta-Classifier Confusion Matrix
+
+| Metric | Value |
+|---|---|
+| True Positives (TP) | **70** |
+| False Positives (FP) | **15** |
+| True Negatives (TN) | **25** |
+| False Negatives (FN) | **0** |
 
 ---
 
-## 3. Incident Response Automation Coverage
+## 3. APT Attribution Accuracy (MITRE ATT&CK Technique Level)
+
+| Metric | Value |
+|---|---|
+| Incidents evaluated | 70 |
+| Top-1 Technique Accuracy | **0.0%** |
+| Top-3 Technique Accuracy | **28.6%** |
+| Any Technique Match Rate | **28.6%** |
+| Avg AI Pipeline Time | 0.0s |
+
+---
+
+## 4. Incident Response Automation Coverage
 
 | Metric | Value |
 |---|---|
 | Total incidents processed | 110 |
-| Auto-contained (no human) | 53 (**48.2%**) |
-| Escalated to approval queue | 57 |
-| Automation coverage | **48.2%** |
+| Auto-contained (no human) | 0 (**0.0%**) |
+| Escalated to approval queue | 110 |
+| Automation coverage | **0.0%** |
 
 ---
 
-## 4. MTTD / MTTR Improvement vs Manual SOC Baseline
+## 5. MTTD / MTTR Improvement vs Manual SOC Baseline
 
 > Baseline: IBM X-Force Threat Intelligence Index 2023 (MTTD ≈ 45 min alert-to-triage),
 > IBM Cost of a Data Breach 2023 (MTTR ≈ 12 hours triage-to-contain).
 
 > **Scope note:** Sentient-Prime MTTD = time from event intake to detection flag & routing.
 > Sentient-Prime MTTR = AI analysis + SOAR dispatch decision latency (not physical containment).
-> The improvement factor reflects **AI-assisted triage speed**, not end-to-end remediation time.
 
 | | Sentient-Prime | Manual SOC Baseline | Improvement |
 |---|---|---|---|
-| MTTD (alert-to-detection flag) | **67.11ms** | 45.0 min | **40232.2× faster** |
-| MTTR (AI analysis + dispatch) | **67.11ms** | 720.0 min | **643762.5× faster (triage only)** |
+| MTTD (alert-to-detection flag) | **0.8ms** | 45.0 min | **3375000.0× faster** |
+| MTTR (AI analysis + dispatch) | **126.9ms** | 720.0 min | **340413.8× faster (triage only)** |
 
 ---
 
-## 5. Ledger Auditability
+## 6. Ledger Auditability
 
 | Metric | Value |
 |---|---|
 | Hash chain status | **VALID** |
-| Entries verified | 766 |
+| Entries verified | 660 |
 | Hash errors | 0 |
 | Action traceability coverage | **100.0%** |
 
