@@ -43,6 +43,12 @@ The project has reached the stage where **all Sprint 1–3 features are implemen
 - Type annotations added throughout.
 - All modules already import via `from sentinel_prime.core.config_manager import config`.
 
+## 6. Benchmarking & Evaluation Suite
+**DONE:**
+- Full benchmarking suite merged into `scripts/eval/`.
+- Synthetic benchmark generation added (`scripts/generate_synthetic_benchmark.py`).
+- Evaluation script `scripts/evaluate_all.py` completed.
+- Ground truth data created (`data/eval_ground_truth.json`).
 ---
 
 # 🟢 NICE TO HAVE
