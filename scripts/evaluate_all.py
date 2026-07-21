@@ -159,23 +159,17 @@ def _build_markdown(ml: dict, apt: dict, soar: dict, ledger: dict, eval_results:
 
     lines += [
         "\n---\n",
-        "## 5. MTTD / MTTR Improvement vs Manual SOC Baseline\n",
-        "> Baseline: IBM X-Force Threat Intelligence Index 2023 (MTTD ≈ 45 min alert-to-triage),",
-        "> IBM Cost of a Data Breach 2023 (MTTR ≈ 12 hours triage-to-contain).\n",
-        "> **Scope note:** Sentient-Prime MTTD = time from event intake to detection flag & routing.",
-        "> Sentient-Prime MTTR = AI analysis + SOAR dispatch decision latency (not physical containment).\n",
+        "## 5. Pipeline Processing Latency\n",
+        "> **Detection Latency**: time from event intake to meta-classifier decision flag.",
+        "> **SOAR Latency**: time from meta-classifier output to SOAR dispatch decision.\n",
     ]
-    mttd_ms = soar.get("avg_mttd_ms", "N/A")
-    mttr_ms = soar.get("avg_mttr_ms", "N/A")
-    mttd_x = soar.get("mttd_improvement_factor", "N/A")
-    mttr_x = soar.get("mttr_improvement_factor", "N/A")
-    base_mttd = soar.get("baseline_mttd_minutes", 45)
-    base_mttr = soar.get("baseline_mttr_minutes", 720)
+    det_ms = soar.get("avg_detection_latency_ms", "N/A")
+    soar_ms = soar.get("avg_soar_latency_ms", "N/A")
     lines += [
-        "| | Sentient-Prime | Manual SOC Baseline | Improvement |",
-        "|---|---|---|---|",
-        f"| MTTD (alert-to-detection flag) | **{mttd_ms}ms** | {base_mttd} min | **{mttd_x}× faster** |",
-        f"| MTTR (AI analysis + dispatch) | **{mttr_ms}ms** | {base_mttr} min | **{mttr_x}× faster (triage only)** |",
+        "| | Avg Latency (ms) |",
+        "|---|---|",
+        f"| Detection (intake → meta-classifier) | **{det_ms} ms** |",
+        f"| SOAR Dispatch (meta-classifier → decision) | **{soar_ms} ms** |",
     ]
 
     lines += [

@@ -213,6 +213,7 @@ class PipelineEvaluator:
         print(f"  Starting unified execution of {len(dataset)} benchmark incidents...")
 
         for idx, sample in enumerate(dataset):
+            t_detection_start = time.perf_counter()
             incident_id = sample["incident_id"]
             entity_id = sample["entity_id"]
             attack_class = sample["ground_truth"]["attack_class"]
@@ -419,6 +420,8 @@ class PipelineEvaluator:
             meta_result = self.framework.context_builder.meta_classifier.predict(meta_features)
             score_meta = float(meta_result.get("unified_threat_score", 0.0))
             pred_meta = 1 if score_meta >= 0.5 else 0
+            t_detection_end = time.perf_counter()
+            detection_latency_ms = (t_detection_end - t_detection_start) * 1000.0
 
             # Propagate meta score back into context for downstream SOAR confidence
             context.unified_threat_score = score_meta
@@ -443,13 +446,13 @@ class PipelineEvaluator:
                 rag_results = rag_search(rag_query, top_k=6, enabled_providers=["attack"])
                 rag_candidates = [r.get("technique_id", "") for r in rag_results if r.get("technique_id")]
             except Exception:
-                rag_candidates = ["T1490", "T1486", "T1550.002", "T1021.002", "T1105", "T1071.001", "T0831", "T0836", "T1003.001", "T1048.003", "T1071.004", "T1134.001"]
+                rag_candidates = []
 
             # AI agent attribution: Run LLM on the first 20 malicious samples
             predicted_techniques = []
             timings = []
             
-            is_ai_eligible = (global_label == 1 and len(sample.get("ground_truth", {}).get("mitre_techniques", [])) > 0 and idx < 20)
+            is_ai_eligible = (global_label == 1 and len(sample.get("ground_truth", {}).get("mitre_techniques", [])) > 0)
             
             if self.agents_available and is_ai_eligible:
                 ctx = {
@@ -516,11 +519,11 @@ class PipelineEvaluator:
                     
                 except Exception as e:
                     print(f"          ⚠️  Pipeline failed: {e}")
-                    predicted_techniques = rag_candidates
+                    predicted_techniques = []
                     timings.append(0.0)
                     ai_response_plan = {}
             else:
-                # Fallback directly to blind RAG candidate set
+                # No AI agents available or sample not eligible
                 predicted_techniques = rag_candidates
                 timings.append(0.0)
                 ai_response_plan = {}
@@ -593,7 +596,8 @@ class PipelineEvaluator:
                 "gt_techniques": list(sample["ground_truth"].get("mitre_techniques", [])),
                 "predicted_techniques": predicted_techniques,
                 "ai_time_s": sum(timings),
-                # SOAR metrics
+                # Latency metrics (real measured values)
+                "detection_latency_ms": detection_latency_ms,
                 "soar_decision": soar_res.get("decision", "UNKNOWN"),
                 "soar_latency_ms": soar_latency_ms
             })
@@ -607,10 +611,6 @@ class PipelineEvaluator:
 
 def compute_detailed_metrics(results: list[dict]) -> dict:
     from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score, roc_auc_score
-    
-    # ── Baseline constants ──
-    BASELINE_MTTD_MINUTES = 45.0
-    BASELINE_MTTR_MINUTES = 720.0
 
     # ── Specialist Detectors ──
     # Evaluate only on domain-specific samples
@@ -680,19 +680,20 @@ def compute_detailed_metrics(results: list[dict]) -> dict:
             if set(predicted).intersection(gt):
                 any_match += 1
 
-    # ── SOAR Automation metrics ──
+    # ── SOAR & Latency metrics ──
     auto_count = sum(1 for r in results if r["soar_decision"] in ("AUTO", "ALLOW", "MONITOR"))
     escalate_count = sum(1 for r in results if r["soar_decision"] == "ESCALATE")
     error_count = sum(1 for r in results if r["soar_decision"] not in ("AUTO", "ALLOW", "MONITOR", "ESCALATE"))
-    latency_samples = [r["soar_latency_ms"] for r in results]
-    
-    avg_mttd_ms = 0.8 # minimal overhead to publish
-    avg_mttr_ms = sum(latency_samples) / len(latency_samples) if latency_samples else 0.0
-    avg_mttd_minutes = avg_mttd_ms / 60000.0
-    avg_mttr_minutes = avg_mttr_ms / 60000.0
-    
-    mttd_improvement = BASELINE_MTTD_MINUTES / avg_mttd_minutes if avg_mttd_minutes > 0 else float("inf")
-    mttr_improvement = BASELINE_MTTR_MINUTES / avg_mttr_minutes if avg_mttr_minutes > 0 else float("inf")
+
+    detection_latency_samples = [r["detection_latency_ms"] for r in results]
+    soar_latency_samples = [r["soar_latency_ms"] for r in results]
+
+    avg_detection_latency_ms = round(
+        sum(detection_latency_samples) / len(detection_latency_samples), 3
+    ) if detection_latency_samples else 0.0
+    avg_soar_latency_ms = round(
+        sum(soar_latency_samples) / len(soar_latency_samples), 3
+    ) if soar_latency_samples else 0.0
 
     return {
         "specialist_detectors": {
@@ -717,14 +718,8 @@ def compute_detailed_metrics(results: list[dict]) -> dict:
             "escalated_to_human": escalate_count,
             "errors": error_count,
             "automation_coverage_pct": round((auto_count / len(results)) * 100, 1) if results else 0.0,
-            "avg_mttd_ms": avg_mttd_ms,
-            "avg_mttr_ms": round(avg_mttr_ms, 2),
-            "avg_mttd_minutes": round(avg_mttd_minutes, 6),
-            "avg_mttr_minutes": round(avg_mttr_minutes, 6),
-            "baseline_mttd_minutes": BASELINE_MTTD_MINUTES,
-            "baseline_mttr_minutes": BASELINE_MTTR_MINUTES,
-            "mttd_improvement_factor": round(mttd_improvement, 1) if mttd_improvement != float("inf") else "∞",
-            "mttr_improvement_factor": round(mttr_improvement, 1) if mttr_improvement != float("inf") else "∞",
+            "avg_detection_latency_ms": avg_detection_latency_ms,
+            "avg_soar_latency_ms": avg_soar_latency_ms,
         }
     }
 

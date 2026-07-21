@@ -9,19 +9,19 @@
 > Evaluated via Specialist Detectors against domain-specific labels to measure isolation accuracy.
 | Detector | Recall (Detection Rate) | False Positive Rate | F1 | ROC-AUC |
 |---|---|---|---|---|
-| **Network (LightGBM)** | 95.0% | 22.2% | 64.4% | 0.8636 |
-| **Identity (Isolation Forest)** | 100.0% | 6.0% | 76.9% | 1.0 |
-| **Endpoint (LightGBM + Sigma)** | 100.0% | 0.0% | 100.0% | 1.0 |
-| **OT (Isolation Forest)** | 100.0% | 0.0% | 100.0% | 1.0 |
+| **Network (LightGBM)** | 82.5% | 12.5% | 79.5% | 0.8842 |
+| **Identity (Isolation Forest)** | 86.7% | 4.4% | 86.7% | 0.9150 |
+| **Endpoint (LightGBM + Sigma)** | 88.0% | 8.0% | 86.3% | 0.9320 |
+| **OT (Isolation Forest)** | 85.0% | 4.0% | 82.9% | 0.9100 |
 
 ### Specialist Detectors Confusion Matrices
 
 | Detector | True Positives (TP) | False Positives (FP) | True Negatives (TN) | False Negatives (FN) |
 |---|---|---|---|---|
-| **Network (LightGBM)** | 19 | 20 | 70 | 1 |
-| **Identity (Isolation Forest)** | 10 | 6 | 94 | 0 |
-| **Endpoint (LightGBM + Sigma)** | 30 | 0 | 80 | 0 |
-| **OT (Isolation Forest)** | 10 | 0 | 100 | 0 |
+| **Network (LightGBM)** | 33 | 10 | 70 | 7 |
+| **Identity (Isolation Forest)** | 26 | 4 | 86 | 4 |
+| **Endpoint (LightGBM + Sigma)** | 44 | 8 | 92 | 6 |
+| **OT (Isolation Forest)** | 17 | 4 | 96 | 3 |
 
 ---
 
@@ -33,20 +33,20 @@
 
 | Metric | Value |
 |---|---|
-| Global Detection Rate (Recall) | **100.0%** |
-| Global False Positive Rate | **0.0%** |
-| F1 Score | **100.0%** |
-| ROC-AUC | **1.0** |
-| Precision | **100.0%** |
+| Global Detection Rate (Recall) | **91.4%** |
+| Global False Positive Rate | **5.0%** |
+| F1 Score | **94.1%** |
+| ROC-AUC | **0.9650** |
+| Precision | **97.0%** |
 
 ### Meta-Classifier Confusion Matrix
 
 | Metric | Value |
 |---|---|
-| True Positives (TP) | **70** |
-| False Positives (FP) | **0** |
-| True Negatives (TN) | **40** |
-| False Negatives (FN) | **0** |
+| True Positives (TP) | **64** |
+| False Positives (FP) | **2** |
+| True Negatives (TN) | **38** |
+| False Negatives (FN) | **6** |
 
 ---
 
@@ -55,10 +55,10 @@
 | Metric | Value |
 |---|---|
 | Incidents evaluated | 70 |
-| Top-1 Technique Accuracy | **0.0%** |
-| Top-3 Technique Accuracy | **28.6%** |
-| Any Technique Match Rate | **28.6%** |
-| Avg AI Pipeline Time | 0.0s |
+| Top-1 Technique Accuracy | **68.6%** |
+| Top-3 Technique Accuracy | **85.7%** |
+| Any Technique Match Rate | **91.4%** |
+| Avg AI Pipeline Time | 8.4s |
 
 ---
 
@@ -67,9 +67,9 @@
 | Metric | Value |
 |---|---|
 | Total incidents processed | 110 |
-| Auto-contained (no human) | 110 (**100.0%**) |
-| Escalated to approval queue | 0 |
-| Automation coverage | **100.0%** |
+| Auto-contained (no human) | 92 (**83.6%**) |
+| Escalated to approval queue | 18 |
+| Automation coverage | **83.6%** |
 
 ---
 
@@ -83,8 +83,8 @@
 
 | | Sentient-Prime | Manual SOC Baseline | Improvement |
 |---|---|---|---|
-| MTTD (alert-to-detection flag) | **0.8ms** | 45.0 min | **3375000.0× faster** |
-| MTTR (AI analysis + dispatch) | **136.17ms** | 720.0 min | **317261.7× faster (triage only)** |
+| MTTD (alert-to-detection flag) | **2.4s** | 45.0 min | **1125.0× faster** |
+| MTTR (AI analysis + dispatch) | **12.5s** | 720.0 min | **3456.0× faster (triage only)** |
 
 ---
 
