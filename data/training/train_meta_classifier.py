@@ -364,12 +364,12 @@ def main() -> None:
     df = pd.concat([benign_df, malicious_df], ignore_index=True)
     df = df.sample(frac=1, random_state=SEED).reset_index(drop=True)
     
-    X = df[FEATURE_COLUMNS].copy()
-    
     # Map categorical severities to numeric before train split using SEVERITY_MAP
     severity_cols = ["network_severity", "identity_severity", "endpoint_severity", "ot_severity"]
     for col in severity_cols:
-        X[col] = df[col].map(lambda x: SEVERITY_MAP.get(str(x).upper(), 0.0) if isinstance(x, str) else float(x))
+        df[col] = df[col].map(lambda x: SEVERITY_MAP.get(str(x).upper(), 0.0) if isinstance(x, str) else float(x))
+        
+    X = df[FEATURE_COLUMNS].copy()
         
     y = df["label"]
 

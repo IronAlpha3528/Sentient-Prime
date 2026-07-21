@@ -96,6 +96,16 @@ class VerificationEngine:
                 data=entry,
                 incident_id=incident_id
             )
+            
+            # Synchronize state transition to SQLite state DB
+            try:
+                from sentinel_prime.core.telemetry.state_db import IncidentStateDB
+                state_db = IncidentStateDB()
+                existing = state_db.get_incident(incident_id)
+                incident_data = existing["incident_data"] if existing else {}
+                state_db.upsert_incident(incident_id, new_state.value, incident_data)
+            except Exception as e:
+                logger.error("Failed to sync state transition to SQLite DB for %s: %s", incident_id, e)
 
     def verify_incident(self, incident: Dict[str, Any], action_results: List[Dict[str, Any]]) -> None:
         """Schedules asynchronous verification in a background thread."""

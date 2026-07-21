@@ -323,17 +323,21 @@ class ContextBuilder:
                     active_detectors.add(det)
                     
                 if det == "NETWORK":
+                    if score_val > 0.0:
+                        net_conf = conf_val if net_score == 0.0 else max(net_conf, conf_val)
                     net_score = max(net_score, score_val)
-                    net_conf = max(net_conf, conf_val)
                 elif det == "IDENTITY":
+                    if score_val > 0.0:
+                        id_conf = conf_val if id_score == 0.0 else max(id_conf, conf_val)
                     id_score = max(id_score, score_val)
-                    id_conf = max(id_conf, conf_val)
                 elif det == "ENDPOINT":
+                    if score_val > 0.0:
+                        ep_conf = conf_val if ep_score == 0.0 else max(ep_conf, conf_val)
                     ep_score = max(ep_score, score_val)
-                    ep_conf = max(ep_conf, conf_val)
                 elif det in ["OT", "ICS"]:
+                    if score_val > 0.0:
+                        ot_conf = conf_val if ot_score == 0.0 else max(ot_conf, conf_val)
                     ot_score = max(ot_score, score_val)
-                    ot_conf = max(ot_conf, conf_val)
                 elif det in ["DECEPTION", "HONEYPOT", "CANARYTOKEN", "CONPOT"]:
                     honeypot_touched = 1.0
 

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-20T20:17:44.645635+00:00",
+  "generated_at": "2026-07-21T10:15:06.640536+00:00",
   "ml_detectors": {
     "Network (LightGBM)": {
       "status": "OK",
@@ -77,23 +77,23 @@
   },
   "soar_metrics": {
     "total_incidents": 110,
-    "auto_contained": 58,
-    "escalated_to_human": 52,
+    "auto_contained": 110,
+    "escalated_to_human": 0,
     "errors": 0,
-    "automation_coverage_pct": 52.7,
+    "automation_coverage_pct": 100.0,
     "avg_mttd_ms": 0.8,
-    "avg_mttr_ms": 69.54,
+    "avg_mttr_ms": 125.55,
     "avg_mttd_minutes": 1.3e-05,
-    "avg_mttr_minutes": 0.001159,
+    "avg_mttr_minutes": 0.002092,
     "baseline_mttd_minutes": 45.0,
     "baseline_mttr_minutes": 720.0,
     "mttd_improvement_factor": 3375000.0,
-    "mttr_improvement_factor": 621193.2
+    "mttr_improvement_factor": 344092.8
   },
   "ledger_audit": {
     "status": "VALID",
     "valid": true,
-    "entries_checked": 944,
+    "entries_checked": 1003,
     "hash_errors": 0,
     "error_details": [],
     "total_incidents_with_actions": 110,
