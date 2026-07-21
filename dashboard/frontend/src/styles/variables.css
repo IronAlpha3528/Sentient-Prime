@@ -1,25 +1,68 @@
 :root {
-  --bg: #05070d;
-  --panel: #0b1020;
-  --panel-2: #111827;
-  --border: rgba(148, 163, 184, 0.14);
-  --border-strong: rgba(148, 163, 184, 0.24);
-  --text: #e5e7eb;
-  --muted: #64748b;
-  --muted-2: #94a3b8;
-  --primary: #38bdf8;
-  --secondary: #818cf8;
-  --ai: #a78bfa;
-  --danger: #ef4444;
-  --safe: #22c55e;
-  --warning: #f97316;
-  --info: #818cf8;
-  --node: #334155;
-  --edge: rgba(148, 163, 184, 0.16);
-  --sidebar: 240px;
-  --radius: 16px;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: var(--text);
-  background: var(--bg);
-  font-size: 14px;
+  /* Futuristic Cyber Palette */
+  --bg-dark: #020409;
+  --bg-canvas: #060a17;
+  --panel-bg: rgba(9, 14, 28, 0.75);
+  --panel-bg-solid: #090e1c;
+  --panel-bg-hover: rgba(16, 24, 48, 0.88);
+  --panel-card: rgba(11, 17, 36, 0.65);
+  --header-bg: rgba(4, 7, 16, 0.88);
+
+  /* Neon Accent Colors */
+  --cyber-cyan: #00f0ff;
+  --cyber-cyan-glow: rgba(0, 240, 255, 0.35);
+  --cyber-cyan-subtle: rgba(0, 240, 255, 0.08);
+
+  --neon-violet: #9d4edd;
+  --neon-violet-glow: rgba(157, 78, 221, 0.35);
+
+  --matrix-green: #00ff9d;
+  --matrix-green-glow: rgba(0, 255, 157, 0.35);
+  --matrix-green-subtle: rgba(0, 255, 157, 0.08);
+
+  --crimson-alert: #ff0055;
+  --crimson-glow: rgba(255, 0, 85, 0.35);
+  --crimson-subtle: rgba(255, 0, 85, 0.08);
+
+  --cyber-gold: #ffb700;
+  --cyber-gold-glow: rgba(255, 183, 0, 0.35);
+  --cyber-gold-subtle: rgba(255, 183, 0, 0.08);
+
+  /* Standard Aliases */
+  --primary: var(--cyber-cyan);
+  --primary-glow: var(--cyber-cyan-glow);
+  --secondary: var(--neon-violet);
+  --ai-purple: #c084fc;
+  --danger: var(--crimson-alert);
+  --warning: var(--cyber-gold);
+  --safe: var(--matrix-green);
+  --info: #38bdf8;
+
+  /* Borders & Gradients */
+  --border: rgba(0, 240, 255, 0.12);
+  --border-strong: rgba(0, 240, 255, 0.28);
+  --border-focus: rgba(0, 240, 255, 0.6);
+  --border-glow: 0 0 16px rgba(0, 240, 255, 0.25);
+  --gradient-cyber: linear-gradient(135deg, #00f0ff 0%, #7b2cbf 100%);
+  --gradient-card-border: linear-gradient(135deg, rgba(0, 240, 255, 0.3), rgba(157, 78, 221, 0.1));
+
+  /* Text Colors */
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-subtle: #475569;
+
+  /* Fonts */
+  --font-hud: 'Orbitron', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Dimensions & Glass Effects */
+  --sidebar-width: 250px;
+  --header-height: 68px;
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --glass-blur: blur(16px);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+  --shadow-hud: 0 0 24px rgba(0, 240, 255, 0.15);
 }

@@ -1,0 +1,354 @@
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/*  SENTINEL-PRIME — Intro Animation Styles                                   */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Full-screen overlay ────────────────────────────────────────────────── */
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #020409;
+  overflow: hidden;
+  will-change: opacity, transform;
+}
+
+/* ─── Scanlines ──────────────────────────────────────────────────────────── */
+.intro-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 240, 255, 0.015) 2px,
+    rgba(0, 240, 255, 0.015) 4px
+  );
+  animation: intro-scanline-scroll 8s linear infinite;
+}
+
+@keyframes intro-scanline-scroll {
+  0%   { background-position: 0 0; }
+  100% { background-position: 0 200px; }
+}
+
+/* ─── Hex grid background ────────────────────────────────────────────────── */
+.intro-hex-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.04;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(0,240,255,0.2) 0%, transparent 50%),
+    radial-gradient(circle at 75% 60%, rgba(157,78,221,0.15) 0%, transparent 50%);
+}
+
+/* ─── Particle field ─────────────────────────────────────────────────────── */
+.intro-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.intro-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: #00f0ff;
+  animation: intro-particle-float linear infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes intro-particle-float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.1;
+  }
+  25% {
+    transform: translateY(-15px) translateX(5px);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-5px) translateX(-8px);
+    opacity: 0.2;
+  }
+  75% {
+    transform: translateY(-20px) translateX(3px);
+    opacity: 0.45;
+  }
+}
+
+/* ─── Center content ─────────────────────────────────────────────────────── */
+.intro-center {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 420px;
+  width: 100%;
+}
+
+/* ─── Logo ────────────────────────────────────────────────────────────────── */
+.intro-logo-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.intro-logo-shield {
+  width: 72px;
+  height: 82px;
+  position: relative;
+  filter: drop-shadow(0 0 20px rgba(0,240,255,0.3));
+}
+
+.intro-shield-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.intro-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 22px;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0;
+  position: relative;
+  text-transform: uppercase;
+}
+
+/* Glitch effect on title */
+.intro-title-glitch {
+  position: relative;
+  display: inline-block;
+}
+
+.intro-title-glitch::before,
+.intro-title-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.intro-title-glitch::before {
+  color: #00f0ff;
+  z-index: -1;
+  animation: intro-glitch-1 3s infinite linear alternate-reverse;
+}
+
+.intro-title-glitch::after {
+  color: #ff0055;
+  z-index: -2;
+  animation: intro-glitch-2 2.5s infinite linear alternate-reverse;
+}
+
+@keyframes intro-glitch-1 {
+  0%, 90%, 100% { clip-path: inset(0 0 0 0); transform: none; }
+  92% { clip-path: inset(40% 0 20% 0); transform: translateX(-3px); }
+  94% { clip-path: inset(10% 0 60% 0); transform: translateX(2px); }
+  96% { clip-path: inset(70% 0 5% 0); transform: translateX(-1px); }
+}
+
+@keyframes intro-glitch-2 {
+  0%, 88%, 100% { clip-path: inset(0 0 0 0); transform: none; }
+  90% { clip-path: inset(20% 0 50% 0); transform: translateX(2px); }
+  93% { clip-path: inset(60% 0 10% 0); transform: translateX(-3px); }
+  95% { clip-path: inset(5% 0 80% 0); transform: translateX(1px); }
+}
+
+.intro-subtitle {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: var(--text-muted, #94a3b8);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* ─── Mini Graph ─────────────────────────────────────────────────────────── */
+.intro-mini-graph {
+  width: 200px;
+  height: 200px;
+  margin: -10px 0;
+  filter: drop-shadow(0 0 10px rgba(0,240,255,0.15));
+}
+
+/* ─── Init Steps ─────────────────────────────────────────────────────────── */
+.intro-init-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  max-width: 320px;
+  padding: 0 8px;
+}
+
+.intro-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  background: rgba(0, 240, 255, 0.03);
+  border: 1px solid rgba(0, 240, 255, 0.06);
+  font-size: 12px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  color: var(--text-muted, #94a3b8);
+}
+
+.intro-step-icon {
+  font-size: 12px;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.intro-step-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.intro-step-status {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.intro-check {
+  color: #00ff9d;
+  font-size: 14px;
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(0, 255, 157, 0.6);
+}
+
+.intro-spinner {
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid rgba(0, 240, 255, 0.2);
+  border-top-color: #00f0ff;
+  border-radius: 50%;
+  animation: intro-spin 0.8s linear infinite;
+}
+
+@keyframes intro-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Online Badge ───────────────────────────────────────────────────────── */
+.intro-online-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 28px;
+  border-radius: 9999px;
+  background: rgba(0, 255, 157, 0.06);
+  border: 1px solid rgba(0, 255, 157, 0.3);
+  color: #00ff9d;
+  font-family: 'Orbitron', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 12px rgba(0, 255, 157, 0.5);
+  box-shadow:
+    0 0 20px rgba(0, 255, 157, 0.15),
+    inset 0 0 20px rgba(0, 255, 157, 0.05);
+}
+
+.intro-online-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00ff9d;
+  box-shadow: 0 0 8px #00ff9d;
+  animation: intro-online-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes intro-online-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+/* ─── Skip Button ────────────────────────────────────────────────────────── */
+.intro-skip {
+  position: absolute;
+  bottom: 60px;
+  right: 40px;
+  z-index: 20;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--text-muted, #94a3b8);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  padding: 6px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.intro-skip:hover {
+  color: #00f0ff;
+  border-color: rgba(0, 240, 255, 0.3);
+  background: rgba(0, 240, 255, 0.06);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.15);
+}
+
+/* ─── Bottom Bar ─────────────────────────────────────────────────────────── */
+.intro-bottom-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  background: rgba(2, 4, 9, 0.8);
+  border-top: 1px solid rgba(0, 240, 255, 0.08);
+  font-size: 10px;
+  color: var(--text-subtle, #475569);
+}
+
+.intro-bottom-left,
+.intro-bottom-right {
+  white-space: nowrap;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.intro-bottom-right {
+  text-align: right;
+}
+
+.intro-progress-track {
+  flex: 1;
+  height: 2px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.intro-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00f0ff, #9d4edd);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+}

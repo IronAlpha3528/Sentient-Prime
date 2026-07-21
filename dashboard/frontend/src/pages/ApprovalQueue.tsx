@@ -33,86 +33,121 @@ export default function ApprovalQueue() {
   }
 
   return (
-    <div>
+    <div style={{ maxWidth: 1000, margin: '0 auto' }}>
       <div className="page-header">
         <div>
-          <p className="eyebrow">Human-in-the-Loop</p>
-          <h1>Approval Queue</h1>
-          <p className="subtle">Incidents awaiting analyst decision before containment is executed</p>
+          <p className="eyebrow">HUMAN-IN-THE-LOOP GOVERNANCE</p>
+          <h1>Analyst Approval Queue</h1>
+          <p className="subtle">High-risk AI containment actions awaiting explicit human decision under policy gate controls.</p>
         </div>
-        <span className="badge danger" style={{ fontSize: 14, padding: '4px 16px' }}>{incidents.length} Pending</span>
+        <span className="badge danger" style={{ fontSize: 13, padding: '6px 16px' }}>
+          ⚡ {incidents.length} Pending Actions
+        </span>
       </div>
 
       {incidents.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: 48 }}>
-          <div style={{ fontSize: 40, marginBottom: 16 }}>✓</div>
-          <h2 style={{ color: 'var(--safe)' }}>Queue Clear</h2>
-          <p className="subtle">No incidents currently require manual approval. All actions were auto-authorized by the policy gate.</p>
+        <div className="card" style={{ textAlign: 'center', padding: 60 }}>
+          <div style={{ fontSize: 44, marginBottom: 16, color: 'var(--safe)' }}>✓</div>
+          <h2 style={{ color: 'var(--safe)' }}>Approval Queue Clear</h2>
+          <p className="subtle" style={{ maxWidth: 480, margin: '0 auto' }}>
+            No incidents currently require manual analyst authorization. Low-risk containment actions were auto-approved by the policy gate.
+          </p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {incidents.map((inc) => {
             const isExpanded = expanded === inc.incident_id
             const threatColor = inc.unified_threat_score >= 0.75 ? 'var(--danger)' : inc.unified_threat_score >= 0.5 ? 'var(--warning)' : 'var(--safe)'
+
             return (
-              <div key={inc.incident_id} className="card" style={{ borderColor: inc.unified_threat_score >= 0.75 ? 'rgba(239,68,68,0.30)' : 'var(--border)' }}>
-                {/* Row header */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'center', gap: 16, cursor: 'pointer' }} onClick={() => setExpanded(isExpanded ? null : inc.incident_id)}>
+              <div 
+                key={inc.incident_id} 
+                className={`card accent-${inc.unified_threat_score >= 0.75 ? 'danger' : 'warning'}`}
+              >
+                {/* Row Header */}
+                <div 
+                  style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'center', gap: 16, cursor: 'pointer' }} 
+                  onClick={() => setExpanded(isExpanded ? null : inc.incident_id)}
+                >
                   <div>
-                    <div className="action-row" style={{ marginBottom: 6 }}>
+                    <div className="action-row" style={{ marginBottom: 8 }}>
                       <StatusBadge status={inc.status} />
-                      <span className="mono" style={{ color: 'var(--primary)', fontWeight: 700 }}>{inc.incident_id}</span>
+                      <span className="mono" style={{ color: 'var(--primary)', fontWeight: 700, fontSize: 16 }}>
+                        {inc.incident_id}
+                      </span>
                       <span className="badge neutral">{inc.attack_class}</span>
                     </div>
-                    <p className="subtle" style={{ margin: 0, fontSize: 12 }}>
-                      Target: <strong>{inc.target_asset}</strong> &nbsp;|&nbsp;
-                      Hosts: {inc.entities.hosts.join(', ')} &nbsp;|&nbsp;
+
+                    <p className="subtle" style={{ margin: 0, fontSize: 13 }}>
+                      Target: <strong style={{ color: 'var(--text-main)' }}>{inc.target_asset}</strong> &nbsp;|&nbsp;
+                      Hosts: <span className="mono">{inc.entities.hosts.join(', ')}</span> &nbsp;|&nbsp;
                       {new Date(inc.timestamp).toLocaleString()}
                     </p>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{ textAlign: 'right' }}>
-                      <div className="mono" style={{ color: threatColor, fontSize: 22, fontWeight: 700 }}>{inc.unified_threat_score.toFixed(2)}</div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>Threat Score</div>
+                      <div className="mono" style={{ color: threatColor, fontSize: 24, fontWeight: 800, lineHeight: 1 }}>
+                        {inc.unified_threat_score.toFixed(2)}
+                      </div>
+                      <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '1px' }}>THREAT SCORE</div>
                     </div>
-                    <div style={{ width: 60, height: 60, borderRadius: '50%', border: `3px solid ${threatColor}`, display: 'grid', placeItems: 'center', background: `${threatColor}14` }}>
-                      <span style={{ fontSize: 22 }}>{inc.unified_threat_score >= 0.75 ? '🔴' : '🟡'}</span>
-                    </div>
+                    
+                    <button className="btn secondary" style={{ height: 32, padding: '0 10px', fontSize: 12 }}>
+                      {isExpanded ? 'Hide ▲' : 'Details ▼'}
+                    </button>
                   </div>
                 </div>
 
-                {/* Expanded detail panel */}
+                {/* Expanded Details */}
                 {isExpanded && (
-                  <div style={{ marginTop: 20, borderTop: '1px solid var(--border)', paddingTop: 20 }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 16 }}>
-                      <div className="data-box"><span>Users</span><strong className="mono">{inc.entities.users.join(', ') || '—'}</strong></div>
-                      <div className="data-box"><span>Source IPs</span><strong className="mono">{inc.entities.ips.join(', ') || '—'}</strong></div>
-                      <div className="data-box"><span>OT Assets</span><strong className="mono">{inc.entities.ot_assets.join(', ') || 'None'}</strong></div>
+                  <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid var(--border)' }}>
+                    <div className="grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 16 }}>
+                      <div className="data-box">
+                        <span>Target User Accounts</span>
+                        <strong className="mono">{inc.entities.users.join(', ') || 'None'}</strong>
+                      </div>
+                      <div className="data-box">
+                        <span>Source IP Addresses</span>
+                        <strong className="mono">{inc.entities.ips.join(', ') || 'None'}</strong>
+                      </div>
+                      <div className="data-box">
+                        <span>OT Boundary Assets</span>
+                        <strong className="mono">{inc.entities.ot_assets.join(', ') || 'None'}</strong>
+                      </div>
                     </div>
-                    <div className="action-row" style={{ marginBottom: 8 }}>
-                      <button className="btn secondary" style={{ fontSize: 12 }} onClick={() => navigate(`/reasoning/${inc.incident_id}`)}>
-                        View Full AI Reasoning →
-                      </button>
-                    </div>
+
                     {messages[inc.incident_id] && (
-                      <div className="warning-card" style={{ marginBottom: 12 }}>{messages[inc.incident_id]}</div>
+                      <div className="warning-card" style={{ borderColor: 'rgba(52,211,153,0.3)', background: 'rgba(52,211,153,0.08)', color: 'var(--safe)', marginBottom: 16 }}>
+                        {messages[inc.incident_id]}
+                      </div>
                     )}
-                    <div className="action-row" style={{ marginTop: 8 }}>
+
+                    <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
+                      <button
+                        className="btn secondary"
+                        style={{ fontSize: 12 }}
+                        onClick={() => navigate(`/reasoning/${inc.incident_id}`)}
+                      >
+                        Inspect AI Reasoning Path →
+                      </button>
+
                       <button
                         className="btn primary"
                         disabled={submitting === inc.incident_id}
                         onClick={() => handle(inc.incident_id, 'approve')}
-                        style={{ background: 'linear-gradient(135deg,#bbf7d0,#6ee7b7)', flex: 1 }}
+                        style={{ flex: 1 }}
                       >
-                        {submitting === inc.incident_id ? 'Submitting…' : '✓ Approve Containment'}
+                        {submitting === inc.incident_id ? 'Authorizing...' : '✓ Approve & Dispatch Containment'}
                       </button>
+
                       <button
-                        className="btn secondary"
+                        className="btn danger"
                         disabled={submitting === inc.incident_id}
                         onClick={() => handle(inc.incident_id, 'reject')}
-                        style={{ borderColor: 'rgba(239,68,68,0.4)', color: 'var(--danger)', flex: 1 }}
+                        style={{ flex: 1 }}
                       >
-                        ✕ Reject / Monitor Only
+                        ✕ Reject Action / Monitor
                       </button>
                     </div>
                   </div>
