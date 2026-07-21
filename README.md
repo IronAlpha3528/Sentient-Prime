@@ -34,40 +34,7 @@ Deterministic policy — not the LLM — authorizes execution.
 
 ## 3. How it works (end to end)
 
-```mermaid
-flowchart LR
-    %% Define Styles
-    classDef db fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#e65100
-    classDef mlModel fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20
-    classDef aiAgent fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
-    classDef action fill:#ffebee,stroke:#d32f2f,stroke-width:2px,color:#b71c1c
-    classDef dec fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,color:#f57f17
-
-    subgraph Detect ["1. ML Detection"]
-        A[(SIEM)]:::db --> B[Specialist ML\nNet/ID/EP/OT]:::mlModel
-        B --> C([Unified Evidence])
-    end
-
-    subgraph Correlate ["2. Correlation"]
-        C --> D[(Cyber Graph)]:::db
-        D --> E[Meta-Classifier]:::mlModel
-    end
-
-    subgraph Reason ["3. AI Reasoning"]
-        E --> F[(ATT&CK RAG)]:::db
-        F --> G[3x Gemini Agents\nAnalyze/Critique/Act]:::aiAgent
-    end
-
-    subgraph Execute ["4. Deception & SOAR"]
-        G -.->|Uncertainty| H[Deploy Active Decoy]:::action
-        H -.->|Trigger| A
-        
-        G -->|High Risk| I{Risk Policy}:::dec
-        I -->|Allowed| J[SOAR Auto-Execute]:::action
-        I -->|Unsafe| K[Human Queue]:::action
-        J --> L[(Audit Ledger)]:::db
-    end
-```
+![Architecture Diagram](architecture.png)
 
 ### 3.1 Specialist Behavioral Detectors
 
