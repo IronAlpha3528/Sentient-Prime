@@ -47,6 +47,31 @@ class PolicyGate:
                 "reason": "Dry run failed",
             }
 
+        # Determine is_malicious flag
+        top_hypothesis = incident.get("top_hypothesis_selected", {})
+        is_malicious = top_hypothesis.get("is_malicious", True) if isinstance(top_hypothesis, dict) else True
+        
+        # Threat score (unified_threat_score) is in incident.get("score")
+        threat_score = incident.get("score")
+        if threat_score is None:
+            threat_score = 0.75 if is_malicious else 0.15
+        else:
+            threat_score = float(threat_score)
+
+        if threat_score < 0.40:
+            logger.info("Incident %s allowed: low threat score (%.4f)", incident_id, threat_score)
+            return {
+                "decision": "ALLOW",
+                "reason": f"Low threat score {threat_score:.4f} (benign)",
+            }
+
+        if 0.40 <= threat_score < 0.60:
+            logger.info("Incident %s routed to MONITOR: medium threat score (%.4f)", incident_id, threat_score)
+            return {
+                "decision": "MONITOR",
+                "reason": f"Medium threat score {threat_score:.4f} (monitoring)",
+            }
+
         confidence = float(incident.get("confidence", 0))
         if confidence < AUTO_CONFIDENCE_THRESHOLD:
             logger.warning("Incident %s escalated: confidence (%.4f) below threshold (%.4f)", incident_id, confidence, AUTO_CONFIDENCE_THRESHOLD)

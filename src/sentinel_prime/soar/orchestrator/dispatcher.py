@@ -93,6 +93,59 @@ class SOARDispatcher:
             self._record("escalation", result, incident_id)
             self._record("monitor_outcome", result["outcome"], incident_id)
             self.state_db.upsert_incident(incident_id, "ESCALATED", incident_data)
+            
+            # Diagnostic log
+            logger.info(
+                "Incident %s diagnostics | Confidence: %.4f | Risk: %.2f | Policy: ESCALATE | Reason: %s | Mode: %s",
+                incident_id, incident_data.get("confidence", 0), incident_data.get("risk_score", 0),
+                result["reason"], incident_data.get("model_version", "unknown")
+            )
+            return result
+
+        elif decision == "ALLOW":
+            result = {
+                "incident_id": incident_id,
+                "decision": "ALLOW",
+                "reason": decision_result.get("reason", "Low threat score (benign)"),
+            }
+            result["outcome"] = {
+                "status": "RESOLVED",
+                "message": "Event allowed (benign)",
+            }
+            self.verification_engine.states[incident_id] = IncidentState.RESOLVED
+            self._record("allow", result, incident_id)
+            self._record("monitor_outcome", result["outcome"], incident_id)
+            self.state_db.upsert_incident(incident_id, "RESOLVED", incident_data)
+            
+            # Diagnostic log
+            logger.info(
+                "Incident %s diagnostics | Confidence: %.4f | Risk: %.2f | Policy: ALLOW | Reason: %s | Mode: %s",
+                incident_id, incident_data.get("confidence", 0), incident_data.get("risk_score", 0),
+                result["reason"], incident_data.get("model_version", "unknown")
+            )
+            return result
+
+        elif decision == "MONITOR":
+            result = {
+                "incident_id": incident_id,
+                "decision": "MONITOR",
+                "reason": decision_result.get("reason", "Medium threat score (monitoring)"),
+            }
+            result["outcome"] = {
+                "status": "RESOLVED",
+                "message": "Incident placed in monitoring queue",
+            }
+            self.verification_engine.states[incident_id] = IncidentState.INVESTIGATING
+            self._record("monitor", result, incident_id)
+            self._record("monitor_outcome", result["outcome"], incident_id)
+            self.state_db.upsert_incident(incident_id, "INVESTIGATING", incident_data)
+            
+            # Diagnostic log
+            logger.info(
+                "Incident %s diagnostics | Confidence: %.4f | Risk: %.2f | Policy: MONITOR | Reason: %s | Mode: %s",
+                incident_id, incident_data.get("confidence", 0), incident_data.get("risk_score", 0),
+                result["reason"], incident_data.get("model_version", "unknown")
+            )
             return result
 
         action_results = []
@@ -110,9 +163,9 @@ class SOARDispatcher:
         
         # Add structured diagnostic log line
         logger.info(
-            "Incident %s diagnostics | Confidence: %.4f | Risk: %.2f | Policy: AUTO | Actions: %s",
+            "Incident %s diagnostics | Confidence: %.4f | Risk: %.2f | Policy: AUTO | Actions: %s | Mode: %s",
             incident_id, incident_data.get("confidence", 0), incident_data.get("risk_score", 0), 
-            [a.get("action") for a in action_results]
+            [a.get("action") for a in action_results], incident_data.get("model_version", "unknown")
         )
         
         outcome = self.monitor.check_status(incident_data, action_results)
@@ -153,11 +206,19 @@ class SOARDispatcher:
     def _prepare_incident(self, incident: dict[str, Any]) -> dict[str, Any]:
         incident_data = dict(incident)
         entity_id = incident_data.get("entity_id", "UNKNOWN")
-        score = float(incident_data.get("score", 0))
         top_hypothesis = incident_data.get("top_hypothesis_selected", {})
+        is_malicious = top_hypothesis.get("is_malicious", True) if isinstance(top_hypothesis, dict) else True
+        
+        score = incident_data.get("score")
+        if score is None:
+            score = 0.75 if is_malicious else 0.15
+        else:
+            score = float(score)
+
         response_plan = incident_data.get("response_plan", {})
         entities = incident_data.get("entities", {})
 
+        incident_data["score"] = score
         incident_data.setdefault("incident_id", f"INC-{entity_id}")
         incident_data.setdefault("attack_type", incident_data.get("classification", "Unknown"))
         
@@ -170,16 +231,15 @@ class SOARDispatcher:
         incident_data["confidence"] = float(conf)
         logger.info("Confidence resolved to %.4f from incident context for %s", incident_data["confidence"], incident_data["incident_id"])
 
-        ranked_actions = response_plan.get("ranked_actions", [])
-        incident_data.setdefault(
-            "risk_score",
-            max((item.get("score", 0) for item in ranked_actions), default=0) * 100,
-        )
+        # Proportional risk score based on the incident threat score
+        incident_data["risk_score"] = score * 100
         incident_data.setdefault("asset", entity_id)
 
         # Derive attacker_ip from entities or network features
         if "attacker_ip" not in incident_data:
             ip = entities.get("source_ip", entities.get("src_ip", entities.get("attacker_ip")))
+            if not ip and isinstance(entities.get("ips"), list) and len(entities["ips"]) > 0:
+                ip = entities["ips"][0]
             if not ip and "network" in incident_data and "features" in incident_data["network"]:
                 feats = incident_data["network"]["features"]
                 ip = feats.get("source_ip", feats.get("src_ip"))
@@ -190,6 +250,8 @@ class SOARDispatcher:
         if "username" not in incident_data:
             if incident_data.get("entity_type") == "user":
                 incident_data["username"] = entity_id
+            elif isinstance(entities.get("users"), list) and len(entities["users"]) > 0:
+                incident_data["username"] = entities["users"][0]
             elif "user" in entities:
                 incident_data["username"] = entities["user"]
             elif "username" in entities:

@@ -1,6 +1,6 @@
 # Sentient-Prime — Evaluation Report
 
-> Generated: 2026-07-20 20:17 UTC
+> Generated: 2026-07-21 10:29 UTC
 
 ---
 
@@ -52,7 +52,13 @@
 
 ## 3. APT Attribution Accuracy (MITRE ATT&CK Technique Level)
 
-> *Skipped (run without --no-ai to evaluate)*
+| Metric | Value |
+|---|---|
+| Incidents evaluated | 70 |
+| Top-1 Technique Accuracy | **0.0%** |
+| Top-3 Technique Accuracy | **28.6%** |
+| Any Technique Match Rate | **28.6%** |
+| Avg AI Pipeline Time | 0.0s |
 
 ---
 
@@ -61,9 +67,9 @@
 | Metric | Value |
 |---|---|
 | Total incidents processed | 110 |
-| Auto-contained (no human) | 58 (**52.7%**) |
-| Escalated to approval queue | 52 |
-| Automation coverage | **52.7%** |
+| Auto-contained (no human) | 110 (**100.0%**) |
+| Escalated to approval queue | 0 |
+| Automation coverage | **100.0%** |
 
 ---
 
@@ -78,7 +84,7 @@
 | | Sentient-Prime | Manual SOC Baseline | Improvement |
 |---|---|---|---|
 | MTTD (alert-to-detection flag) | **0.8ms** | 45.0 min | **3375000.0× faster** |
-| MTTR (AI analysis + dispatch) | **69.54ms** | 720.0 min | **621193.2× faster (triage only)** |
+| MTTR (AI analysis + dispatch) | **136.17ms** | 720.0 min | **317261.7× faster (triage only)** |
 
 ---
 
@@ -87,7 +93,7 @@
 | Metric | Value |
 |---|---|
 | Hash chain status | **VALID** |
-| Entries verified | 944 |
+| Entries verified | 1003 |
 | Hash errors | 0 |
 | Action traceability coverage | **100.0%** |
 

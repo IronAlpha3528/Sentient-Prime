@@ -50,8 +50,8 @@
       "risk_score": 0.0,
       "confidence": 1.0,
       "severity": "INFO",
-      "first_seen": "2026-07-20T20:17:44.037211+00:00",
-      "last_seen": "2026-07-20T20:17:44.037211+00:00",
+      "first_seen": "2026-07-21T10:29:04.790431+00:00",
+      "last_seen": "2026-07-21T10:29:04.790431+00:00",
       "metadata": {
         "incident_id": "INC-EVAL-023",
         "evidence_collected_count": 0,
@@ -61,18 +61,18 @@
       "id": "HOST:HOST-023"
     },
     {
-      "node_id": "PROCESS:HOST-023:unknown",
-      "entity_type": "PROCESS",
-      "display_name": "unknown",
+      "node_id": "HOST:0.0.0.0",
+      "entity_type": "HOST",
+      "display_name": "0.0.0.0",
       "risk_score": 0.0,
       "confidence": 1.0,
       "severity": "INFO",
-      "first_seen": "2026-07-20T20:17:44.037211+00:00",
-      "last_seen": "2026-07-20T20:17:44.037211+00:00",
+      "first_seen": "2026-07-21T10:29:04.790431+00:00",
+      "last_seen": "2026-07-21T10:29:04.790431+00:00",
       "metadata": {
-        "mitre_candidates": []
+        "role": "destination"
       },
-      "id": "PROCESS:HOST-023:unknown"
+      "id": "HOST:0.0.0.0"
     }
   ],
   "edges": [
@@ -94,20 +94,38 @@
       "key": 0
     },
     {
-      "type": "RUNS_PROCESS",
-      "first_seen": "2026-07-20T20:17:44.037211+00:00",
-      "last_seen": "2026-07-20T20:17:44.037211+00:00",
+      "type": "CONNECTS_TO",
+      "first_seen": "2026-07-21T10:29:04.790431+00:00",
+      "last_seen": "2026-07-21T10:29:04.790431+00:00",
       "occurrence_count": 1,
-      "timestamp": "2026-07-20T20:17:44.037211+00:00",
+      "timestamp": "2026-07-21T10:29:04.790431+00:00",
       "confidence": 1.0,
-      "source_detector": "ENDPOINT",
+      "source_detector": "NETWORK",
       "risk": 0.0,
       "metadata": {
-        "source_detector": "ENDPOINT",
-        "sigma_hits": []
+        "protocol": "unknown",
+        "attack_family": "unknown",
+        "flow_duration": 0.0,
+        "source_detector": "NETWORK"
       },
-      "source": "HOST:HOST-023",
-      "target": "PROCESS:HOST-023:unknown",
+      "source": "HOST:0.0.0.0",
+      "target": "HOST:0.0.0.0",
+      "key": 0
+    },
+    {
+      "type": "GENERATES",
+      "first_seen": "2026-07-21T10:29:04.790431+00:00",
+      "last_seen": "2026-07-21T10:29:04.790431+00:00",
+      "occurrence_count": 1,
+      "timestamp": "2026-07-21T10:29:04.790431+00:00",
+      "confidence": 1.0,
+      "source_detector": "NETWORK",
+      "risk": 0.0,
+      "metadata": {
+        "source_detector": "NETWORK"
+      },
+      "source": "HOST:0.0.0.0",
+      "target": "HOST:HOST-023",
       "key": 0
     }
   ]

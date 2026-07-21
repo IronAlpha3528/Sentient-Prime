@@ -180,38 +180,16 @@ def collect_features(dataset: list):
         row = {
             "network_score":             score_net,
             "network_confidence":        _conf(net_res),
-            "network_severity":          _sev(net_res),
             "identity_score":            score_id,
             "identity_confidence":       _conf(id_res),
-            "identity_severity":         _sev(id_res),
             "endpoint_score":            score_ep,
             "endpoint_confidence":       _conf(ep_res),
-            "endpoint_severity":         _sev(ep_res),
             "ot_score":                  score_ot,
             "ot_confidence":             _conf(ot_res),
-            "ot_severity":               _sev(ot_res),
             "honeypot_touched":          honeypot,
-            # Graph topological features — zero for offline training
-            # (at inference time these are populated from the live graph)
-            "degree_centrality":         min(1.0, score_net + 0.2),
-            "betweenness_centrality":    0.0,
-            "closeness_centrality":      0.0,
-            "pagerank":                  0.0,
-            "weakly_connected_components_count": 1.0,
-            "communities_count":         1.0,
-            "community_size":            1.0,
-            "node_degree":               float(fired),
-            # Threat intel — zero for offline training
             "threat_intel_match_count":  0.0,
-            "max_threat_intel_score":    0.0,
-            # Evidence
             "evidence_diversity":        float(fired),
-            "evidence_count":            float(fired),
             "sigma_match_count":         float(sigma_hits),
-            "historical_incident_frequency": 0.0,
-            "temporal_activity":         0.0,
-            "monitoring_queue_size":     0.0,
-            "monitoring_latency":        0.0,
         }
         rows.append(row)
         labels.append(global_label)

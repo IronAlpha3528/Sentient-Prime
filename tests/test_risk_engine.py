@@ -50,8 +50,8 @@ def test_policy_gate():
     assert res2["decision"] == "ESCALATE"
     assert "blast radius" in res2["reason"].lower()
 
-    # Case 3: Confidence below threshold (0.75) → ESCALATE
-    incident_low_conf = {"incident_id": "TEST-03", "confidence": 0.60, "risk_score": 40}
+    # Case 3: Confidence below threshold (0.50) → ESCALATE
+    incident_low_conf = {"incident_id": "TEST-03", "confidence": 0.40, "risk_score": 40}
     res3 = evaluate(incident_low_conf, dry_run_pass)
     assert res3["decision"] == "ESCALATE"
     assert "confidence" in res3["reason"].lower()

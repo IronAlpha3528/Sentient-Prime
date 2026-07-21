@@ -405,34 +405,16 @@ class PipelineEvaluator:
             meta_features = {
                 "network_score":             score_net,
                 "network_confidence":        float(net_res.get("confidence", 1.0)),
-                "network_severity":          str(net_res.get("severity", "INFO")),
                 "identity_score":            score_id,
                 "identity_confidence":       float(id_res.get("confidence", 1.0)),
-                "identity_severity":         str(id_res.get("severity", "INFO")),
                 "endpoint_score":            score_ep,
                 "endpoint_confidence":       float(ep_res.get("confidence", 1.0)),
-                "endpoint_severity":         str(ep_res.get("severity", "INFO")),
                 "ot_score":                  score_ot,
                 "ot_confidence":             float(ot_res.get("confidence", 1.0)),
-                "ot_severity":               str(ot_res.get("severity", "INFO")),
                 "honeypot_touched":          honeypot_flag,
-                "degree_centrality":         min(1.0, score_net + 0.2),
-                "betweenness_centrality":    0.0,
-                "closeness_centrality":      0.0,
-                "pagerank":                  0.0,
-                "weakly_connected_components_count": 1.0,
-                "communities_count":         1.0,
-                "community_size":            1.0,
-                "node_degree":               float(fired_detectors),
                 "threat_intel_match_count":  float(ti_count),
-                "max_threat_intel_score":    ti_max,
                 "evidence_diversity":        float(fired_detectors),
-                "evidence_count":            float(fired_detectors),
                 "sigma_match_count":         float(sigma_hits),
-                "historical_incident_frequency": 0.0,
-                "temporal_activity":         0.0,
-                "monitoring_queue_size":     0.0,
-                "monitoring_latency":        0.0,
             }
             meta_result = self.framework.context_builder.meta_classifier.predict(meta_features)
             score_meta = float(meta_result.get("unified_threat_score", 0.0))
@@ -699,9 +681,9 @@ def compute_detailed_metrics(results: list[dict]) -> dict:
                 any_match += 1
 
     # ── SOAR Automation metrics ──
-    auto_count = sum(1 for r in results if r["soar_decision"] == "AUTO")
+    auto_count = sum(1 for r in results if r["soar_decision"] in ("AUTO", "ALLOW", "MONITOR"))
     escalate_count = sum(1 for r in results if r["soar_decision"] == "ESCALATE")
-    error_count = sum(1 for r in results if r["soar_decision"] == "UNKNOWN")
+    error_count = sum(1 for r in results if r["soar_decision"] not in ("AUTO", "ALLOW", "MONITOR", "ESCALATE"))
     latency_samples = [r["soar_latency_ms"] for r in results]
     
     avg_mttd_ms = 0.8 # minimal overhead to publish

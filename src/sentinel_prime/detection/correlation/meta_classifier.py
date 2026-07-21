@@ -24,34 +24,16 @@ SEVERITY_MAP = {
 FEATURE_COLUMNS = [
     "network_score",
     "network_confidence",
-    "network_severity",
     "identity_score",
     "identity_confidence",
-    "identity_severity",
     "endpoint_score",
     "endpoint_confidence",
-    "endpoint_severity",
     "ot_score",
     "ot_confidence",
-    "ot_severity",
     "honeypot_touched",
-    "degree_centrality",
-    "betweenness_centrality",
-    "closeness_centrality",
-    "pagerank",
-    "weakly_connected_components_count",
-    "communities_count",
-    "community_size",
-    "node_degree",
     "threat_intel_match_count",
-    "max_threat_intel_score",
     "evidence_diversity",
-    "evidence_count",
-    "sigma_match_count",
-    "historical_incident_frequency",
-    "temporal_activity",
-    "monitoring_queue_size",
-    "monitoring_latency"
+    "sigma_match_count"
 ]
 
 class MetaClassifier:
@@ -187,7 +169,8 @@ class MetaClassifier:
                 global_importances = {col: 1.0 / len(self.feature_columns) for col in self.feature_columns}
             else:
                 # Model-based inference
-                df = pd.DataFrame([cleaned_feats], columns=self.feature_columns)
+                model_feats = cleaned_feats.copy()
+                df = pd.DataFrame([model_feats], columns=self.feature_columns)
                 probs = self.model.predict_proba(df)[0]
                 raw_prob = float(probs[1]) # probability of malicious class
                 
@@ -201,13 +184,17 @@ class MetaClassifier:
                 # Confidence estimation: 0.5 * model probability certainty + 0.5 * input confidence
                 model_certainty = 2.0 * abs(unified_score - 0.5)
                 
-                detector_confs = [
-                    cleaned_feats["network_confidence"],
-                    cleaned_feats["identity_confidence"],
-                    cleaned_feats["endpoint_confidence"],
-                    cleaned_feats["ot_confidence"]
-                ]
-                mean_detector_conf = sum(detector_confs) / len(detector_confs) if detector_confs else 1.0
+                active_confs = []
+                if cleaned_feats.get("network_score", 0.0) > 0.0:
+                    active_confs.append(cleaned_feats["network_confidence"])
+                if cleaned_feats.get("identity_score", 0.0) > 0.0:
+                    active_confs.append(cleaned_feats["identity_confidence"])
+                if cleaned_feats.get("endpoint_score", 0.0) > 0.0:
+                    active_confs.append(cleaned_feats["endpoint_confidence"])
+                if cleaned_feats.get("ot_score", 0.0) > 0.0:
+                    active_confs.append(cleaned_feats["ot_confidence"])
+                
+                mean_detector_conf = sum(active_confs) / len(active_confs) if active_confs else 1.0
                 confidence_score = 0.5 * model_certainty + 0.5 * mean_detector_conf
                 
                 # Extract model global importances
@@ -307,7 +294,7 @@ class MetaClassifier:
                 "model_version": self.model_version + "-error"
             }
 
-    def _predict_fallback(self, cleaned_feats: Dict[str, float]) -> tuple[float, float]:
+    def _predict_fallback(self, cleaned_feats: Dict[str, float], raw_features: Optional[Dict[str, Any]] = None) -> tuple[float, float]:
         """Provides a high-fidelity deterministic threat score fallback calculation."""
         # 1. Override signal: Honeypot / Deception triggered
         if cleaned_feats["honeypot_touched"] > 0.5:
@@ -339,13 +326,14 @@ class MetaClassifier:
             multiplier += 0.05 * min(diversity - 1, 4.0)
 
         # Incorporate graph metrics (blast-radius / reachability multiplier)
-        pagerank = cleaned_feats["pagerank"]
-        deg_centrality = cleaned_feats["degree_centrality"]
+        raw_feats = raw_features or {}
+        pagerank = float(raw_feats.get("pagerank", 0.0))
+        deg_centrality = float(raw_feats.get("degree_centrality", 0.0))
         if pagerank > 0.1 or deg_centrality > 0.1:
             multiplier += 0.05
 
         # Incorporate Threat Intel matches
-        ti_score = cleaned_feats["max_threat_intel_score"]
+        ti_score = float(raw_feats.get("max_threat_intel_score", 0.0))
         if ti_score > 0.5:
             multiplier += 0.05
             
@@ -358,14 +346,17 @@ class MetaClassifier:
         else:
             unified_score = float(np.clip(base_score, 0.0, 0.99))
 
-        # Fallback confidence calculation based on mean detector confidence
-        detector_confs = [
-            cleaned_feats["network_confidence"],
-            cleaned_feats["identity_confidence"],
-            cleaned_feats["endpoint_confidence"],
-            cleaned_feats["ot_confidence"]
-        ]
-        mean_conf = sum(detector_confs) / len(detector_confs) if detector_confs else 1.0
+        active_confs = []
+        if cleaned_feats.get("network_score", 0.0) > 0.0:
+            active_confs.append(cleaned_feats["network_confidence"])
+        if cleaned_feats.get("identity_score", 0.0) > 0.0:
+            active_confs.append(cleaned_feats["identity_confidence"])
+        if cleaned_feats.get("endpoint_score", 0.0) > 0.0:
+            active_confs.append(cleaned_feats["endpoint_confidence"])
+        if cleaned_feats.get("ot_score", 0.0) > 0.0:
+            active_confs.append(cleaned_feats["ot_confidence"])
+        
+        mean_conf = sum(active_confs) / len(active_confs) if active_confs else 1.0
 
         return unified_score, float(np.clip(mean_conf, 0.0, 1.0))
 
