@@ -35,80 +35,37 @@ Deterministic policy — not the LLM — authorizes execution.
 ## 3. How it works (end to end)
 
 ```mermaid
-flowchart TD
+flowchart LR
     %% Define Styles
-    classDef telemetry fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef db fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#e65100
     classDef mlModel fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20
     classDef aiAgent fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
-    classDef database fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#e65100
-    classDef decision fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,color:#f57f17
     classDef action fill:#ffebee,stroke:#d32f2f,stroke-width:2px,color:#b71c1c
-    classDef external fill:#eceff1,stroke:#607d8b,stroke-width:2px,color:#263238
+    classDef dec fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,color:#f57f17
 
-    subgraph Phase1 [1. Telemetry and SIEM]
-        A[Raw Telemetry]:::telemetry --> B[(SIEM / Elasticsearch)]:::database
+    subgraph Detect ["1. ML Detection"]
+        A[(SIEM)]:::db --> B[Specialist ML\nNet/ID/EP/OT]:::mlModel
+        B --> C([Unified Evidence])
     end
 
-    subgraph Phase2 [2. Specialist ML Detectors]
-        B --> C1[Network LightGBM]:::mlModel
-        B --> C2[Identity Isolation Forest]:::mlModel
-        B --> C3[Endpoint LightGBM and Sigma]:::mlModel
-        B --> C4[OT Isolation Forest]:::mlModel
+    subgraph Correlate ["2. Correlation"]
+        C --> D[(Cyber Graph)]:::db
+        D --> E[Meta-Classifier]:::mlModel
     end
 
-    C1 --> D([Common Evidence Object]):::external
-    C2 --> D
-    C3 --> D
-    C4 --> D
-
-    subgraph Phase3 [3. Correlation and Threat Knowledge]
-        D --> E[(Cyber Entity Graph)]:::database
-        E --> F[Extract Graph Features]:::mlModel
-        F --> G[LightGBM Meta-Classifier]:::mlModel
-        G --> H{Threat Score}:::decision
+    subgraph Reason ["3. AI Reasoning"]
+        E --> F[(ATT&CK RAG)]:::db
+        F --> G[3x Gemini Agents\nAnalyze/Critique/Act]:::aiAgent
     end
 
-    H -->|Low| I[Monitor or Decay]:::external
-    H -->|Moderate or High| J[(MITRE ATT&CK Hybrid Graph-RAG)]:::database
-
-    subgraph Phase4 [4. AI Agent Reasoning Pipeline]
-        J --> K[AI Correlation Agent]:::aiAgent
-        K --> L[AI Hypothesis Agent]:::aiAgent
-        L --> M[AI Prediction Agent]:::aiAgent
-    end
-
-    M --> N{Testable Uncertainty?}:::decision
-
-    subgraph Phase5 [5. AI-Driven Adaptive Deception]
-        N -->|Yes and Moderate Score| O[AI Deception Agent]:::aiAgent
-        O --> P[Graph-Guided Decoy Placement]:::action
-        P --> Q[Deterministic Deception Policy]:::decision
-        Q --> R[Deploy Active Decoy]:::action
-        R -.-> S{Decoy Touched?}:::decision
-        S -->|Yes| T[High-Confidence Deception Evidence]:::external
-        S -->|No| U[Cleanup Decoy]:::external
-    end
-
-    T -.-> D
-    U -.-> I
-
-    subgraph Phase6 [6. Response and Orchestration]
-        N -->|No or High Score| V[AI Response Agent]:::aiAgent
-        M -->|High Score| V
-        V --> W[Deterministic Risk Engine]:::mlModel
-        W --> X[Dry-Run Simulator]:::mlModel
-        X --> Y{Policy Gate}:::decision
-        Y -->|Allowed| Z[SOAR Playbook Auto-Execute]:::action
-        Y -->|Critical or Unsafe| AA[Human Approval Queue]:::action
-    end
-
-    subgraph Phase7 [7. Monitoring and Ledger]
-        Z --> AB[Closed-Loop Outcome Monitoring]:::mlModel
-        AA --> AB
-        AB --> AC{Outcome Result}:::decision
-        AC -->|Persisted| B
-        AC -->|Escalated| G
-        AC -->|Resolved| AD[(Tamper-Evident Audit Ledger)]:::database
+    subgraph Execute ["4. Deception & SOAR"]
+        G -.->|Uncertainty| H[Deploy Active Decoy]:::action
+        H -.->|Trigger| A
+        
+        G -->|High Risk| I{Risk Policy}:::dec
+        I -->|Allowed| J[SOAR Auto-Execute]:::action
+        I -->|Unsafe| K[Human Queue]:::action
+        J --> L[(Audit Ledger)]:::db
     end
 ```
 
