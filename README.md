@@ -371,3 +371,34 @@ Alternatively, you can run the process interactively:
 docker compose run --rm ml_worker
 ```
 This executes `run_phase1.py`, which injects telemetry, correlates evidence, generates AI hypotheses, and outputs the results to be viewed in the dashboard.
+ 
+---
+
+## 13. Autonomous Defense Demonstration
+
+A completely isolated demonstration subsystem is available in `scripts/demo/` for hackathons and presentations. This subsystem orchestrates the complete autonomous cyber-defense lifecycle (Telemetry → Detection → AI Reasoning → SOAR → Feedback Loop → Closure) without modifying production configurations.
+
+### 1. Run via Docker (Recommended)
+This uses an isolated `docker-compose.demo.yml` (spawning Elasticsearch on port 9201 and API on 8001) to ensure production environments remain untouched:
+```bash
+docker compose -f docker-compose.demo.yml up --build
+```
+
+### 2. Run Locally
+The demo pipeline can be run locally in 5 different modes:
+```bash
+# Mode 1: Single Incident Demonstration
+python scripts/demo/run_autonomous_demo.py --mode 1
+
+# Mode 2: Multi-stage Attack
+python scripts/demo/run_autonomous_demo.py --mode 2
+
+# Mode 3: Autonomous Closed Loop (Default)
+python scripts/demo/run_autonomous_demo.py --mode 3
+
+# Mode 4: Continuous Monitoring
+python scripts/demo/run_autonomous_demo.py --mode 4
+
+# Mode 5: Honeypot Deployment & Trigger
+python scripts/demo/run_autonomous_demo.py --mode 5
+```

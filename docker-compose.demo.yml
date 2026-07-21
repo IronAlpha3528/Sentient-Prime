@@ -1,0 +1,96 @@
+services:
+  # ── SIEM (Elasticsearch) ────────────────────────────────────────────────────
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    container_name: sentinel-demo-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9201:9200" # Mapped to 9201 to avoid conflict with production
+      - "9301:9300"
+    volumes:
+      - esdata_demo:/usr/share/elasticsearch/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # ── Flask API Backend ───────────────────────────────────────────────────────
+  api:
+    build: 
+      context: .
+      dockerfile: Dockerfile.api
+    image: sentinel-core-api:latest
+    container_name: sentinel-demo-api
+    ports:
+      - "8001:8000" # Mapped to 8001 to avoid conflict
+    environment:
+      - ES_HOST=http://elasticsearch:9200
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - API_HOST=0.0.0.0
+      - LOG_LEVEL=INFO
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./processed:/app/processed
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/api/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  # ── Honeypot Webhook Receiver ────────────────────────────────────────────────
+  webhook:
+    build:
+      context: .
+      dockerfile: Dockerfile.webhook
+    container_name: sentinel-demo-webhook
+    ports:
+      - "5051:5050"
+    environment:
+      - ES_HOST=http://elasticsearch:9200
+      - RECEIVER_HOST=0.0.0.0
+      - RECEIVER_PORT=5050
+      - HONEYPOT_API_KEY=${HONEYPOT_API_KEY:-}
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ── Autonomous Demo Runner ───────────────────────────────────────────────────
+  demo_runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: sentinel-core-api:latest
+    container_name: sentinel-demo-runner
+    command: ["python", "scripts/demo/run_autonomous_demo.py", "--mode", "3"]
+    environment:
+      - ES_HOST=http://elasticsearch:9200
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - LOG_LEVEL=INFO
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./processed:/app/processed
+      - ./models:/app/models
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: "no"
+
+volumes:
+  esdata_demo:
