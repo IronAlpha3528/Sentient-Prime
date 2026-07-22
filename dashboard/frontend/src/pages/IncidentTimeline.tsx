@@ -89,7 +89,7 @@ export default function IncidentTimeline() {
 
                     <div style={{ marginTop: 10, textAlign: 'right' }}>
                       <span className="mono subtle" style={{ fontSize: 11 }}>
-                        SHA256: 0x{entry.hash.substring(0, 16)}...
+                        SHA256: 0x{(entry.hash || '').replace(/\.+$/, '')}...
                       </span>
                     </div>
                   </div>

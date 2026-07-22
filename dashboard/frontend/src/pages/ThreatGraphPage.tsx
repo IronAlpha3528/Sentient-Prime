@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { getTopology, type Topology, type TopologyNode } from '../api/client'
 import StatusBadge from '../components/StatusBadge'
 import ThreatGraph from '../components/ThreatGraph'
@@ -107,9 +108,9 @@ export default function ThreatGraphPage() {
                 <div className="warning-card" style={{ marginTop: 16 }}>
                   🚨 <strong>Compromised Entity:</strong> High threat correlation. Click below to inspect AI reasoning.
                   <div style={{ marginTop: 10 }}>
-                    <a href="/reasoning/INC-GRAPH-001" className="btn primary" style={{ width: '100%', fontSize: 12 }}>
+                    <Link to="/reasoning/INC-GRAPH-001" className="btn primary" style={{ width: '100%', fontSize: 12 }}>
                       Inspect AI Reasoning Trace →
-                    </a>
+                    </Link>
                   </div>
                 </div>
               ) : (

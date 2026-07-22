@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { approveIncident } from '../api/client'
 import type { ReasoningOutput } from '../api/client'
 import StatusBadge from './StatusBadge'
 
@@ -13,15 +14,11 @@ export default function DeceptionCard({ strategy, incidentId }: Props) {
   const [elapsed, setElapsed] = useState(0)
 
   const deployDecoy = async () => {
+    if (!incidentId) return
     setDeployStatus('deploying')
     try {
-      const res = await fetch(`/api/incidents/${incidentId}/approve`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'deploy_decoy', strategy }),
-      })
-      const data = res.ok ? await res.json() : null
-      setDeployedInfo(data?.decoy_id ? data : { decoy_id: 'DECOY-HONEY-SMB-09', target_path: 'data/decoys/.smb_creds_db_server.txt' })
+      const data = await approveIncident(incidentId)
+      setDeployedInfo((data as any)?.decoy_id ? (data as any) : { decoy_id: 'DECOY-HONEY-SMB-09', target_path: 'data/decoys/.smb_creds_db_server.txt' })
       setDeployStatus('deployed')
       
       const start = Date.now()

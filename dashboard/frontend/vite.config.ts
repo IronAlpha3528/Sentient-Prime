@@ -5,7 +5,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://api:8000',
+      '/api': {
+        target: process.env.VITE_API_TARGET || (process.env.DOCKER_ENV ? 'http://api:8000' : 'http://localhost:8000'),
+        changeOrigin: true,
+      },
     },
   },
 })

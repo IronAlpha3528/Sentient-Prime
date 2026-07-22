@@ -110,8 +110,13 @@ export default function Overview() {
     return () => clearInterval(id)
   }, [])
 
-  const topScore = Math.max(...incidents.map((incident) => incident.unified_threat_score), 0)
-  const chartData = metrics ? Object.entries(metrics.detector_scores).map(([name, data]: any) => ({ name, precision: data.precision, recall: data.recall })) : []
+  const topScore = Math.max(...incidents.map((incident) => incident.unified_threat_score || 0), 0)
+  const chartData = metrics?.detector_scores 
+    ? Object.entries(metrics.detector_scores).map(([name, data]: any) => {
+        const displayName = name === 'ot' ? 'OT' : name.charAt(0).toUpperCase() + name.slice(1)
+        return { name: displayName, precision: data?.precision ?? 0, recall: data?.recall ?? 0 }
+      }) 
+    : []
 
   return (
     <div className="overview-layout">
