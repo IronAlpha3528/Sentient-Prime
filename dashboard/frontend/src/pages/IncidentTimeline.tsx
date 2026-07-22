@@ -66,8 +66,7 @@ export default function IncidentTimeline() {
                       alignItems: 'center', 
                       justifyContent: 'center', 
                       fontSize: 13, 
-                      zIndex: 2,
-                      boxShadow: `0 0 12px ${color}40`
+                      zIndex: 2
                     }}
                   >
                     {icon}

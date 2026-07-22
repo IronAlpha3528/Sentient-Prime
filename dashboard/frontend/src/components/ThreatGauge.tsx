@@ -54,7 +54,7 @@ export default function ThreatGauge({ score, size = 160, label = 'THREAT LEVEL' 
 
       {/* Inner Score Text */}
       <div style={{ position: 'absolute', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <span className="mono" style={{ fontFamily: 'var(--font-hud)', fontSize: size > 140 ? 32 : 24, fontWeight: 900, color, lineHeight: 1, textShadow: `0 0 12px ${color}` }}>
+        <span className="mono" style={{ fontFamily: 'var(--font-hud)', fontSize: size > 140 ? 32 : 24, fontWeight: 900, color, lineHeight: 1 }}>
           {normalized.toFixed(2)}
         </span>
         <span style={{ fontFamily: 'var(--font-hud)', fontSize: size > 140 ? 9 : 8, color: 'var(--text-subtle)', marginTop: 4, letterSpacing: '1px' }}>

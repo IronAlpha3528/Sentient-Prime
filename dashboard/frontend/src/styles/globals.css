@@ -69,7 +69,6 @@ button {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--cyber-cyan);
-  box-shadow: 0 0 10px var(--cyber-cyan);
 }
 
 /* ─── Layout Shell ───────────────────────────────────────────────────────────── */
@@ -119,7 +118,6 @@ button {
   font-weight: 900;
   font-family: var(--font-hud);
   font-size: 16px;
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.35);
   position: relative;
 }
 
@@ -138,7 +136,7 @@ button {
   font-size: 13px;
   letter-spacing: 2px;
   color: #ffffff;
-  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+
 }
 
 .nav {
@@ -172,7 +170,6 @@ button {
   color: #ffffff;
   background: linear-gradient(90deg, rgba(0, 240, 255, 0.16) 0%, rgba(157, 78, 221, 0.08) 100%);
   border-color: var(--cyber-cyan);
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
 }
 
 .nav-item.active::before {
@@ -184,7 +181,6 @@ button {
   width: 4px;
   background: var(--cyber-cyan);
   border-radius: 0 4px 4px 0;
-  box-shadow: 0 0 12px var(--cyber-cyan);
 }
 
 .nav-icon {
@@ -252,7 +248,6 @@ button {
   font-family: var(--font-hud);
   color: var(--cyber-cyan);
   letter-spacing: 1px;
-  box-shadow: inset 0 0 12px rgba(0, 240, 255, 0.1);
 }
 
 .status-dot {
@@ -260,7 +255,6 @@ button {
   height: 8px;
   border-radius: 50%;
   background: var(--matrix-green);
-  box-shadow: 0 0 10px var(--matrix-green);
 }
 
 .status-dot.pulse {
@@ -299,7 +293,7 @@ button {
   display: flex;
   align-items: center;
   gap: 8px;
-  text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+
 }
 
 h1 {
@@ -313,7 +307,7 @@ h1 {
   background-clip: text;
   color: transparent;
   letter-spacing: 0.5px;
-  text-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+
 }
 
 h2 {
@@ -347,7 +341,6 @@ h3 {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 24px;
-  box-shadow: var(--shadow-hud);
   transition: all 240ms cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -355,7 +348,6 @@ h3 {
 
 .card:hover {
   border-color: rgba(0, 240, 255, 0.35);
-  box-shadow: 0 8px 30px rgba(0, 240, 255, 0.15);
   transform: translateY(-2px);
 }
 
@@ -387,7 +379,6 @@ h3 {
 }
 
 .card.glow-primary {
-  box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
   border-color: rgba(0, 240, 255, 0.5);
 }
 
@@ -456,7 +447,6 @@ h3 {
   place-items: center;
   background: rgba(0, 240, 255, 0.06);
   border: 1px solid rgba(0, 240, 255, 0.2);
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.1);
 }
 
 .metric-value {
@@ -466,7 +456,7 @@ h3 {
   line-height: 1.1;
   letter-spacing: -0.5px;
   margin: 12px 0 4px 0;
-  text-shadow: 0 0 14px currentColor;
+
 }
 
 .metric-subtitle {
@@ -492,19 +482,17 @@ h3 {
 }
 
 .btn:active {
-  transform: scale(0.97);
+  /* Removed scale down animation */
 }
 
 .btn.primary {
   background: linear-gradient(135deg, #00f0ff 0%, #7b2cbf 100%);
   color: #ffffff;
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.35);
   border: 1px solid rgba(0, 240, 255, 0.5);
 }
 
 .btn.primary:hover {
-  box-shadow: 0 0 30px rgba(0, 240, 255, 0.55);
-  transform: translateY(-2px);
+  /* Removed glow and translate animations */
 }
 
 .btn.secondary {
@@ -516,20 +504,17 @@ h3 {
 .btn.secondary:hover {
   background: rgba(0, 240, 255, 0.12);
   border-color: var(--cyber-cyan);
-  box-shadow: 0 0 16px rgba(0, 240, 255, 0.2);
-  transform: translateY(-1px);
+  /* Removed glow and translate animations */
 }
 
 .btn.danger {
   background: linear-gradient(135deg, #ff0055 0%, #b91c1c 100%);
   color: #ffffff;
-  box-shadow: 0 0 20px rgba(255, 0, 85, 0.35);
   border: 1px solid rgba(255, 0, 85, 0.5);
 }
 
 .btn.danger:hover {
-  box-shadow: 0 0 30px rgba(255, 0, 85, 0.55);
-  transform: translateY(-2px);
+  /* Removed glow and translate animations */
 }
 
 /* ─── Cyber Badges & Controls ───────────────────────────────────────────────── */
@@ -552,28 +537,24 @@ h3 {
   color: #ff4b6e;
   background: var(--crimson-subtle);
   border-color: rgba(255, 0, 85, 0.35);
-  box-shadow: 0 0 12px rgba(255, 0, 85, 0.15);
 }
 
 .badge.safe {
   color: #00ff9d;
   background: var(--matrix-green-subtle);
   border-color: rgba(0, 255, 157, 0.35);
-  box-shadow: 0 0 12px rgba(0, 255, 157, 0.15);
 }
 
 .badge.warning {
   color: #ffb700;
   background: var(--cyber-gold-subtle);
   border-color: rgba(255, 183, 0, 0.35);
-  box-shadow: 0 0 12px rgba(255, 183, 0, 0.15);
 }
 
 .badge.info {
   color: var(--cyber-cyan);
   background: var(--cyber-cyan-subtle);
   border-color: rgba(0, 240, 255, 0.35);
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.15);
 }
 
 .badge.neutral {
@@ -611,7 +592,6 @@ h3 {
   background: var(--cyber-cyan-subtle);
   color: var(--cyber-cyan);
   border-color: var(--cyber-cyan);
-  box-shadow: 0 0 16px rgba(0, 240, 255, 0.25);
 }
 
 /* ─── Matrix Data Tables ─────────────────────────────────────────────────────── */
@@ -658,9 +638,9 @@ tr.clickable:hover td {
   display: inline-block;
 }
 
-.score.high { color: var(--crimson-alert); text-shadow: 0 0 12px rgba(255, 0, 85, 0.5); }
-.score.mid { color: var(--cyber-gold); text-shadow: 0 0 12px rgba(255, 183, 0, 0.5); }
-.score.low { color: var(--matrix-green); text-shadow: 0 0 12px rgba(0, 255, 157, 0.5); }
+
+
+
 
 /* ─── Threat Topology Panel ─────────────────────────────────────────────────── */
 .graph-card {
@@ -670,7 +650,6 @@ tr.clickable:hover td {
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-strong);
   background: radial-gradient(circle at 50% 50%, #060e22 0%, #020409 100%);
-  box-shadow: 0 0 35px rgba(0, 240, 255, 0.1);
 }
 
 .graph-title {
@@ -688,7 +667,7 @@ tr.clickable:hover td {
   font-size: 13px;
   letter-spacing: 2px;
   color: var(--cyber-cyan);
-  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+
 }
 
 .graph-title span {
@@ -706,7 +685,6 @@ tr.clickable:hover td {
   border-radius: var(--radius-md);
   padding: 16px;
   min-width: 220px;
-  box-shadow: 0 0 24px rgba(0, 240, 255, 0.25);
 }
 
 .graph-tooltip .name {
@@ -852,7 +830,6 @@ tr.clickable:hover td {
   height: 100%;
   border-radius: inherit;
   transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 10px currentColor;
 }
 
 .evidence-list {
@@ -893,7 +870,7 @@ tr.clickable:hover td {
   font-family: var(--font-hud);
   font-size: 20px;
   font-weight: 900;
-  text-shadow: 0 0 10px var(--crimson-alert);
+
 }
 
 .deception-grid {
@@ -927,7 +904,6 @@ tr.clickable:hover td {
   padding: 16px;
   margin-top: 16px;
   font-size: 13px;
-  box-shadow: 0 0 16px rgba(255, 183, 0, 0.1);
 }
 
 .modal-backdrop {
@@ -947,7 +923,6 @@ tr.clickable:hover td {
   border: 1px solid var(--cyber-cyan);
   border-radius: var(--radius-lg);
   padding: 28px;
-  box-shadow: 0 0 40px rgba(0, 240, 255, 0.25);
 }
 
 .select {
@@ -962,7 +937,6 @@ tr.clickable:hover td {
 }
 .select:focus {
   border-color: var(--cyber-cyan);
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
 }
 
 .health-chart {
@@ -1028,8 +1002,8 @@ tr.clickable:hover td {
 }
 
 @keyframes pulseDot {
-  0%, 100% { opacity: 0.6; transform: scale(1); box-shadow: 0 0 6px var(--matrix-green); }
-  50% { opacity: 1; transform: scale(1.25); box-shadow: 0 0 16px var(--matrix-green); }
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 
 @keyframes rotateClockwise {

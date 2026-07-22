@@ -64,7 +64,6 @@ function ChartTooltip({ active, payload, label }: any) {
       fontFamily: 'var(--font-mono)',
       fontSize: 12,
       color: '#f8fafc',
-      boxShadow: '0 0 20px rgba(0, 240, 255, 0.15), 0 8px 24px rgba(0,0,0,0.5)',
       backdropFilter: 'blur(12px)',
       minWidth: 160,
     }}>
@@ -181,11 +180,11 @@ export default function Overview() {
           </div>
           <div className="detector-legend">
             <span className="legend-item">
-              <span className="legend-dot" style={{ background: '#00f0ff', boxShadow: '0 0 8px rgba(0,240,255,0.6)' }} />
+              <span className="legend-dot" style={{ background: '#00f0ff' }} />
               <span style={{ color: '#00f0ff' }}>Precision</span>
             </span>
             <span className="legend-item">
-              <span className="legend-dot" style={{ background: '#00ff9d', boxShadow: '0 0 8px rgba(0,255,157,0.6)' }} />
+              <span className="legend-dot" style={{ background: '#00ff9d' }} />
               <span style={{ color: '#00ff9d' }}>Recall</span>
             </span>
           </div>
@@ -253,7 +252,7 @@ export default function Overview() {
                 isAnimationActive={true}
                 animationDuration={800}
                 animationEasing="ease-out"
-                style={{ filter: 'url(#glowCyan)' }}
+                
               >
                 <LabelList dataKey="precision" content={renderValueLabel} />
               </Bar>
@@ -267,7 +266,7 @@ export default function Overview() {
                 isAnimationActive={true}
                 animationDuration={800}
                 animationEasing="ease-out"
-                style={{ filter: 'url(#glowGreen)' }}
+                
               >
                 <LabelList dataKey="recall" content={renderValueLabel} />
               </Bar>
